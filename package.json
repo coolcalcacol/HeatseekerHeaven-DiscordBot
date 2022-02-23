@@ -1,0 +1,35 @@
+{
+  "name": "heatseekerheaven-discordbot",
+  "version": "0.0.1",
+  "description": "Heatseeker Heaven Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CTN-Originals/HeatseekerHeaven-DiscordBot.git"
+  },
+  "keywords": [
+    "discord",
+    "rocket",
+    "league",
+    "rocket",
+    "league",
+    "heatseeker",
+    "discord",
+    "bot"
+  ],
+  "author": "CTN-Originals",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CTN-Originals/HeatseekerHeaven-DiscordBot/issues"
+  },
+  "homepage": "https://github.com/CTN-Originals/HeatseekerHeaven-DiscordBot#readme",
+  "dependencies": {
+    "discord.js": "^13.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.9.0"
+  }
+}
