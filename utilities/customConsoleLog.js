@@ -1,4 +1,5 @@
 /**
+ * Author: CTN-Originals
  * ◘ is a char that i use isntead of more common chars to avoid errors with collorization
  */
 const colors = {
@@ -37,7 +38,11 @@ const defaultLogOptions = {
     autoColorize: true,
     resetStyle: true,
     newlineMarker: false,
+    unfoldJsonObjects: true,
+    reformatJsonObjects: true,
     resetLogOptions: true,
+    resetForeGroundToColor: true,
+    resetForeGroundColor: 'white'
 }
 
 module.exports = {
@@ -49,11 +54,17 @@ module.exports = {
             bgColor: ''
         },
         statments: {
-            instances: ['if', 'else', 'return', 'break', 'continue', 'try', 'catch'],
+            instances: [
+                'if', 'else', 
+                'return', 'break', 'continue', 
+                'for', 
+                'try', 'catch'
+            ],
             fontStyle: 'bold',
             fontColor: 'magenta',
             bgColor: ''
         },
+
         bools: {
             instances: ['true', 'false'],
             fontStyle: '',
@@ -66,8 +77,20 @@ module.exports = {
             fontColor: 'cyan',
             bgColor: ''
         },
+        operatorFlags: {
+            instances: [
+                'const', 'var', 'let', 
+                'typeof', 'this', 
+                'function', 'Function', 
+                'init', 'Init', 
+                'args', 'arg'
+            ],
+            fontStyle: '',
+            fontColor: 'blue',
+            bgColor: ''
+        },
         operators: {
-            instances: ['=', '>', '<', '?', '!', '|', '&'],
+            instances: ['=', '>', '<', '?', '!', '|', '&', '@'],
             fontStyle: '',
             fontColor: 'cyan',
             bgColor: ''
@@ -90,25 +113,17 @@ module.exports = {
             fontColor: 'cyan',
             bgColor: ''
         },
-        test11: {
-            instances: ['Test'],
-            fontStyle: '',
-            fontColor: 'test1',
-            bgColor: ''
-        },
-        test21: {
-            instances: ['Testing'],
-            fontStyle: '',
-            fontColor: 'test2',
-            bgColor: ''
-        },
     },
     logOptions: {
         colorize: true,
         autoColorize: true,
         resetStyle: true,
         newlineMarker: false,
+        unfoldJsonObjects: true,
+        reformatJsonObjects: true,
         resetLogOptions: true,
+        resetForeGroundToColor: true,
+        resetForeGroundColor: 'white'
         // resetColor: true
     },
     
@@ -129,15 +144,25 @@ module.exports = {
             }
         }
 
-        if (Array.isArray(output)) {
-            for (const line in output) {
-                this.log(output[line], options);
+        if ((this.isJson(output) || Array.isArray(output)) && options.reformatJsonObjects) {
+            const jsonOptions = {
+                colorize: true,
+                autoColorize: false,
+                resetStyle: true,
+                newlineMarker: false,
+                unfoldJsonObjects: true,
+                reformatJsonObjects: true,
+                resetLogOptions: true,
+                resetForeGroundToColor: true,
+                resetForeGroundColor: 'white'
             }
-            return;
-        }
-        else if (this.isJsonString(output)) {
-            output = this.formatJsonToString(output);
-        }
+            if (options.unfoldJsonObjects) {
+                output = this.formatOutput(this.unfoldNestedObject(output, 2, ' '), jsonOptions);
+            }
+            else {
+                output = this.formatOutput(JSON.stringify(output, 2, ' '), jsonOptions);
+            }
+		}
         else {
             output = this.formatOutput(output, options);
         }
@@ -150,6 +175,10 @@ module.exports = {
         }
     },
     formatOutput(input, options) {
+        if (this.isJson(input)) {
+            input = JSON.stringify(input);
+        }
+
         if (options.colorize) {
             input = this.colorize(input);
         }
@@ -157,9 +186,16 @@ module.exports = {
             input = this.autoColorize(input);
         }
         if (options.newlineMarker) {
-            str = str.replaceAll('\n', ' ¬\n');
+            input = this.tryReplaceString(input, '\n', ' ¬\n');
         }
-        input = this.setStylePlaceholder(input)
+        if (options.resetForeGroundToColor) {
+            const reset = this.getStylePlaceholder('style', 'reset');
+            const fgColor = this.getStylePlaceholder('fg', options.resetForeGroundColor)
+            input = reset + input;
+            input = this.tryReplaceString(input, reset, reset + fgColor);
+        }
+
+        input = this.setStylePlaceholder(input);
         return input;
     },
 
@@ -167,16 +203,20 @@ module.exports = {
         for (const colorType in colors) {
             for (const colorContent in colors[colorType]) {
                 const value = this.getStylePlaceholder(colorType, colorContent);
-                const strSplit = str.split('[' + colorType + '=' + colorContent + ']')
-    
+                var strSplit = '';
+                try {
+                    strSplit = str.split('[' + colorType + '=' + colorContent + ']');
+                } catch (error) {}
+                
+                if (!strSplit) {continue;}
                 for (const split in strSplit) {
                     const target = strSplit[split];
                     const segment = target.split('[/>]')[0];
-                    str = str.replace('[' + colorType + '=' + colorContent + ']' + segment, value + segment);
+                    str = this.tryReplaceString(str, '[' + colorType + '=' + colorContent + ']' + segment, value + segment, false);
                 }
             }
         }
-        str = str.replaceAll('[/>]', this.getStylePlaceholder('style', 'reset'))
+        str = this.tryReplaceString(str, '[/>]', this.getStylePlaceholder('style', 'reset'))
         return str;
     },
     autoColorize(str) {
@@ -194,7 +234,7 @@ module.exports = {
                 instance + 
                 this.getStylePlaceholder('style', 'reset');
 
-                str = str.replaceAll(instance, newInstance);
+                str = this.tryReplaceString(str, instance, newInstance);
                 // console.log(instance + ' -> ' + newInstance)
             }
         }
@@ -209,11 +249,13 @@ module.exports = {
         for (const colorType in colors) {
             for (const colorContent in colors[colorType]) {
                 const value = colors[colorType][colorContent];
-                str = str.replaceAll('◘' + colorType + colorContent + '◘', value);
+                str = this.tryReplaceString(str, '◘' + colorType + colorContent + '◘', value);
             }
         }
-        str = str.replaceAll(/◘style|◘fg|◘bg/g, '')
-        str = str.replaceAll('◘', '');
+        str = this.tryReplaceString(str,'◘style', '')
+        str = this.tryReplaceString(str,'◘fg', '')
+        str = this.tryReplaceString(str,'◘bg', '')
+        str = this.tryReplaceString(str, '◘', '');
         
         return str;
     },
@@ -222,31 +264,84 @@ module.exports = {
         for (const colorType in colors) {
             for (const colorContent in colors[colorType]) {
                 const value = colors[colorType][colorContent];
-                str = str.replaceAll(value, '');
+                str = this.tryReplaceString(str, value, '');
+                str = this.tryReplaceString(str, '[' + colorType + '=' + colorContent + ']', '');
+                str = this.tryReplaceString(str, '[/>]', '');
             }
         }
         return str;
     },
 
-    formatJsonToString(target) {
-        return JSON.parse(JSON.stringify(target));
+    unfoldNestedObject(obj, indent, indentChar, indentInc = 2, parent = true, isJson = true) {
+        var output = '';
+		var currentIndent = '';
+		var currentIndentCount = 0;
+		if (parent) {indentInc = indent; indent = 0}
+		for (let ind = 0; ind < indent + indentInc; ind++) {
+            currentIndent += indentChar;
+			currentIndentCount += 1;
+		}
+        var lineStart = parent ? currentIndent : '\n' + currentIndent;
+
+		for (const key in obj) {
+			if (this.isJson(obj[key]) && options.unfoldJsonObjects) {
+				obj[key] = this.unfoldNestedObject(obj[key], currentIndentCount, indentChar, indentInc, false, true);
+				output += lineStart + '[style=bold][fg=blue]' + key + '[/>]: {' + obj[key] + '\n' + currentIndent + '}';
+			}
+			else if (Array.isArray(obj[key])) {
+				obj[key] = this.unfoldNestedObject(obj[key], currentIndentCount, indentChar, indentInc, false, false);
+				output += lineStart + '[style=bold][fg=blue]' + key + '[/>]: [' + obj[key] + '\n' + currentIndent + ']';
+			}
+			else {
+				if (isJson) {
+					output += lineStart + '[style=bold][fg=blue]' + key + '[/>]: [fg=green]' + obj[key] + '[/>]';
+				}
+				else {
+					output += lineStart + '[fg=green]' + obj[key] + '[/>]';
+				}
+			}
+			lineStart = ',\n' + currentIndent
+		}
+		return parent ? '{\n' + output + '\n}' : output;
     },
-    isJsonString(target) {
+    isJson(target) {
+		try {
+			var o = JSON.parse(JSON.stringify(target));
+			if (o && typeof o === "object"  && !Array.isArray(target)) {
+				return true;
+			}
+		}
+		catch (e) { }
+		return false;
+	},
+
+    /**
+     * @param {String} input The string to edit
+     * @param {String|Char} target The string or char to search for
+     * @param {String|Char} replacer The string or char to replace the target with
+     * @param {Bool} allInstances Replace all instences?
+     * @param {Bool} logError Log any error that is cough in this process?
+     */
+    tryReplaceString(input, target, replacer, allInstances = true, logError = false) {
         try {
-            var o = JSON.parse(JSON.stringify(target));
-    
-            // Handle non-exception-throwing cases:
-            // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
-            // but... JSON.parse(null) returns null, and typeof null === "object", 
-            // so we must check for that, too. Thankfully, null is falsey, so this suffices:
-            // console.log(o)
-            if (o && typeof o === "object") {
-                return true;
+            if (allInstances) {
+                input = input.replaceAll(target, replacer);
+            }
+            else {
+                input = input.replace(target, replacer);
+            }
+        } catch (error) {
+            if (logError) {
+                console.error(
+                    '--Custom Console--\nTRY REPLACE ERROR\n' + 
+                    'Input: ' + input + 
+                    '\nTarget: ' + target + 
+                    '\nReplacer: ' + replacer + 
+                    '\n\n' + error
+                )
             }
         }
-        catch (e) { }
-        
-        return false;
+        return input;
     },
 
     test() {
@@ -260,10 +355,26 @@ module.exports = {
         ]
         this.log(msgArray);
         const data = {
-            name: "John Smith",
-            age: 30,
-            hobbies: ["Programming", "Video Games"]
-        };
-        this.log([' ', data, ' ']);
+			name: 'opt name',
+			desciption: 'some description',
+			arr: [
+				'apples',
+				'banana',
+				'orange',
+				'barry'
+			],
+			info: {
+				first: 'jhon',
+				last: 'baker',
+				gender: 'other',
+				job: 'chef',
+				xArr: [
+					{a: '1', b: '2', c: [1,2,3]},
+					['1', '2', ['11', '12']]
+				]
+			}
+		}
+
+		this.log(data);
     }
 }

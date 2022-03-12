@@ -1,16 +1,23 @@
 const fs = require('fs');
+const { cConsole, embedCreator } = require('./utilities/utilityManager.js');
 // Require the necessary discord.js classes
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
+const { prefix } = require('./config/config.json');
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ 
+	intents: [
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MESSAGES
+	]
+});
 
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
-// Get all the commands from the files in the commands folder
+// Get all the commands from the files in the commands folder1312
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	// Set a new item in the Collection
@@ -36,10 +43,11 @@ client.on('interactionCreate', async interaction => {
 
 	if (!command) return;
 	try {
-		await command.execute(interaction);
+		await command.execute(interaction, interaction.options);
+		// cConsole.log(command);
 	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+		cConsole.log(error);
 	}
 });
 
