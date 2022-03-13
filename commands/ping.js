@@ -13,7 +13,6 @@ module.exports = {
 			//cConsole.log(options);
 		}
 		else {
-			cConsole.log('interaction: ' + interaction + '\nid: ' + interaction.message);
 			await interaction.reply('Pong!');
 		}
 	},

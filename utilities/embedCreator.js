@@ -18,10 +18,18 @@ const exampleEmbed = new MessageEmbed()
 	.addField('Inline field title', 'Some value here', true)
 	.setImage('https://i.imgur.com/AfFp7pu.png')
 	.setTimestamp()
-	.setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
+	.setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' 
+});
 
-module.exports = {
+
+
+module.exports.create = {
+    create() {
+
+    }
+}
+module.exports.info = {
     test() {
-        //clientSendMessage.sendTestMessage({ embeds: [exampleEmbed] });
+        clientSendMessage.sendTestMessage({ embeds: [exampleEmbed] });
     }
 }
