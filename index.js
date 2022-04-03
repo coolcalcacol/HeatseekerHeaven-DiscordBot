@@ -43,11 +43,12 @@ client.on('interactionCreate', async interaction => {
 
 	if (!command) return;
 	try {
-		await command.execute(interaction, interaction.options);
+		await command.execute(interaction, client);
 		// cConsole.log(command);
 	} catch (error) {
 		await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
-		cConsole.log(error);
+		cConsole.log('Error: ' + error.message);
+		cConsole.log(error.stack);
 	}
 });
 

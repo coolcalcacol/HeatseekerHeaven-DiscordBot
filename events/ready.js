@@ -6,10 +6,10 @@ module.exports = {
 	execute(client) {
 		cConsole.log(`[fg=green]Ready![/>] Logged in as [style=bold][fg=cyan]${client.user.tag}[/>]`, {autoColorize: false});
 		clientSendMessage.setClient(client);
-		this.runTestActuins();
+		this.runTestActions();
 	},
-	runTestActuins() {
+	runTestActions() {
 		//cConsole.test();
-		embedCreator.test();
+		// embedCreator.info.test();
 	}
 };

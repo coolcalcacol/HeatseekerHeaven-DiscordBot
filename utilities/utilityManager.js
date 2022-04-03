@@ -1,7 +1,5 @@
-const cc = require('./customConsoleLog.js');
-
 module.exports = {
-    cConsole: cc,
+    cConsole: require('./customConsoleLog.js'),
     clientSendMessage: require('./clientSendMessage.js'),
     embedCreator: require('./embedCreator.js'),
 }

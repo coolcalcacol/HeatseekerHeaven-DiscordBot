@@ -48,7 +48,7 @@ const defaultLogOptions = {
 module.exports = {
     autoColorizeData: {
         errors: {
-            instances: ['undefined', 'null', 'error'],
+            instances: ['undefined', 'null', 'error', 'Error', 'ERROR'],
             fontStyle: 'bold',
             fontColor: 'red',
             bgColor: ''
@@ -284,7 +284,7 @@ module.exports = {
         var lineStart = parent ? currentIndent : '\n' + currentIndent;
 
 		for (const key in obj) {
-			if (this.isJson(obj[key]) && options.unfoldJsonObjects) {
+			if (this.isJson(obj[key])) {
 				obj[key] = this.unfoldNestedObject(obj[key], currentIndentCount, indentChar, indentInc, false, true);
 				output += lineStart + '[style=bold][fg=blue]' + key + '[/>]: {' + obj[key] + '\n' + currentIndent + '}';
 			}

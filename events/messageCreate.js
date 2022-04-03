@@ -23,6 +23,7 @@ const interactionFields = [
 
 module.exports = {
 	name: 'messageCreate-',
+    once: true,
 	async execute(message) {
         const client = message.client;
         if (message.content.startsWith(prefix)) {
