@@ -1,4 +1,4 @@
-const { cConsole, clientSendMessage, embedCreator } = require('../utilities/utilityManager.js');
+const { cConsole, clientSendMessage } = require('../utils/utilityManager.js');
 
 module.exports = {
 	name: 'queueEvent',

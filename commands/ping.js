@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { cConsole, clientSendMessage } = require('../utilities/utilityManager.js');
+const { cConsole, clientSendMessage } = require('../utils/utilityManager.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -7,6 +7,7 @@ module.exports = {
 		.setDescription('Replies with Pong!')
 		.addStringOption(option => option.setName('name').setDescription('some description')),
 	async execute(interaction) {
+        /// -- Options test
 		// const options = interaction.options;
 		// if (options._hoistedOptions.length > 0) {
 		// 	await interaction.reply('Pong! ```json\n' + JSON.stringify(options, '', 4) + '```');
@@ -15,8 +16,6 @@ module.exports = {
 		// else {
 		// 	await interaction.reply('Pong!');
 		// }
-
-
 		await interaction.reply('Pong!');
 	},
 };

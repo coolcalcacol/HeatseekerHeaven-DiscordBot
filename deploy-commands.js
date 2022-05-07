@@ -3,14 +3,17 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId, token } = require('./config/private.json');
-const { cConsole, embedCreator } = require('./utilities/utilityManager.js');
+const { cConsole } = require('./utils/utilityManager.js');
 
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
-	commands.push(command.data.toJSON());
+	const commandData = command.data.toJSON();
+	
+	commands.push(commandData);
+	cConsole.log('[fg=cyan]' + commandData.name + '[/>]');
 }
 
 const rest = new REST({ version: '9' }).setToken(token);

@@ -1,11 +1,14 @@
-const { cConsole, clientSendMessage, embedCreator } = require('../utilities/utilityManager.js');
+const { cConsole, clientSendMessage } = require('../utils/utilityManager.js');
+const generalData = require('../data/generalData.js');
+const config = require('../config/config.json');
+
 
 module.exports = {
 	name: 'ready',
 	once: true,
 	execute(client) {
+		generalData.client = client;
 		cConsole.log(`[fg=green]Ready![/>] Logged in as [style=bold][fg=cyan]${client.user.tag}[/>]`, {autoColorize: false});
-		clientSendMessage.setClient(client);
 		this.runTestActions();
 	},
 	runTestActions() {

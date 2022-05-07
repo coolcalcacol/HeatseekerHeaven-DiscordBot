@@ -1,9 +1,9 @@
 const fs = require('fs');
-const { cConsole, embedCreator } = require('./utilities/utilityManager.js');
+const { cConsole } = require('./utils/utilityManager.js');
 // Require the necessary discord.js classes
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
-const { prefix } = require('./config/config.json');
+// const { prefix } = require('./config/config.json');
 
 // Create a new client instance
 const client = new Client({ 
