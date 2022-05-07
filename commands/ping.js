@@ -1,8 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { cConsole, clientSendMessage } = require('../utilities/utilityManager.js');
 
-
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')

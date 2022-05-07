@@ -375,6 +375,6 @@ module.exports = {
 			}
 		}
 
-		this.log(data);
+		this.log([data, 'swome data']);
     }
 }

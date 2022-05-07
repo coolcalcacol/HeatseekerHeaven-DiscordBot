@@ -1,4 +1,3 @@
-const { Client } = require('discord.js');
 const config = require('../config/config.json');
 const cConsole = require('./customConsoleLog.js');
 

@@ -9,7 +9,7 @@ module.exports = {
 		this.runTestActions();
 	},
 	runTestActions() {
-		//cConsole.test();
+		// cConsole.test();
 		// embedCreator.info.test();
 	}
 };

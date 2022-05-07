@@ -14,7 +14,7 @@ module.exports = {
         }
         else if (response == 'wasNotInQueue') {
             await interaction.reply({
-                content: 'You where not in the queue.', 
+                content: 'You are not in the queue.', 
                 ephemeral: true
             });
         }
