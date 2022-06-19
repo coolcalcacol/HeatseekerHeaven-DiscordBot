@@ -1,9 +1,14 @@
 const fs = require('fs');
+const Database = require('./data/database/database.js');
+// const Sequelize = require('sequelize');
 const { cConsole } = require('./utils/utilityManager.js');
 // Require the necessary discord.js classes
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
 // const { prefix } = require('./config/config.json');
+
+const db = new Database();
+db.connect();
 
 // Create a new client instance
 const client = new Client({ 
@@ -12,6 +17,7 @@ const client = new Client({
 		Intents.FLAGS.GUILD_MESSAGES
 	]
 });
+
 
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -40,7 +46,7 @@ for (const file of eventFiles) {
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 	const command = client.commands.get(interaction.commandName);
-
+	
 	if (!command) return;
 	try {
 		await command.execute(interaction, client);
