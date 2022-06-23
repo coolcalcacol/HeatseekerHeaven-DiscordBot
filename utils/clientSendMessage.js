@@ -9,6 +9,9 @@ function setClient(client) {
 function sendMessageTo(channelID, msg) {
     generalData.client.channels.cache.get(channelID).send(msg);
 }
+function sendEmbedMessageTo(channelId, embed) {
+    generalData.client.channels.cache.get(channelId).send({embeds: embed});
+}
 function sendTestMessage(msg) {
     const channel = generalData.client.channels.cache.get(config.channels.test);
     channel.send(msg);
@@ -22,6 +25,7 @@ module.exports = {
     client: null,
     setClient,
     sendMessageTo,
+    sendEmbedMessageTo,
     sendTestMessage,
     sendLogMessage
 }

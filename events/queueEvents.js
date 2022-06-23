@@ -1,4 +1,5 @@
 const { cConsole, clientSendMessage } = require('../utils/utilityManager.js');
+const queueData = require('../data/queue.js');
 
 module.exports = {
 	name: 'queueEvent',
@@ -6,14 +7,18 @@ module.exports = {
         switch (action) {
             case 'add': {
                 cConsole.log(
-                    `[fg=green]Queue Event[/>]: User [style=bold][fg=cyan]${interaction.user.tag}[/>] has been [fg=green]added[/>] to the queue`, 
+                    '[fg=green]Queue Event[/>]: User [style=bold][fg=cyan] ' + 
+                    interaction.user.tag + 
+                    '[/>] has been [fg=green]added[/>] to the queue',
                     {autoColorize: false}
                 );
             }
             break;
             case 'removed': {
                 cConsole.log(
-                    `[fg=green]Queue Event[/>]: User [style=bold][fg=cyan]${interaction.user.tag}[/>] has been [fg=red]removed[/>] from the queue`, 
+                    '[fg=green]Queue Event[/>]: User [style=bold][fg=cyan]' + 
+                    interaction.user.tag + 
+                    '[/>] has been [fg=red]removed[/>] from the queue', 
                     {autoColorize: false}
                 );
             }

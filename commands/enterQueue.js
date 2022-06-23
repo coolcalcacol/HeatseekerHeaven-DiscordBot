@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { cConsole, clientSendMessage } = require('../utils/utilityManager.js');
+const { cConsole, clientSendMessage, databaseUtilities, embedUtilities } = require('../utils/utilityManager.js');
 const queueData = require('../data/queue.js');
 
 module.exports = {
@@ -7,10 +7,21 @@ module.exports = {
         .setName('queue')
         .setDescription('Adds your to the queue'),
     async execute(interaction, client) {
-        const response = queueData.actions.addPlayerToQueue(interaction, 'ones');
+        const lobby = await databaseUtilities.getRankedLobby(interaction.channel);
+        if (!lobby) {
+            await interaction.reply({
+                content: 'Something went wrong.... This is probably not the right channel for this command.', 
+                ephemeral: true
+            });
+            return;
+        }
+        const response = queueData.actions.addPlayerToQueue(interaction, lobby);
+        
         if (response == 'enteredQueue') {
             await client.emit('queueEvent', interaction, 'add');
-            await interaction.reply(queueData.info.getCurrentQueueMessage(interaction, 'ones'));
+            await interaction.reply({
+                embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'User entered Queue')
+            });
         }
         else if (response == 'alreadyInQueue') {
             await interaction.reply({

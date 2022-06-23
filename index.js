@@ -23,13 +23,32 @@ client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
-// Get all the commands from the files in the commands folder1312
+// Get all the commands from the files in the commands folder
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	// Set a new item in the Collection
 	// With the key as the command name and the value as the exported module
 	client.commands.set(command.data.name, command);
 }
+function getCommandFiles(dir) {
+	const commandFiles = fs.readdirSync('./' + dir);
+	for (const file of commandFiles) {
+		if (file.endsWith('.js')) {
+			registerCommand(dir, file);
+		}
+		else if (file.match(/[a-zA-Z0-9 -_]+/i)) {
+			if (file == 'Archive') { continue; }
+			getCommandFiles(dir + '/' + file);
+		}
+	}
+}
+function registerCommand(dir, file) {
+	const command = require(`./${dir}/${file}`);
+	// Set a new item in the Collection
+	// With the key as the command name and the value as the exported module
+	client.commands.set(command.data.name, command);
+}
+getCommandFiles('commands');
 
 // Get all the events from the files in the events folder
 for (const file of eventFiles) {

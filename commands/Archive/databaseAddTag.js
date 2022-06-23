@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { cConsole } = require('../utils/utilityManager');
+const { cConsole } = require('../../utils/utilityManager');
 
 module.exports = {
     data: new SlashCommandBuilder()

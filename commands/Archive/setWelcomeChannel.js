@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
-const GuildSettings = require('../data/database/guildSettings');
-const { cConsole } = require('../utils/utilityManager');
+const GuildSettings = require('../../data/database/guildSettings');
+const { cConsole } = require('../../utils/utilityManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
