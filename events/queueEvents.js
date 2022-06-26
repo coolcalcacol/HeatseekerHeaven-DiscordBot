@@ -1,6 +1,8 @@
 const { cConsole, clientSendMessage } = require('../utils/utilityManager.js');
 const queueData = require('../data/queue.js');
 
+
+
 module.exports = {
 	name: 'queueEvent',
 	execute(interaction, action) {

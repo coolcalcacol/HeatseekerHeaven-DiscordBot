@@ -71,11 +71,29 @@ client.on('interactionCreate', async interaction => {
 		await command.execute(interaction, client);
 		// cConsole.log(command);
 	} catch (error) {
-		await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+		//await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		cConsole.log('Error: ' + error.message);
 		cConsole.log(error.stack);
 	}
 });
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isSelectMenu()) return;
+
+	if (interaction.customId === 'select') {
+		console.log(interaction)
+		await interaction.update({ content: 'Something was selected!', components: [] });
+	}
+});
+// client.on('interactionCreate', async interaction => {
+// 	if (!interaction.isModalSubmit()) return;
+// 	// Get the data entered by the user
+// 	const favoriteColor = interaction.fields.getTextInputValue('favoriteColorInput');
+// 	const hobbies = interaction.fields.getTextInputValue('hobbiesInput');
+// 	console.log({ favoriteColor, hobbies });
+// 	await interaction.reply({
+// 		content: 'You submited ' + favoriteColor + ' succesfully!'
+// 	})
+// });
 
 // Login to Discord with your client's token
 client.login(token);

@@ -7,7 +7,7 @@ module.exports = {
         .setName('queue')
         .setDescription('Adds your to the queue'),
     async execute(interaction, client) {
-        const lobby = await databaseUtilities.getRankedLobby(interaction.channel);
+        const lobby = await databaseUtilities.get.getRankedLobbyById(interaction.channel);
         if (!lobby) {
             await interaction.reply({
                 content: 'Something went wrong.... This is probably not the right channel for this command.', 
@@ -15,25 +15,34 @@ module.exports = {
             });
             return;
         }
-        const response = queueData.actions.addPlayerToQueue(interaction, lobby);
+        const response = await queueData.actions.addPlayerToQueue(interaction, lobby);
+        console.log('response: ' + response)
+        switch (response) {
+            case 'enteredQueue': {
+                await client.emit('queueEvent', interaction, 'add');
+                await interaction.reply({
+                    embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)
+                });
+            } break;
+            case 'alreadyInQueue': {
+                await interaction.reply({
+                    content: 'You are already in the queue', 
+                    ephemeral: true
+                });
+            } break;
+            case 'gameStarted': {
+                await interaction.reply({
+                    content: 'You started the queue', 
+                    ephemeral: true
+                });
+            } break;
         
-        if (response == 'enteredQueue') {
-            await client.emit('queueEvent', interaction, 'add');
-            await interaction.reply({
-                embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'User entered Queue')
-            });
-        }
-        else if (response == 'alreadyInQueue') {
-            await interaction.reply({
-                content: 'You are already in the queue', 
-                ephemeral: true
-            });
-        }
-        else {
-            await interaction.reply({
-                content: 'Something went wrong.... I dont know what else to tell you here....', 
-                ephemeral: true
-            });
+            default: {
+                await interaction.reply({
+                    content: 'Something went wrong.... I dont know what else to tell you here....', 
+                    ephemeral: true
+                });
+            } break;
         }
     },
 };

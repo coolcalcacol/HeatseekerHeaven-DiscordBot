@@ -2,6 +2,8 @@ const { cConsole, clientSendMessage, embedUtilities } = require('../utils/utilit
 const generalData = require('../data/generalData.js');
 const config = require('../config/config.json');
 const fs = require('fs');
+// const { databaseUtilities } = require('../utils/utilityManager');
+// const { queueData } = require('../data/queue');
 
 var count = 0;
 module.exports = {
@@ -9,6 +11,7 @@ module.exports = {
 	once: true,
 	execute(client) {
 		generalData.client = client;
+		
 		cConsole.log(`[fg=green]Ready![/>] Logged in as [style=bold][fg=cyan]${client.user.tag}[/>]`, {autoColorize: false});
 		this.runTestActions(client);
 	},

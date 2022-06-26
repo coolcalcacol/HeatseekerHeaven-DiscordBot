@@ -7,7 +7,7 @@ module.exports = {
         .setName('leave')
         .setDescription('Removes your from the queue'),
     async execute(interaction, client) {
-        const lobby = await databaseUtilities.getRankedLobby(interaction.channel);
+        const lobby = await databaseUtilities.get.getRankedLobbyById(interaction.channel);
         if (!lobby) {
             await interaction.reply({
                 content: 'Something went wrong.... This is probably not the right channel for this command.', 
@@ -20,7 +20,7 @@ module.exports = {
         if (response == 'removedFromQueue') {
             await client.emit('queueEvent', interaction, 'removed');
             await interaction.reply({
-                embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'User left Queue', 'eb6e34')
+                embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'removed', interaction)
             });
         }
         else if (response == 'wasNotInQueue') {
