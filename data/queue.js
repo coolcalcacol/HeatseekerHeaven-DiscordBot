@@ -4,6 +4,8 @@ const { client } = require('./generalData');
 const clientSendMessage = require('../utils/clientSendMessage');
 const embedUtilities = require('../utils/embedUtilities');
 const databaseUtilities = require('../utils/databaseUtilities');
+const cConsole = require('../utils/customConsoleLog');
+const generalUtilities = require('../utils/generalUtilities');
 
 var queueData = {
     lobby: {
@@ -20,11 +22,11 @@ var queueData = {
             queueSize: 6
         },
     },
-    gameId: 0,
+    gameId: 100,
     gamesInProgress: [],
 
-    getGameID() {
-        this.gameId++;
+    getGameID(readOnly = false) {
+        if (!readOnly) { this.gameId++; }        
         return this.gameId;
     },
     clearLobbyQueue(lobby) {
@@ -51,7 +53,6 @@ class GameLobby {
             case 'ones':{
                 this.teams.blue[0] = this.players[0];
                 this.teams.orange[0] = this.players[1];
-
             } break;
             case 'twos':{
                 this.teams.blue[0] = this.players[0];
@@ -91,7 +92,7 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null) {
         queueData.lobby[lobby].players[interaction.user.id] = interaction.user;
     }
     else {
-        const user = await generalData.client.users.fetch(userId).catch(console.error);
+        const user = await generalUtilities.info.getUserById(userId);
         queueData.lobby[lobby].players[user.id] = user;
     }
 
@@ -106,7 +107,7 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null) {
     }
 }
 async function fillQueueWithPlayers(players, lobby, amount) {
-    const p = shuffle(players);
+    const p = generalUtilities.generate.randomizeArray(players);
     for (let i = 0; i < amount; i++) {
         await addPlayerToQueue(null, lobby, p[i].toString());
     }
@@ -127,9 +128,17 @@ async function startQueue(lobby) {
     const channelId = await databaseUtilities.get.getRankedLobbyByName(lobby).then(queueData.clearLobbyQueue(lobby));
 
     queueData.gamesInProgress.push(game);
-    console.log(queueData.lobby);
     console.log(queueData.gamesInProgress);
-    clientSendMessage.sendEmbedMessageTo(channelId, embedUtilities.presets.queueGameStartPreset(game))
+
+    var msgContent = '';
+    for (const player in game.players) {
+        const user = await generalUtilities.info.getUserById(game.players[player]);
+        msgContent += '<@' + user.username + '> ';
+    }
+    clientSendMessage.sendMessageTo(channelId, {
+        content: msgContent,
+        embeds: embedUtilities.presets.queueGameStartPreset(game),
+    });
 }
 
 function getCurrentQueue(lobby = 0) {
@@ -140,35 +149,6 @@ function getCurrentQueue(lobby = 0) {
         return queueData;
     }
 }
-// function getCurrentQueueMessage(interaction, lobby, title = '', color) {
-//     if (queueData[lobby].players.length <= 0) {return;}
-//     const currentQueueData = queueData[lobby].players;
-//     var currentQueue = '';
-//     for (const player in queueData[lobby].players) {
-//         const user = queueData[lobby].players[player];
-//         currentQueue += '<@' + user.id + '> ';
-//     }
-//     if (currentQueue == '') {
-//         return 'Queue is empty...'
-//     }
-//     else {
-//         return "[embedUtilities.presets.queueStatusEmbed(lobby, 'currentQueue')]"
-//         // return '__**Current Queue**__\nSize: ' + 
-//         // Object.keys(queueData[lobby].players).length + 
-//         // '\nUsers in Queue: ' + currentQueue;
-//     }
-// }
-
-function shuffle(a) {
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.round(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-    return a;
-}
 
 module.exports.actions = {
     addPlayerToQueue,
@@ -177,5 +157,6 @@ module.exports.actions = {
 }
 module.exports.info = {
     getCurrentQueue,
+    queueData
     // getCurrentQueueMessage
 }

@@ -3,4 +3,5 @@ module.exports = {
     clientSendMessage: require('./clientSendMessage'),
     databaseUtilities: require('./databaseUtilities'),
     embedUtilities: require('./embedUtilities'),
+    generalUtilities: require('./generalUtilities'),
 }

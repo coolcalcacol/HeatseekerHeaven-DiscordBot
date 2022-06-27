@@ -45,7 +45,7 @@ function queueGameStartPreset(gameData) {
     const header = new MessageEmbed()
         .setColor('#000000')
         .setTitle('Teams have been selected!')
-        .setDescription('__**Match ID**__:\n```        12345```')
+        .setDescription('__**Match ID**__:\n```        hs' + gameData.gameId + '```')
     const teamBlue = new MessageEmbed()
         .setColor('#0000FF')
         .addFields(
@@ -65,8 +65,28 @@ function getTeamMembers(team) {
     return output;
 }
 
+function mmrStats(data) {
+    const embed = new MessageEmbed();
+    var description = '';
+
+    embed.setTitle('MMR Stats');
+    for (let i = 0; i < data.length; i++) {
+        const target = data[i];
+        description += 
+            '' + target.user.mention + '\n' +
+            '**MMR**: `' + target.stats.mmr + 
+            '` | **Wins**: `' + target.stats.gamesWon + 
+            '` | **Losses**: `' + target.stats.gamesLost + 
+            '` | **Win Rate**: `' + target.stats.winRate + '%`\n\n'
+        ;
+    }
+    embed.setDescription(description)
+    return [embed]
+}
+
 
 module.exports.presets = {
     queueStatusEmbed,
-    queueGameStartPreset
+    queueGameStartPreset,
+    mmrStats
 }

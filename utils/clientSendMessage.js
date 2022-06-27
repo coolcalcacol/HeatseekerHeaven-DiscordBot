@@ -12,6 +12,10 @@ function sendMessageTo(channelID, msg) {
 function sendEmbedMessageTo(channelId, embed) {
     generalData.client.channels.cache.get(channelId).send({embeds: embed});
 }
+async function editMessage(channelId, messageId, msg) {
+    await generalData.client.channels.cache.get(channelId).messages.fetch(messageId).then(message => message.edit(msg));
+    // console.log(message.content);
+}
 function sendTestMessage(msg) {
     const channel = generalData.client.channels.cache.get(config.channels.test);
     channel.send(msg);
@@ -26,6 +30,7 @@ module.exports = {
     setClient,
     sendMessageTo,
     sendEmbedMessageTo,
+    editMessage,
     sendTestMessage,
     sendLogMessage
 }
