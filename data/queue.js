@@ -1,6 +1,6 @@
 const generalData = require('./generalData');
 const QueueDatabase = require('./database/queueDataStorage');
-const { client } = require('./generalData');
+// const { client } = require('./generalData');
 const clientSendMessage = require('../utils/clientSendMessage');
 const embedUtilities = require('../utils/embedUtilities');
 const databaseUtilities = require('../utils/databaseUtilities');
