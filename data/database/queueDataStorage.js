@@ -8,6 +8,6 @@ const QueueDataSchema = new mongoose.Schema({
         threesChannel: String,
         matchReportChannel: String,
     }
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model('QueueDatabase', QueueDataSchema);

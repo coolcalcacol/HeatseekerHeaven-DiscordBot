@@ -127,7 +127,7 @@ class PlayerData {
             mention: '',
         }
         this.stats = {
-            mmr: 1000, // 600
+            mmr: 600,
             gamesPlayed: 0,
             gamesWon: 0,
             gamesLost: 0,
@@ -155,8 +155,8 @@ var playerDataList = [];
 var gameInProgress;
 var debugLog = {'[fg=green]winners[/>]': {team: {}}, '[fg=red]losers[/>]': {team: {}}}
 
-const simCount = 200;
-const interval = 50;
+const simCount = 10000;
+const interval = 10001;
 const logSpecificCount = []
 
 const restInterval = 1000;
@@ -214,7 +214,7 @@ function reportGame() {
     const teamBlue = game.teams.blue;
     const teamOrange = game.teams.orange;
     var blueOdds = teamBlue.mmr / (teamBlue.mmr + teamOrange.mmr) * 10;
-    var orangeOdds = teamOrange.mmr / (teamOrange.mmr + teamBlue.mmr) * 10;
+    var orangeOdds = teamOrange.mmr / (teamOrange.mmr + teamBlue.mmr12) * 10;
 
     // if (blueOdds > orangeOdds) {blueOdds *= 2}
     // else {orangeOdds *= 2}
@@ -266,6 +266,7 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome) {
     var result = 0;
     var soloBonus = 0; // [20]
     var teamBonus = 0;
+    var totalBonus = 0;
 
     const ratio = stats.mmr / combined;
     const teamRatio = teamMmr / combined;
@@ -283,30 +284,43 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome) {
         case 'won': {
             soloBonus = (teamRatio - ratio) / teamRatio * 0.5;
             teamBonus = (6 * baseGain) * (1 - extremeTeamRatio);
+            totalBonus = soloBonus * teamBonus;
+            if (stats.mmr > 1500) { // Modify the bonus so the player doesnt reach >= 2500 mmr
+                totalBonus -= (stats.mmr - 1500) * totalBonus / 1000
+            }
             soloBonusEq = `(${ratioDisplay} - ${ratioDisplay}) / ${teamRatioDisplay} * 0.5`; // Debug Log
             teamBonusEq = `(6 * ${baseGain}) * (1 - ${extremeTeamRatioDisplay}))`; // Debug Log
         } break;
         case 'lost': {
-            soloBonus = (teamRatio - ratioDisplay) / teamRatio * 0.5;
+            soloBonus = (teamRatio - ratio) / teamRatio * 0.5;
             teamBonus = (6 * baseGain) * extremeTeamRatio;
+            totalBonus = soloBonus * teamBonus;
+            if (stats.mmr < 100) { // Modify the bonus so the player doesnt reach <= 0 mmr
+                totalBonus -= (100 - stats.mmr) * totalBonus / 100
+            }
             soloBonusEq = `${ratioDisplay} / ${teamRatioDisplay}`; // Debug Log
             teamBonusEq = `(6 * ${baseGain}) * ${extremeTeamRatioDisplay}`; // Debug Log
         } break;
         default: break;
     }
-    result = teamBonus * soloBonus;
-
-    soloBonus = generalUtilities.generate.roundToFloat(soloBonus, 2)
-    teamBonus = generalUtilities.generate.roundToFloat(teamBonus, 2)
-    result = generalUtilities.generate.roundToFloat(result, 2)
+    result = totalBonus;
+    
+    // Round
+        totalBonus = generalUtilities.generate.roundToFloat(totalBonus, 4);
+        totalBonus = totalBonus + ` (${generalUtilities.generate.roundToFloat((soloBonus * teamBonus), 4)})`;
+        soloBonus = generalUtilities.generate.roundToFloat(soloBonus, 2);
+        teamBonus = generalUtilities.generate.roundToFloat(teamBonus, 2);
+        result = generalUtilities.generate.roundToFloat(result, 2);
+    // -
 
     return {
         output: result, 
-        ratio: generalUtilities.generate.roundToFloat(ratio, 2), 
+        ratio: generalUtilities.generate.roundToFloat(ratio, 4), 
         teamRatio: generalUtilities.generate.roundToFloat(teamRatio, 4), 
         extremeTeamRatio: generalUtilities.generate.roundToFloat(extremeTeamRatio, 4),
         soloBonus: soloBonus, 
         teamBonus: teamBonus,
+        totalBonus: totalBonus,
         soloBonusEq: soloBonusEq,
         teamBonusEq: teamBonusEq
     };
@@ -314,19 +328,17 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome) {
 function equationDebug(target, equation, userData) {
     const user = '[fg=yellow]' + userData.user.name + '[/>]';
     const root = target == 'winners' ? '[fg=green]' + target + '[/>]' : '[fg=red]' + target + '[/>]';
-    // debugLog[root] = {};
-    // debugLog[root].team = {};
+
     debugLog[root].team.ratio = equation.teamRatio;
     debugLog[root].team.extremeRatio = equation.extremeTeamRatio;
     debugLog[root].team.bonus = equation.teamBonus;
-    debugLog[root].team.teamBonus = equation.teamBonus;
 
     debugLog[root][user] = {};
     debugLog[root][user].mmr = userData.stats.mmr;
     debugLog[root][user].Ratio = equation.ratio;
     debugLog[root][user][[
-        `[fg=blue]Solo[/>]: [fg=green]${equation.soloBonus}[/>]`
-        // `[fg=blue]Team[/>]: [fg=green]${equation.teamBonus}[/>]`,
+        `[fg=blue]Solo[/>]: [fg=green]${equation.soloBonus}[/>]`,
+        `[fg=blue]Total[/>]: [fg=green]${equation.totalBonus}[/>]`
     ].join(' [fg=white]|[/>] ')] = '';
 
     debugLog[root][user]
@@ -344,14 +356,26 @@ function DebugConsole() {
 }
 function ConsoleOverwrite() {
     const data = debugLog;
-    const winningTeam = data['[fg=green]winners[/>]'].team;
-    const losingTeam = data['[fg=red]losers[/>]'].team;
+    const winners = data['[fg=green]winners[/>]'];
+    const losers = data['[fg=red]losers[/>]'];
+    const winningTeam = winners.team;
+    const losingTeam = losers.team;
 
-    // if ((losingTeam.mmr - winningTeam.mmr) > 500) {
+    // if ((losingTeam.mmr - winningTeam.mmr) > 1000) {
     //     debugLog = 
-    //     {[`[bg=white][fg=black]BYPASS: win mmr < losers | [${losingTeam.mmr - winningTeam.mmr}]`]: debugLog}
+    //     {[`[bg=white][fg=black]BYPASS: Losers mmr < winners | [${losingTeam.mmr - winningTeam.mmr}]`]: debugLog}
     //     return true;
     // }
+    if ((winningTeam.mmr) > 5000) {
+        debugLog = 
+        {[`[bg=white][fg=black]BYPASS: Winners mmr > 4500 | [${winningTeam.mmr}]`]: debugLog[winners]}
+        return true;
+    }
+    if ((losingTeam.mmr) < 500) {
+        debugLog = 
+        {[`[bg=white][fg=black]BYPASS: Winners mmr > 4500 | [${losingTeam.mmr}]`]: debugLog[losers]}
+        return true;
+    }
     return false;
 }
 
