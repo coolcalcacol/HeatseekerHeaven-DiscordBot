@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 const { cConsole, clientSendMessage, embedUtilities, databaseUtilities } = require('../utils/utilityManager');
-const queueData = require('../data/queue.js');
+const queueData = require('../data/queueData.js');
 
 const userWhitelist = [
     '479936093047750659',

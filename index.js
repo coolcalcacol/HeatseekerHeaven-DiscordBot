@@ -73,7 +73,7 @@ client.on('interactionCreate', async interaction => {
 	} catch (error) {
 		//await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		cConsole.log('Error: ' + error.message);
-		cConsole.log(error.stack);
+		console.log(error.stack);
 	}
 });
 client.on('interactionCreate', async interaction => {

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { cConsole, clientSendMessage, databaseUtilities, embedUtilities } = require('../utils/utilityManager.js');
-const queueData = require('../data/queue.js');
+const queueData = require('../data/queueData.js');
 
 module.exports = {
     data: new SlashCommandBuilder()

@@ -21,7 +21,7 @@ module.exports = {
 		// embedCreator.info.test();
 		// startCombTest()
 		// return
-		mmrSystem.methods.init();
+		// mmrSystem.methods.init();
 		// mmrCalculation.methods.init()
 	}
 };

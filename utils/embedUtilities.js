@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const cConsole = require('./customConsoleLog.js');
 const generalData = require('../data/generalData.js');
-const queueData = require('../data/queue.js');
+const queueData = require('../data/queueData.js');
 
 
 function queueStatusEmbed(lobby, context, interaction = null) {

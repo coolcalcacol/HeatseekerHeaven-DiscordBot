@@ -2,7 +2,7 @@ const clientSendMessage = require('../../utils/clientSendMessage');
 const cConsole = require('../../utils/customConsoleLog');
 const generalUtilities = require('../../utils/generalUtilities');
 const embedUtilities = require('../../utils/embedUtilities');
-const queueData = require('../../data/queue').info.queueData;
+const queueData = require('../../data/queueData').info.globalQueueData;
 
 
 const userWhitelist = [
