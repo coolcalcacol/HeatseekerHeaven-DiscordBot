@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { mongooseURI } = require('../../config/private.json');
-const { cConsole } = require('../../utils/utilityManager.js');
+const cConsole = require('../../utils/customConsoleLog');
 
 
 class Database {

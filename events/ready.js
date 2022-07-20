@@ -1,9 +1,9 @@
 const fs = require('fs');
-const { cConsole, clientSendMessage, embedUtilities, generalUtilities } = require('../utils/utilityManager.js');
+const cConsole = require('../utils/customConsoleLog');
 const generalData = require('../data/generalData.js');
-const config = require('../config/config.json');
-const mmrSystem = require('../Examples/mmr/mmrSystem');
-const mmrCalculation = require('../Examples/mmr/mmrCalculation');
+// const config = require('../config/config.json');
+// const mmrSystem = require('../Examples/mmr/mmrSystem');
+// const mmrCalculation = require('../Examples/mmr/mmrCalculation');
 // const { databaseUtilities } = require('../utils/utilityManager');
 // const { queueData } = require('../data/queue');
 

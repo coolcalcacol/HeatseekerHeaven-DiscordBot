@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Database = require('./data/database/database.js');
 // const Sequelize = require('sequelize');
-const { cConsole } = require('./utils/utilityManager.js');
+const cConsole = require('./utils/customConsoleLog');
 // Require the necessary discord.js classes
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
@@ -97,3 +97,7 @@ client.on('interactionCreate', async interaction => {
 
 // Login to Discord with your client's token
 client.login(token);
+
+module.exports.info = {
+	database: db
+}

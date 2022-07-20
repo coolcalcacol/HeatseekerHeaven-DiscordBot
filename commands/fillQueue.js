@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
-const { cConsole, clientSendMessage, embedUtilities, databaseUtilities } = require('../utils/utilityManager');
+const cConsole = require('../utils/customConsoleLog');
+const databaseUtilities = require('../utils/databaseUtilities');
+const embedUtilities = require('../utils/embedUtilities');
 const queueData = require('../data/queueData.js');
 
 const userWhitelist = [

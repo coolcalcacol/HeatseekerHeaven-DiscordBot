@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 const QueueDatabase = require('../data/database/queueDataStorage');
-const { cConsole } = require('../utils/utilityManager.js');
+const cConsole = require('../utils/customConsoleLog');
 
 
 module.exports = {

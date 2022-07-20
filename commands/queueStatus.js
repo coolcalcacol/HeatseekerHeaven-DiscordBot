@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { cConsole, databaseUtilities, embedUtilities } = require('../utils/utilityManager.js');
+const cConsole = require('../utils/customConsoleLog');
+const databaseUtilities = require('../utils/databaseUtilities');
+const embedUtilities = require('../utils/embedUtilities');
 // const queueData = require('../data/queue.js');
 
 

@@ -1,4 +1,4 @@
-const { cConsole } = require('../utils/utilityManager.js');
+const cConsole = require('../utils/customConsoleLog');
 
 module.exports = {
 	name: 'interactionCreate',

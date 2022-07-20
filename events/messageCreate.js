@@ -1,4 +1,4 @@
-const { cConsole } = require('../utils/utilityManager.js');
+const cConsole = require('../utils/customConsoleLog');
 const { prefix } = require('../config/config.json');
 
 const interactionFields = [
