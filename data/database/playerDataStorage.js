@@ -3,8 +3,12 @@ const mongoose = require('mongoose');
 const PlayerDataSchema = new mongoose.Schema({
     _id: String,
     userData: {
-        type: Object, 
-        required: true
+        name: String,
+        mention: String,
+        discriminator: String,
+        avatar: String,
+        defaultAvatarURL: String,
+        createdAt: Date
     },
     stats: {
         mmr: Number,

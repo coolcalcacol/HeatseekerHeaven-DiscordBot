@@ -15,7 +15,7 @@ const userWhitelist = [
     '138115007983517697', // klex
     '295244765547462656', // Acc70
     '614257446654967813', // orangecod
-    // '465960027400830980', // Stockfish 13
+    '465960027400830980', // Stockfish 13
     '267442458638417921', // NoLimitGoten
     '371465297477238784', // lydipai
     '437259152574906368', // SuperSpaceMonke
@@ -23,6 +23,7 @@ const userWhitelist = [
     '95630080893521920',  // kaelan
     '568449733228756993', // Bramble
     '382279435828723716', // FinnayBusiness
+    '178625919559270409', // ncj
 ]
 
 const userList = []

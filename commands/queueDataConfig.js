@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 const QueueDatabase = require('../data/database/queueDataStorage');
+const PlayerData = require('../data/playerData');
 const cConsole = require('../utils/customConsoleLog');
 
 
@@ -29,8 +30,8 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('getmatchid')
-                .setDescription('Get the current match ID')
+                .setName('clearplayerdata')
+                .setDescription('Clears the PlayerDatabase')
         ),
     async execute(interaction) {
         if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
@@ -108,11 +109,11 @@ module.exports = {
                 );
             }
             break;
-            case 'getmatchid': {
-                var query = QueueDatabase.find({})
+            case 'clearplayerdata': {
+                await PlayerData.clearPlayerData();
                 await interaction.reply({
-                    content: 'The current match ID is: `' + (await query.select())[0].matchId + '`',
-                    ephemeral: false
+                    content: 'Data hase been cleared',
+                    ephemeral: true
                 })
             }
             break;

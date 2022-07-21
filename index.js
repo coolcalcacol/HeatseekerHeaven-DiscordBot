@@ -76,14 +76,14 @@ client.on('interactionCreate', async interaction => {
 		console.log(error.stack);
 	}
 });
-client.on('interactionCreate', async interaction => {
-	if (!interaction.isSelectMenu()) return;
+// client.on('interactionCreate', async interaction => {
+// 	if (!interaction.isSelectMenu()) return;
 
-	if (interaction.customId === 'select') {
-		console.log(interaction)
-		await interaction.update({ content: 'Something was selected!', components: [] });
-	}
-});
+// 	if (interaction.customId === 'select') {
+// 		console.log(interaction)
+// 		await interaction.update({ content: 'Something was selected!', components: [] });
+// 	}
+// });
 // client.on('interactionCreate', async interaction => {
 // 	if (!interaction.isModalSubmit()) return;
 // 	// Get the data entered by the user

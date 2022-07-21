@@ -1,55 +1,25 @@
-const generalUtilities = require('../utils/generalUtilities');
+const GeneralUtilities = require('../utils/generalUtilities');
 const cConsole = require('../utils/customConsoleLog');
 const PlayerDataStorage = require('./database/playerDataStorage');
-
-class PlayerData {
-    constructor(data) {
-        this.userData = data;
-        this.user = {
-            name: '',
-            id: '',
-            mention: '',
-        }
-        this.stats = {
-            mmr: 600,
-            gamesPlayed: 0,
-            gamesWon: 0,
-            gamesLost: 0,
-            winRate: 0,
-        }
-        this.formatData();
-    }
-    formatData() {
-        this.user.id = this.userData.id;
-        this.user.name = this.userData.username;
-        this.user.mention = '<@' + this.user.id + '>';
-    }
-    calculateStats() {
-        const w = this.stats.gamesWon;
-        const l = this.stats.gamesLost;
-        this.stats.gamesPlayed = w + l;
-        this.stats.winRate = generalUtilities.generate.roundToFloat((w / (w + l) * 100), 2);
-    }
-    get playerData() {
-        return this;
-    }
-}
+const GeneralData = require('./generalData');
 
 async function getPlayerDataById(id, createIfNull = false) {
     var output;
     await PlayerDataStorage.findById(id)
         .then(async (result) => {
             if (result) {
-                console.log('Found player data');
-                console.log(result);
+                if (GeneralData.logOptions.playerData) {
+                    console.log('Found player data');
+                    console.log(result);
+                }
                 output = result;
             }
         })
         .catch((err) => {console.log(err)});
     if (!output && createIfNull) {
-        await createPlayerData(await generalUtilities.info.getUserById(id))
+        await createPlayerData(await GeneralUtilities.info.getUserById(id))
             .then((createdData) => {
-                console.log('created data');
+                if (GeneralData.logOptions.playerData) console.log('Creating data');
                 output = createdData;
             });
         return output;
@@ -60,9 +30,43 @@ async function getPlayerDataById(id, createIfNull = false) {
 }
 async function createPlayerData(userData) {
     var output;
+    const newData = await getPlayerDataObject(userData);
+    await PlayerDataStorage.insertMany(newData)
+        .then((result) => {
+            if (GeneralData.logOptions.playerData) {
+                cConsole.log('New PlayerData created');
+                console.log(result[0]);
+            }
+            output = result[0];
+        })
+        .catch((err) => {console.log(err);});
+    return output;
+}
+
+async function updatePlayerData(data) {
+    const user = await GeneralUtilities.info.getUserById(data['_id']);
+    const newData = await getPlayerDataObject(user);
+
+    newData.stats.mmr = data.stats.mmr;
+    newData.stats.gamesPlayed = data.stats.gamesPlayed;
+    newData.stats.gamesWon = data.stats.gamesWon;
+    newData.stats.gamesLost = data.stats.gamesLost;
+    newData.stats.winRate = data.stats.winRate;
+
+    await PlayerDataStorage.updateMany({_id: data['_id']}, newData);
+}
+
+async function getPlayerDataObject(userData) { // The user data that discord generates for a user
+    // const memberData = await GeneralUtilities.info.getMemberById(userData.id).then(console.log)
     const newData = new PlayerDataStorage({
         _id: userData.id,
-        userData: userData,
+        userData: {
+            name: userData.username,
+            mention: `<@${userData.id}>`,
+            discriminator: userData.discriminator,
+            avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=1024`,
+            createdAt: new Date(userData.createdAt)
+        },
         stats: {
             mmr: 600,
             gamesPlayed: 0,
@@ -70,18 +74,18 @@ async function createPlayerData(userData) {
             gamesLost: 0,
             winRate: 0,
         }
-    })
-    await PlayerDataStorage.insertMany(newData)
-        .then((result) => {
-            cConsole.log('New PlayerData created');
-            console.log(result[0]);
-            output = result[0];
-        })
-        .catch((err) => {console.log(err);});
-    return output;
+    });
+    return newData;
+}
+
+async function clearPlayerData() {
+    console.log('Deleting PlayerData...');
+    console.log(await PlayerDataStorage.deleteMany({}));
 }
 
 module.exports = {
     getPlayerDataById,
-    createPlayerData
+    createPlayerData,
+    updatePlayerData,
+    clearPlayerData
 }

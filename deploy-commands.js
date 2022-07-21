@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId, token } = require('./config/private.json');
-const { cConsole } = require('./utils/utilityManager.js');
+const cConsole = require('./utils/customConsoleLog');
 
 const commands = [];
 // const commandFiles = fs.readdirSync('./commands');
@@ -27,7 +27,7 @@ function registerCommand(dir, file) {
 	const commandData = command.data.toJSON();
 
 	commands.push(commandData);
-	cConsole.log(`./${dir}/${file}` + ' - [fg=cyan]' + commandData.name + '[/>]');
+	cConsole.log(`./[fg=green]${dir}[/>]/[fg=green]${file}[/>]` + ' - [fg=cyan]' + commandData.name + '[/>]');
 }
 getCommandFiles('commands');
 

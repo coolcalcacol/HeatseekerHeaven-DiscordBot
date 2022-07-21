@@ -3,6 +3,9 @@ const generalData = require("../data/generalData")
 async function getUserById(id) {
     return await generalData.client.users.fetch(id).catch(console.error);
 }
+async function getMemberById(id) {
+    return await generalData.client.members.fetch(id).catch(console.error);
+}
 
 function randomizeArray(array) {
     var j, x;
@@ -116,7 +119,8 @@ function sleep(ms) {
 }
 
 module.exports.info = {
-    getUserById
+    getUserById,
+	getMemberById
 }
 module.exports.generate = {
     randomizeArray,

@@ -49,7 +49,9 @@ module.exports = {
 			// 				},
 			// 			]),
 			// 	);
-			// // Create the modal
+		// --
+
+		// -- Create the modal
 			// const modal = new Modal()
 			// .setCustomId('myModal')
 			// .setTitle('My Modal');
@@ -72,9 +74,7 @@ module.exports = {
 			// const secondActionRow = new MessageActionRow().addComponents(hobbiesInput);
 			// // Add inputs to the modal
 			// modal.addComponents(firstActionRow, secondActionRow);
-		// -- 
-		
-		// -- Model
+
 			// // await interaction.showModal(modal);
 			// // await interaction.showModal(modal)
 			// await interaction.reply({ 
