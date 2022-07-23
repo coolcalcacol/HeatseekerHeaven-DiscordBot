@@ -14,6 +14,9 @@ const sleep = require('node:timers/promises').setTimeout;
 
 const userWhitelist = [
     // '479936093047750659', // 888% [Bypass]
+    // '382279435828723716', // FinnayBusiness [Bypass]
+    // '614257446654967813', // orangecod [lEFT THE SERVER]
+    // '267442458638417921', // NoLimitGoten [lEFT THE SERVER]
     '280432147695665163', // Joshh
     '599339755662082057', // Darn
     '688819598686289952', // Lxyer
@@ -21,16 +24,18 @@ const userWhitelist = [
     '399024946631802891', // Wesh
     '138115007983517697', // klex
     '295244765547462656', // Acc70
-    // '614257446654967813', // orangecod [lEFT THE SERVER]
     '465960027400830980', // Stockfish 13
-    // '267442458638417921', // NoLimitGoten [lEFT THE SERVER]
     '371465297477238784', // lydipai
-    '437259152574906368', // SuperSpaceMonke
+    '437259152574906368', // Bobman
     '492497679570436117', // CSmith_Games
     '95630080893521920',  // kaelan
     '568449733228756993', // Bramble
-    // '382279435828723716', // FinnayBusiness [Bypass]
     '178625919559270409', // ncj
+    '198802539783651328', // tavz
+    '201039454930993152', // Marshmallow
+    '510829824483524638', // coco_ice
+    '723703418274971700', // j.
+    '457617584033103892', // Orcas
 ]
 
 module.exports = {
@@ -102,11 +107,11 @@ module.exports = {
 		// startCombTest()
 		// mmrSystem.methods.init();
 		// mmrCalculation.methods.init()
-		clientSend.editMessage(
-			'945703058657120266', 
-			'1000191851476828210', 
-			{ embeds: await embedUtilities.presets.leaderboardPreset() }
-		);
+		// clientSend.editMessage(
+		// 	'945703058657120266', 
+		// 	'1000191851476828210', 
+		// 	{ embeds: await embedUtilities.presets.leaderboardPreset(0) }
+		// );
 
 		// const x = 'ones';
 		// const y = 'twos';

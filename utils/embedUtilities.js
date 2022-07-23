@@ -162,13 +162,15 @@ function playerStatsPreset(playerData, mode = 'global') {
     return embed;
 }
 
-async function leaderboardPreset() {
-    const fullDataList = await playerDataStorage.find().sort({
+async function leaderboardPreset(page, returnMaxPage = false) {
+    const playerDataList = await playerDataStorage.find().sort({
         "stats.global.mmr": -1, 
         "stats.global.winRate": -1, 
         "stats.global.gamesPlayed": -1
     });
-    const dataList = fullDataList.splice(0, 10);
+    const topPlayerData = playerDataList[0].userData;
+    const listStart = 10 * page;
+    const dataList = playerDataList.splice(listStart, 10);
 
     const lineBreak = '───────────────';
     const seperator = '|'
@@ -178,7 +180,7 @@ async function leaderboardPreset() {
     var totalDisplay = '';
     for (let i = 0; i < dataList.length; i++) {
         const player = dataList[i];
-        var rank = getFieldSpacing(i + 1, 2);
+        var index = getFieldSpacing(listStart + i + 1, 2);
         var userName = player.userData.mention;
 
         var mmr = getFieldSpacing(player.stats.global.mmr, 5);
@@ -188,7 +190,7 @@ async function leaderboardPreset() {
         var gamesPlayed = getFieldSpacing(player.stats.global.gamesPlayed, 5);
         var winRate = getFieldSpacing(player.stats.global.winRate.toFixed(2) + '%', 8);
 
-        nameDisplay += `\`${rank}\`: ${userName}\n${lineBreak}\n`;
+        nameDisplay += `\`${index}\`: ${userName}\n${lineBreak}\n`;
         statsDisplay += `${seperator} ${ws(0.01)}\`${mmr}\`${ws(1)}${seperator}${ws(1.01)}\`${gamesWon}\`${ws(1.01)}${seperator}${ws(0.11)}\`${gamesLost}\` ${seperator}\n${lineBreak}\n`;
         totalDisplay += `${seperator} ${ws(3)}\`${gamesPlayed}\`${ws(3.11)}${seperator}${ws(2.12)}\`${winRate}\`${ws(1.02)} ${seperator}\n${lineBreak}\n`;
     }
@@ -208,10 +210,11 @@ async function leaderboardPreset() {
             inline: true 
         },
     );
-    embed.setColor(dataList[0].userData.displayColor);
-    embed.setAuthor({name: dataList[0].userData.name, iconURL: dataList[0].userData.avatar});
+    embed.setColor(topPlayerData.displayColor);
+    embed.setAuthor({name: topPlayerData.name, iconURL: topPlayerData.avatar});
 
-    return [embed];
+    if (returnMaxPage) return [[embed], Math.ceil((playerDataList.length - 1) / 10)]
+    else return [embed];
 }
 function getFieldSpacing(value, spaces) {
     var output = '';
