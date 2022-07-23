@@ -1,19 +1,19 @@
 const fs = require('fs');
 const cConsole = require('../utils/customConsoleLog');
-const EmbedUtilities = require('../utils/embedUtilities');
-const ClientSend = require('../utils/clientSendMessage');
-const GeneralData = require('../data/generalData');
-const PlayerData = require('../data/playerData');
-const QueueData = require('../data/queueData');
+const embedUtilities = require('../utils/embedUtilities');
+const clientSend = require('../utils/clientSendMessage');
+const generalData = require('../data/generalData');
+const playerData = require('../data/playerData');
+const queueData = require('../data/queueData');
+const QueueDatabase = require('../data/database/queueDataStorage');
 const sleep = require('node:timers/promises').setTimeout;
 // const config = require('../config/config.json');
 // const mmrSystem = require('../examples/mmr/mmrSystem');
 // const mmrCalculation = require('../Examples/mmr/mmrCalculation');
 // const { databaseUtilities } = require('../utils/utilityManager');
 
-
 const userWhitelist = [
-    '479936093047750659', // 888%
+    // '479936093047750659', // 888% [Bypass]
     '280432147695665163', // Joshh
     '599339755662082057', // Darn
     '688819598686289952', // Lxyer
@@ -21,15 +21,15 @@ const userWhitelist = [
     '399024946631802891', // Wesh
     '138115007983517697', // klex
     '295244765547462656', // Acc70
-    '614257446654967813', // orangecod
+    // '614257446654967813', // orangecod [lEFT THE SERVER]
     '465960027400830980', // Stockfish 13
-    '267442458638417921', // NoLimitGoten
+    // '267442458638417921', // NoLimitGoten [lEFT THE SERVER]
     '371465297477238784', // lydipai
     '437259152574906368', // SuperSpaceMonke
     '492497679570436117', // CSmith_Games
     '95630080893521920',  // kaelan
     '568449733228756993', // Bramble
-    '382279435828723716', // FinnayBusiness
+    // '382279435828723716', // FinnayBusiness [Bypass]
     '178625919559270409', // ncj
 ]
 
@@ -37,24 +37,76 @@ module.exports = {
 	name: 'ready',
 	once: true,
 	async execute(client) {
-		GeneralData.client = client;
+		generalData.client = client;
 		
 		cConsole.log(`[fg=green]Ready![/>] Logged in as [style=bold][fg=cyan]${client.user.tag}[/>]`, {autoColorize: false});
+		await this.Awake(client);
 		await this.runTestActions(client);
 	},
+	async Awake(client) {
+		const storedQueueData = await QueueDatabase.findOne({});
+		if (storedQueueData.gameId >= 100) {
+			queueData.info.globalQueueData.gameId = storedQueueData.gameId;
+		}
+		else {
+			queueData.info.globalQueueData.gameId = 100;
+			console.log('Updating GameID to 100')
+			await QueueDatabase.updateOne({}, {gameId: 100}).catch(console.error);
+		}
+	},
 	async runTestActions(client) {
+		if (generalData.debugOptions.createGameOnStart) {
+			switch (generalData.debugOptions.gameOnStartLobby) {
+				case 'ones': {
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
+				} break;
+				case 'twos': {
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 1);
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'twos', 1);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'twos', 1);
+					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'twos', 1);
+				} break;
+				case 'threes': {
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 3);
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
+					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
+				} break;
+				case 'custom': {
+					const currentGame = [
+						'399024946631802891', // Wesh
+						'457617584033103892', // Orcas
+						'138115007983517697', // klex
+						'568449733228756993', // Bramble
+						'201039454930993152', // MarshMallow
+						'198802539783651328', // tavz
+					]
+					var players = {};
+					for (let i = 0; i < currentGame.length; i++) {
+						const id = currentGame[i];
+						const pData = await playerData.getPlayerDataById(id);
+						players[id] = pData;
+					}
 
-		// await QueueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 5);
-		// await sleep(1000);
-		// await QueueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1);
+					const game = new queueData.info.GameLobbyData(players, 'threes', true);
+					game.bypassTeamGeneration = true;
+					queueData.actions.startQueue('threes', game);
+				} break;
+				default: break;
+			}
+		}
 
 		// cConsole.test();
 		// embedCreator.info.test();
 		// startCombTest()
-		// return
 		// mmrSystem.methods.init();
 		// mmrCalculation.methods.init()
-		// clientSend.editMessage('945703058657120266', '999310605859180584', {embeds: [embedUtilities.presets.reportGamePreset()]});
+		clientSend.editMessage(
+			'945703058657120266', 
+			'1000191851476828210', 
+			{ embeds: await embedUtilities.presets.leaderboardPreset() }
+		);
 
 		// const x = 'ones';
 		// const y = 'twos';

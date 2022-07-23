@@ -32,6 +32,12 @@ module.exports = {
                     ephemeral: true
                 });
             } break;
+            case 'inOngoingGame': {
+                await interaction.reply({
+                    content: 'You are in an un-reported game', 
+                    ephemeral: true
+                });
+            } break;
             case 'gameStarted': {
                 await interaction.reply({
                     content: 'You started the queue', 

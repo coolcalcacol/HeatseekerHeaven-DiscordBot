@@ -6,8 +6,8 @@ const generalData = require('../data/generalData.js');
 function setClient(client) {
     generalData.client = client;
 }
-function sendMessageTo(channelID, msg) {
-    generalData.client.channels.cache.get(channelID).send(msg);
+async function sendMessageTo(channelID, msg) {
+    await generalData.client.channels.cache.get(channelID).send(msg);
 }
 function sendEmbedMessageTo(channelId, embed) {
     generalData.client.channels.cache.get(channelId).send({embeds: embed});
@@ -15,7 +15,8 @@ function sendEmbedMessageTo(channelId, embed) {
 async function editMessage(channelId, messageId, msg) {
     await generalData.client.channels.cache.get(channelId).messages
         .fetch(messageId)
-        .then(message => message.edit(msg));
+        .then((message) => {message.edit(msg)})
+        .catch(console.error);
     // console.log(message.content);
 }
 function sendTestMessage(msg) {

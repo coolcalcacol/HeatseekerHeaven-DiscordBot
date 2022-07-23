@@ -1,9 +1,10 @@
 const QueueData = require('../data/queueData');
 const GeneralData = require('../data/generalData');
 const PlayerData = require('../data/playerData');
-const GeneralUtilities = require('../utils/GeneralUtilities');
-const EmbedUtilities = require('../utils/embedUtilities');
+const generalUtilities = require('../utils/GeneralUtilities');
+const embedUtilities = require('../utils/embedUtilities');
 const cConsole = require('../utils/customConsoleLog');
+const clientSendMessage = require('../utils/clientSendMessage');
 
 
 var debugLog = {'[fg=green]winners[/>]': {team: {}}, '[fg=red]losers[/>]': {team: {}}}
@@ -11,6 +12,7 @@ var debugLog = {'[fg=green]winners[/>]': {team: {}}, '[fg=red]losers[/>]': {team
 function getGameResults(winningTeam, losingTeam) {
     const combinedMmr = winningTeam.mmr + losingTeam.mmr;
     const lobbySize = Object.keys(winningTeam.members).length + Object.keys(losingTeam.members).length
+    const mode = lobbySize == 2 ? 'ones' : lobbySize == 4 ? 'twos' : lobbySize == 6 ? 'threes' : 'ERROR';
     const resultOutput = []
 
     debugLog.combined = combinedMmr;
@@ -20,32 +22,45 @@ function getGameResults(winningTeam, losingTeam) {
     for (const player in winningTeam.members) {
         const data = winningTeam.members[player];
         
-        const equation = calculatePlayerMmr(combinedMmr, data.stats, winningTeam.mmr, 'won', lobbySize);
+        const equation = calculatePlayerMmr(combinedMmr, data.stats[mode], winningTeam.mmr, 'won', lobbySize);
         resultOutput.push([data.userData.name, `+${equation.output}`])
-        equationDebug('winners', equation, data)
+        equationDebug('winners', equation, data, mode)
 
-        data.stats.mmr += Math.round(equation.output);
-        data.stats.gamesWon++;
+        data.stats[mode].mmr += Math.round(equation.output);
+        data.stats[mode].gamesWon++;
+        data.stats.global.gamesWon++;
 
-        updatePlayerStats(data);
+        updatePlayerStats(data, mode);
     }
     for (const player in losingTeam.members) {
         const data = losingTeam.members[player];
 
-        const equation = calculatePlayerMmr(combinedMmr, data.stats, losingTeam.mmr, 'lost', lobbySize);
+        const equation = calculatePlayerMmr(combinedMmr, data.stats[mode], losingTeam.mmr, 'lost', lobbySize);
         resultOutput.push([data.userData.name, `-${equation.output}`])
-        equationDebug('losers', equation, data)
+        equationDebug('losers', equation, data, mode)
 
-        data.stats.mmr -= Math.round(equation.output);
-        data.stats.gamesLost++;
+        data.stats[mode].mmr -= Math.round(equation.output);
+        data.stats[mode].gamesLost++;
+        data.stats.global.gamesLost++;
 
-        updatePlayerStats(data);
+        updatePlayerStats(data, mode);
     }
-    if (GeneralData.logOptions.gameMmrResults) { cConsole.log(debugLog); }
+    if (GeneralData.logOptions.gameMmrResults) { 
+        cConsole.log(debugLog)
+        debugLogContentWin = cConsole.decolorize(debugLog['[fg=green]winners[/>]']);
+        debugLogContentLose = cConsole.decolorize(debugLog['[fg=red]losers[/>]']);
+
+        clientSendMessage.sendMessageTo('945859974481985606', {
+            content: '> **Winners**\n```js\n' + debugLogContentWin + '```'
+        });
+        clientSendMessage.sendMessageTo('945859974481985606', {
+            content: '> **Losers** \n```js\n' + debugLogContentLose + '```'
+        });
+        debugLog = {'[fg=green]winners[/>]': {team: {}}, '[fg=red]losers[/>]': {team: {}}};
+    }
     return resultOutput;
 }
 function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
-
     const baseGain = 15;
     var result = 0;
     var soloBonus = 0; // [20]
@@ -58,48 +73,48 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
     
     var soloBonusEq;
     var teamBonusEq;
-    const ratioDisplay = GeneralUtilities.generate.roundToFloat(ratio, 4);
-    const teamRatioDisplay = GeneralUtilities.generate.roundToFloat(teamRatio, 4);
-    const extremeTeamRatioDisplay = GeneralUtilities.generate.roundToFloat(extremeTeamRatio, 4);
+    const ratioDisplay = generalUtilities.generate.roundToFloat(ratio, 4);
+    const teamRatioDisplay = generalUtilities.generate.roundToFloat(teamRatio, 4);
+    const extremeTeamRatioDisplay = generalUtilities.generate.roundToFloat(extremeTeamRatio, 4);
 
     switch (gameOutcome) {
         case 'won': {
-            soloBonus = (teamRatio - ratio) / teamRatio * 0.5;
+            soloBonus = (teamRatio - ratio) / teamRatio * (2 - lobbySize * 0.25);
             teamBonus = (lobbySize * baseGain) * (1 - extremeTeamRatio);
-            totalBonus = soloBonus * teamBonus;
+            totalBonus = lobbySize == 2 ? teamBonus : soloBonus * teamBonus;
             if (stats.mmr > 1500) { // Modify the bonus so the player doesnt reach >= 2500 mmr
                 totalBonus -= (stats.mmr - 1500) * totalBonus / 1000
             }
-            soloBonusEq = `(${ratioDisplay} - ${ratioDisplay}) / ${teamRatioDisplay} * 0.5`; // Debug Log
-            teamBonusEq = `(6 * ${baseGain}) * (1 - ${extremeTeamRatioDisplay}))`; // Debug Log
+            soloBonusEq = `(${teamRatioDisplay} - ${ratioDisplay}) / ${teamRatioDisplay} * (2 - ${lobbySize} * 0.25)`; // Debug Log
+            teamBonusEq = `(${lobbySize} * ${baseGain}) * (1 - ${extremeTeamRatioDisplay}))`; // Debug Log
         } break;
         case 'lost': {
-            soloBonus = (teamRatio - ratio) / teamRatio * 0.5;
+            soloBonus = (teamRatio - ratio) / teamRatio * (2 - lobbySize * 0.25);
             teamBonus = (lobbySize * baseGain) * extremeTeamRatio;
-            totalBonus = soloBonus * teamBonus;
+            totalBonus = lobbySize == 2 ? teamBonus : soloBonus * teamBonus;
             if (stats.mmr < 100) { // Modify the bonus so the player doesnt reach <= 0 mmr
                 totalBonus -= (100 - stats.mmr) * totalBonus / 100
             }
-            soloBonusEq = `${ratioDisplay} / ${teamRatioDisplay}`; // Debug Log
-            teamBonusEq = `(6 * ${baseGain}) * ${extremeTeamRatioDisplay}`; // Debug Log
+            soloBonusEq = `(${teamRatioDisplay} - ${ratioDisplay}) / ${teamRatioDisplay} * (2 - ${lobbySize} * 0.25)`; // Debug Log
+            teamBonusEq = `(${lobbySize} * ${baseGain}) * ${extremeTeamRatioDisplay}`; // Debug Log
         } break;
         default: break;
     }
     result = totalBonus;
     
     // Round
-        totalBonus = GeneralUtilities.generate.roundToFloat(totalBonus, 4);
-        totalBonus = totalBonus + ` (${GeneralUtilities.generate.roundToFloat((soloBonus * teamBonus), 4)})`;
-        soloBonus = GeneralUtilities.generate.roundToFloat(soloBonus, 2);
-        teamBonus = GeneralUtilities.generate.roundToFloat(teamBonus, 2);
-        result = GeneralUtilities.generate.roundToFloat(result, 2);
+        totalBonus = generalUtilities.generate.roundToFloat(totalBonus, 4);
+        totalBonus = totalBonus + ` (${generalUtilities.generate.roundToFloat((soloBonus * teamBonus), 4)})`;
+        soloBonus = generalUtilities.generate.roundToFloat(soloBonus, 2);
+        teamBonus = generalUtilities.generate.roundToFloat(teamBonus, 2);
+        result = generalUtilities.generate.roundToFloat(result, 2);
     // -
 
     return {
         output: result, 
-        ratio: GeneralUtilities.generate.roundToFloat(ratio, 4), 
-        teamRatio: GeneralUtilities.generate.roundToFloat(teamRatio, 4), 
-        extremeTeamRatio: GeneralUtilities.generate.roundToFloat(extremeTeamRatio, 4),
+        ratio: generalUtilities.generate.roundToFloat(ratio, 4), 
+        teamRatio: generalUtilities.generate.roundToFloat(teamRatio, 4), 
+        extremeTeamRatio: generalUtilities.generate.roundToFloat(extremeTeamRatio, 4),
         soloBonus: soloBonus, 
         teamBonus: teamBonus,
         totalBonus: totalBonus,
@@ -108,17 +123,22 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
     };
 }
 
-function updatePlayerStats(data) {
-    const w = data.stats.gamesWon;
-    const l = data.stats.gamesLost;
-    data.stats.gamesPlayed = w + l;
-    data.stats.winRate = GeneralUtilities.generate.roundToFloat((w / (w + l) * 100), 2);
+function updatePlayerStats(data, mode) {
+    const w = data.stats[mode].gamesWon;
+    const l = data.stats[mode].gamesLost;
+    data.stats[mode].gamesPlayed = w + l;
+    data.stats[mode].winRate = generalUtilities.generate.roundToFloat((w / (w + l) * 100), 2);
+
+    const globalW = data.stats.global.gamesWon;
+    const globalL = data.stats.global.gamesLost;
+    data.stats.global.gamesPlayed = globalW + globalL;
+    data.stats.global.winRate = generalUtilities.generate.roundToFloat((globalW / (globalW + globalL) * 100), 2);
 
     PlayerData.updatePlayerData(data);
 }
 
-function equationDebug(target, equation, playerData) {
-    const user = '[fg=yellow]' + playerData.userData.name + '[/>]';
+function equationDebug(target, equation, playerData, mode) {
+    const user = '"[fg=yellow]' + playerData.userData.name + '[/>]"';
     const root = target == 'winners' ? '[fg=green]' + target + '[/>]' : '[fg=red]' + target + '[/>]';
 
     debugLog[root].team.ratio = equation.teamRatio;
@@ -126,7 +146,7 @@ function equationDebug(target, equation, playerData) {
     debugLog[root].team.bonus = equation.teamBonus;
 
     debugLog[root][user] = {};
-    debugLog[root][user].mmr = playerData.stats.mmr;
+    debugLog[root][user].mmr = playerData.stats[mode].mmr;
     debugLog[root][user].Ratio = equation.ratio;
     debugLog[root][user][[
         `[fg=blue]Solo[/>]: [fg=green]${equation.soloBonus}[/>]`,

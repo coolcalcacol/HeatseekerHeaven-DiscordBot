@@ -4,18 +4,44 @@ const PlayerDataSchema = new mongoose.Schema({
     _id: String,
     userData: {
         name: String,
+        nickName: String,
         mention: String,
         discriminator: String,
+        roles: Array,
+        displayColor: String,
         avatar: String,
-        defaultAvatarURL: String,
-        createdAt: Date
+        createdAt: Date,
+        joinedAt: Date,
     },
     stats: {
-        mmr: Number,
-        gamesPlayed: Number,
-        gamesWon: Number,
-        gamesLost: Number,
-        winRate: Number,
+        global: {
+            mmr: Number,
+            gamesPlayed: Number,
+            gamesWon: Number,
+            gamesLost: Number,
+            winRate: Number,
+        },
+        ones: {
+            mmr: Number,
+            gamesPlayed: Number,
+            gamesWon: Number,
+            gamesLost: Number,
+            winRate: Number,
+        },
+        twos: {
+            mmr: Number,
+            gamesPlayed: Number,
+            gamesWon: Number,
+            gamesLost: Number,
+            winRate: Number,
+        },
+        threes: {
+            mmr: Number,
+            gamesPlayed: Number,
+            gamesWon: Number,
+            gamesLost: Number,
+            winRate: Number,
+        },
     }
 }, {timestamps: true});
 

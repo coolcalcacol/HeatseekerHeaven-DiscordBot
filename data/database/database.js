@@ -14,6 +14,7 @@ class Database {
         mongoose.connect(mongooseURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            autoIndex: false
         }).then(() => {
             cConsole.log('[style=bold][fg=green]Connected[/>] to the [style=bold][fg=blue]Database[/>]!');
             this.connection == mongoose.connection;

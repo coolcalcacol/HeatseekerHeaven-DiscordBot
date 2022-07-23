@@ -1,11 +1,11 @@
 const fs = require('fs');
 const Database = require('./data/database/database.js');
-// const Sequelize = require('sequelize');
 const cConsole = require('./utils/customConsoleLog');
 // Require the necessary discord.js classes
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
 // const { prefix } = require('./config/config.json');
+const mmrCalculator = require('./data/mmrCalculator');
 
 const db = new Database();
 db.connect();
@@ -76,6 +76,7 @@ client.on('interactionCreate', async interaction => {
 		console.log(error.stack);
 	}
 });
+
 // client.on('interactionCreate', async interaction => {
 // 	if (!interaction.isSelectMenu()) return;
 

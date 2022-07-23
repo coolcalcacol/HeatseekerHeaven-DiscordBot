@@ -1,10 +1,12 @@
-const generalData = require("../data/generalData")
+const generalData = require("../data/generalData");
+const config = require('../config/config.json');
 
 async function getUserById(id) {
     return await generalData.client.users.fetch(id).catch(console.error);
 }
 async function getMemberById(id) {
-    return await generalData.client.members.fetch(id).catch(console.error);
+	const guild = await generalData.client.guilds.cache.get(config.botSetupGuildId);
+    return await guild.members.fetch(id).catch(console.error);
 }
 
 function randomizeArray(array) {

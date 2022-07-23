@@ -25,9 +25,13 @@ var globalQueueData = {
     },
     gameId: 100,
     gamesInProgress: [],
+    gameHistory: [],
 
-    getGameID(readOnly = false) {
-        if (!readOnly) { this.gameId++; }        
+    async getGameID(readOnly = false) {
+        if (!readOnly) { 
+            this.gameId++;
+            await QueueDatabase.updateOne({}, {gameId: this.gameId}).catch(console.error);
+        }        
         return this.gameId;
     },
     clearLobbyQueue(lobby) {
@@ -78,7 +82,7 @@ var globalQueueData = {
 //     }
 // }
 class GameLobbyData {
-    constructor(players, lobby) {
+    constructor(players, lobby, bypass = false) {
         this.lobby = lobby;
         this.lobbyDisplay = '';
         this.players = {};
@@ -89,25 +93,45 @@ class GameLobbyData {
             blue: {},
             orange: {}
         }
-        this.gameId = globalQueueData.getGameID();
+        this.gameId;
         this.startTime = new Date();
+        this.reportStatus;
+        this.bypassTeamGeneration = bypass;
+        this.requestGameId();
         this.getTeams();
+    }
+    async requestGameId() {
+        this.gameId = await globalQueueData.getGameID();
     }
     getTeams() {
         switch (this.lobby) {
             case 'ones':{
-                this.teams.blue = new TeamData([this.players[0]]);
-                this.teams.orange = new TeamData([this.players[1]]);
+                this.teams.blue = new TeamData([this.players[Object.keys(this.players)[0]]], this.lobby);
+                this.teams.orange = new TeamData([this.players[Object.keys(this.players)[1]]], this.lobby);
             } break;
             case 'twos':{
                 const generatedTeams = this.getBalancedTeams(2)
-                this.teams.blue = new TeamData(generatedTeams[0]);
-                this.teams.orange = new TeamData(generatedTeams[1]);
+                this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
+                this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
             } break;
             case 'threes':{
-                const generatedTeams = this.getBalancedTeams(3)
-                this.teams.blue = new TeamData(generatedTeams[0]);
-                this.teams.orange = new TeamData(generatedTeams[1]);
+                if (!this.bypassTeamGeneration) {
+                    const generatedTeams = this.getBalancedTeams(3)
+                    this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
+                    this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
+                }
+                else {
+                    this.teams.blue = new TeamData([
+                        this.players[Object.keys(this.players)[0]],
+                        this.players[Object.keys(this.players)[1]],
+                        this.players[Object.keys(this.players)[2]],
+                    ], this.lobby);
+                    this.teams.orange = new TeamData([
+                        this.players[Object.keys(this.players)[3]],
+                        this.players[Object.keys(this.players)[4]],
+                        this.players[Object.keys(this.players)[5]],
+                    ], this.lobby);
+                }
             } break;
         
             default: break;
@@ -143,10 +167,10 @@ class GameLobbyData {
                     if (!valid) {break;}
                 }
                 if (!valid) {continue;}
-
+                
                 for (let i = 0; i < teamX.length; i++) {
-                    scoreX += teamX[i].stats.mmr;
-                    scoreY += teamY[i].stats.mmr;
+                    scoreX += teamX[i].stats[this.lobby].mmr;
+                    scoreY += teamY[i].stats[this.lobby].mmr;
                 }
                 totalScore = Math.abs(scoreX - scoreY);
                 if (totalScore < bestTotalScore) {
@@ -166,15 +190,16 @@ class GameLobbyData {
     }
 }
 class TeamData {
-    constructor(team) {
+    constructor(team, mode) {
         this.members = team;
+        this.mode = mode;
         this.mmr = 0;
         this.validate()
     }
     validate() {
         for (const player in this.members) {
             const data = this.members[player];
-            this.mmr += data.stats.mmr;
+            this.mmr += data.stats[this.mode].mmr;
         }
     }
 }
@@ -183,27 +208,42 @@ class TeamData {
 async function addPlayerToQueue(interaction = null, lobby, userId = null) {
     var playerData;
     if (!interaction && !userId) {console.log('No interaction param.'); return}
+    if (userId == null) { userId = interaction.user.id; }
+
     for (const room in globalQueueData.lobby) {
         for (const player in globalQueueData.lobby[room].players) {
             const user = globalQueueData.lobby[room].players[player];
             if (userId != null) {continue;}
-            if (interaction.user.id == player)  {
+            if (userId == player)  {
                 return 'alreadyInQueue';
             }
         }
     }
+    for (let i = 0; i < globalQueueData.gamesInProgress.length; i++) {
+        const game = globalQueueData.gamesInProgress[i];
+        for (const playerData in game.players) {
+            const player = game.players[playerData];
+            if (player['_id'] == userId) {
+                return 'inOngoingGame';
+            } 
+        }
+    }
 
-    if (userId == null) { userId = interaction.user.id; }
+    
     await PlayerData.getPlayerDataById(userId, true)
         .then(async (foundData) => {
-            if (GeneralData.logOptions.playerData) console.log('Received PlayerData [addPlayerToQueue]');
+            if (GeneralData.logOptions.playerData) {
+                console.log('Received PlayerData [addPlayerToQueue]');
+                console.log(foundData);
+            }
             playerData = foundData;
-        });
+        })
+        .catch(console.error);
     globalQueueData.lobby[lobby].players[userId] = playerData;
 
     if (Object.keys(globalQueueData.lobby[lobby].players).length == globalQueueData.lobby[lobby].queueSize) {
         // Start the queue
-        console.log('Starting the queue for lobby: ' + lobby)
+        if (GeneralData.logOptions.gameData) { console.log('Starting the queue for lobby: ' + lobby); }
         await startQueue(lobby);
         return 'gameStarted';
     }
@@ -228,8 +268,8 @@ function removePlayerFromQueue(interaction, lobby) {
     return 'wasNotInQueue'
 }
 
-async function startQueue(lobby) {
-    const game = new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
+async function startQueue(lobby, gameData = null) {
+    const game = gameData ? gameData : new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
     const channelId = await databaseUtilities.get.getRankedLobbyByName(lobby)
         .then(globalQueueData.clearLobbyQueue(lobby));
 
@@ -240,10 +280,10 @@ async function startQueue(lobby) {
     for (const player in game.players) {
         const user = game.players[player];
         if (GeneralData.debugMode) {
-            msgContent += '`' + user.userData.mention + '`';
+            msgContent += '`' + user.userData.mention + '` ';
         }
         else {
-            msgContent += user.userData.mention;
+            msgContent += user.userData.mention + ' ';
         }
     }
     clientSendMessage.sendMessageTo(channelId, {
@@ -264,10 +304,12 @@ function getCurrentQueue(lobby = 0) {
 module.exports.actions = {
     addPlayerToQueue,
     fillQueueWithPlayers,
-    removePlayerFromQueue
+    removePlayerFromQueue,
+    startQueue
 }
 module.exports.info = {
     getCurrentQueue,
-    globalQueueData
+    globalQueueData,
+    GameLobbyData
     // getCurrentQueueMessage
 }

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const QueueDataSchema = new mongoose.Schema({
-    matchId: Number,
+    gameId: Number,
     channelSettings: {
         onesChannel: String,
         twosChannel: String,

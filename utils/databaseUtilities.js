@@ -30,7 +30,7 @@ async function getRankedLobbyByName(lobby) {
     var queueData = (await query.select())[0];
     if (queueData == null) {
         console.log('ERROR: QueueData is not defined\nat: databaseUtilities.js:12')
-        return
+        return;
     }
     var channelData = queueData.channelSettings;
 
