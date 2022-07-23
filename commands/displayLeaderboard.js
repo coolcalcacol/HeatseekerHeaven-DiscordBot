@@ -26,11 +26,13 @@ module.exports = {
         
         const buttonRow = new MessageActionRow().addComponents(prevPageButton, nextPageButton);
 
+        const response = await embedUtilities.presets.leaderboardPreset(currentPage, true);
+        if (response[1] <= currentPage) nextPageButton.setDisabled(true);
         await interaction.reply({
             ephemeral: true,
-            embeds: await embedUtilities.presets.leaderboardPreset(currentPage),
+            embeds: response[0],
             components: [buttonRow]
-        });
+        }).catch(console.error);
         
         generalData.client.on('interactionCreate', async btnI => {
             if (!btnI.isButton()) return;
@@ -46,6 +48,7 @@ module.exports = {
                     embeds: response[0],
                     components: [buttonRow]
                 }).catch(console.error);
+                return;
             }
             else if (btnI.customId === 'lb_prev-page') {
                 currentPage--;
@@ -58,6 +61,7 @@ module.exports = {
                     embeds: response[0],
                     components: [buttonRow]
                 }).catch(console.error);
+                return;
             }
         });
     },

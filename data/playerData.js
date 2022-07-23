@@ -2,6 +2,7 @@ const GeneralData = require('./generalData');
 const PlayerDataStorage = require('./database/playerDataStorage');
 const generalUtilities = require('../utils/generalUtilities');
 const cConsole = require('../utils/customConsoleLog');
+const generalData = require('./generalData');
 
 async function getPlayerDataById(id, createIfNull = false) {
     var output;
@@ -47,25 +48,48 @@ async function createPlayerData(userData) {
 async function updatePlayerData(data) {
     const user = await generalUtilities.info.getUserById(data['_id']);
     const newData = await getPlayerDataObject(user);
-    
-    for (const lobby in newData.stats) {
-        const mode = newData.stats[lobby];
-        // console.log(mode);
-        // console.log(lobby);
+    const gameModes = ['ones', 'twos', 'threes', 'global']
 
-        newData.stats[lobby].mmr = data.stats[lobby].mmr;
-        newData.stats[lobby].gamesPlayed = data.stats[lobby].gamesPlayed;
-        newData.stats[lobby].gamesWon = data.stats[lobby].gamesWon;
-        newData.stats[lobby].gamesLost = data.stats[lobby].gamesLost;
-        newData.stats[lobby].winRate = data.stats[lobby].winRate;
+    for (let i = 0; i < gameModes.length; i++) {
+        const mode = gameModes[i];
+
+        newData.stats[mode].mmr = mode == 'global' ? 0 : data.stats[mode].mmr;
+        newData.stats[mode].gamesPlayed = data.stats[mode].gamesPlayed;
+        newData.stats[mode].gamesWon = data.stats[mode].gamesWon;
+        newData.stats[mode].gamesLost = data.stats[mode].gamesLost;
+        newData.stats[mode].winRate = data.stats[mode].winRate;
     }
 
-    for (const mode in data.stats) {
-        // const multiplier = mode == 'twos' ? 0.75 : mode == 'threes' ? 1 : 0.5;
-        newData.stats.global.mmr = data.stats[mode].mmr * data.stats[mode].gamesPlayed;
+    // (teamRatio - 0.5) * 2 + 0.5
+    var gameCountMultiplier = 0;
+    for (let i = 0; i < gameModes.length; i++) {
+        const mode = gameModes[i];
+        if (mode == 'global') continue;
+        
+        const multiplier = mode == 'twos' ? 0.75 : mode == 'threes' ? 1 : 0.5;
+        var mmrMultiplier = data.stats.threes.mmr;
+        if (mode == 'ones') {
+            mmrMultiplier = (data.stats.ones.mmr - 600) * 0.528 + 600;
+        }
+        if (mode == 'twos') {
+            mmrMultiplier = (data.stats.twos.mmr - 600) * 0.848 + 600;
+        }
+
+        gameCountMultiplier += data.stats[mode].gamesPlayed * multiplier;
+        newData.stats.global.mmr += data.stats[mode].gamesPlayed * multiplier * mmrMultiplier;
     }
-    newData.stats.global.mmr = newData.stats.global.mmr / data.stats.global.gamesPlayed;
-    newData.stats.global.mmr = Math.round(newData.stats.global.mmr)
+
+    newData.stats.global.mmr = newData.stats.global.mmr / gameCountMultiplier;
+    newData.stats.global.mmr = Math.round(newData.stats.global.mmr);
+
+    if (generalData.logOptions.gameMmrResults) {
+        console.log(
+            'G ' + 
+            data.userData.name + ' + ' + 
+            newData.stats.global.mmr + ' | ' + 
+            newData.stats.global.gamesPlayed
+        );
+    }
 
 
     newData['__v'] = (data['__v'] + 1);

@@ -89,7 +89,7 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
             teamBonusEq = `(${lobbySize} * ${baseGain}) * (1 - ${extremeTeamRatioDisplay}))`; // Debug Log
         } break;
         case 'lost': {
-            soloBonus = (teamRatio - ratio) / teamRatio * (2 - lobbySize * 0.25);
+            soloBonus = ratio / teamRatio;
             teamBonus = (lobbySize * baseGain) * extremeTeamRatio;
             totalBonus = lobbySize == 2 ? teamBonus : soloBonus * teamBonus;
             if (stats.mmr < 100) { // Modify the bonus so the player doesnt reach <= 0 mmr

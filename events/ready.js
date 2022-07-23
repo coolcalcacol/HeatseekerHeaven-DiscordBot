@@ -36,6 +36,7 @@ const userWhitelist = [
     '510829824483524638', // coco_ice
     '723703418274971700', // j.
     '457617584033103892', // Orcas
+	'362052637400498187', // Senior Bubbles
 ]
 
 module.exports = {
@@ -67,16 +68,17 @@ module.exports = {
 					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
 				} break;
 				case 'twos': {
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 1);
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 2);
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'twos', 1);
 					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'twos', 1);
-					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'twos', 1);
+					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'twos', 1);
 				} break;
 				case 'threes': {
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 3);
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 4);
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1);
 					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
-					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
+					// await queueData.actions.fillQueueWithPlayers(['362052637400498187'], 'threes', 1);
+					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
 				} break;
 				case 'custom': {
 					const currentGame = [

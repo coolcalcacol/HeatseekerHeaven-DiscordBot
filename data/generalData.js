@@ -4,7 +4,7 @@ module.exports = {
     client: null,
     debugMode: true,
     debugOptions: {
-        createGameOnStart: false,
+        createGameOnStart: true,
         gameOnStartLobby: 'threes'
     },
     logOptions : {
