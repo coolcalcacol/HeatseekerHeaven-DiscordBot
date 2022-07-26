@@ -48,17 +48,17 @@ const defaultLogOptions = {
 module.exports = {
     autoColorizeData: {
         errors: {
-            instances: ['undefined', 'null', 'error', 'Error', 'ERROR'],
+            instances: [' undefined', ' null', 'error', 'Error', 'ERROR'],
             fontStyle: 'bold',
             fontColor: 'red',
             bgColor: ''
         },
         statments: {
             instances: [
-                'if', 'else', 
-                'return', 'break', 'continue', 
-                'for', 
-                'try', 'catch'
+                ' if ', ' else ', 
+                ' return ', ' break ', ' continue ', 
+                ' for ', 
+                ' try ', ' catch '
             ],
             fontStyle: 'bold',
             fontColor: 'magenta',
@@ -79,11 +79,11 @@ module.exports = {
         },
         operatorFlags: {
             instances: [
-                'const', 'var', 'let', 
-                'typeof', 'this', 
-                'function', 'Function', 
-                'init', 'Init', 
-                'args', 'arg'
+                ' const ', ' var ', ' let ', 
+                ' typeof ', ' this ', 
+                ' function ', ' Function ', 
+                ' init ', ' Init ', 
+                ' args ', ' arg '
             ],
             fontStyle: '',
             fontColor: 'blue',
@@ -92,7 +92,7 @@ module.exports = {
         operators: {
             instances: ['=', '>', '<', '?', '!', '|', '&', '@'],
             fontStyle: '',
-            fontColor: 'cyan',
+            fontColor: 'blue',
             bgColor: ''
         },
         symbols: {

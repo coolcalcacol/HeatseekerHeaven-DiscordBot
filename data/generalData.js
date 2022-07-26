@@ -11,6 +11,7 @@ module.exports = {
         interactions: true,
         playerData: false,
         gameData: false,
-        gameMmrResults: true,
+        teamGeneration: false,
+        gameMmrResults: false,
     },
 }

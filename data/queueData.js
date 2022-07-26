@@ -7,6 +7,8 @@ const databaseUtilities = require('../utils/databaseUtilities');
 const cConsole = require('../utils/customConsoleLog');
 const generalUtilities = require('../utils/generalUtilities');
 const PlayerData = require('./playerData');
+const generalData = require('./generalData');
+const { logOptions } = require('./generalData');
 
 var globalQueueData = {
     lobby: {
@@ -41,46 +43,6 @@ var globalQueueData = {
         }
     }
 }
-// class GameLobby {
-//     constructor(players, lobby) {
-//         this.lobby = lobby;
-//         this.players = [];
-//         for (const p in players) { this.players.push(p); }
-//         this.teams = {
-//             blue: [],
-//             orange: []
-//         }
-//         this.gameId = globalQueueData.getGameID();
-//         this.getTeams();
-//     }
-//     getTeams() {
-//         switch (this.lobby) {
-//             case 'ones':{
-//                 this.teams.blue[0] = this.players[0];
-//                 this.teams.orange[0] = this.players[1];
-//             } break;
-//             case 'twos':{
-//                 this.teams.blue[0] = this.players[0];
-//                 this.teams.blue[1] = this.players[1];
-//                 this.teams.orange[0] = this.players[2];
-//                 this.teams.orange[1] = this.players[3];
-//             } break;
-//             case 'threes':{
-//                 this.teams.blue[0] = this.players[0];
-//                 this.teams.blue[1] = this.players[1];
-//                 this.teams.blue[2] = this.players[2];
-//                 this.teams.orange[0] = this.players[3];
-//                 this.teams.orange[1] = this.players[4];
-//                 this.teams.orange[2] = this.players[5];
-//             } break;
-        
-//             default: break;
-//         }
-//     }
-//     get game() {
-//         return this;
-//     }
-// }
 class GameLobbyData {
     constructor(players, lobby, bypass = false) {
         this.lobby = lobby;
@@ -139,7 +101,9 @@ class GameLobbyData {
         // console.log(this.teams);
     }
     getBalancedTeams(size) {
-        console.log('Generating Balanced Teams')
+        if (generalData.logOptions.teamGeneration) {
+            cConsole.log(`\n-------- [fg=blue]Initiated Team Generation[/>] --------`);
+        }
         var array = [];
         for (const playerData in this.players) {
             array.push(this.players[playerData]);
@@ -174,16 +138,37 @@ class GameLobbyData {
                 }
                 totalScore = Math.abs(scoreX - scoreY);
                 if (totalScore < bestTotalScore) {
-                    // bestTeams.splice(0, 1, teamX);
-                    // bestTeams.splice(1, 1, teamY);
+                    // console.log('-------- [fg=blue]New Best Team[/>] --------');
+                    // console.log(this.getTeamMembersLog(teamX, teamY) + '\n');
                     bestTeams = [teamX, teamY];
                     bestTotalScore = totalScore;
                 }
             }
         }
-        // console.log('Best Teams Generated');
-        // console.log(bestTeams);
+        if (generalData.logOptions.teamGeneration) {
+            cConsole.log(`-------- [fg=blue]Team Generation Result[/>] --------`);
+            cConsole.log(
+                `[style=bold][fg=green]${this.getTeamMembersLog(bestTeams[0], bestTeams[1])}[/>]`,
+                {autoColorize: false}
+            );
+                
+            if (generalData.logOptions.gameData) {
+                cConsole.log(`-------- [fg=blue]Generated Team Data[/>] --------`);
+                console.log(bestTeams);
+            }
+        }
         return bestTeams;
+    }
+    getTeamMembersLog(teamX, teamY) {
+        var output = '';
+        for (let i = 0; i < 2; i++) {
+            const team = i == 0 ? teamX : teamY;
+            for (const data in team) {
+                output += team[data].userData.name + ' ';
+            }
+            output += '\n';
+        }
+        return output;
     }
     get game() {
         return this;
@@ -191,7 +176,8 @@ class GameLobbyData {
 }
 class TeamData {
     constructor(team, mode) {
-        this.members = team;
+        this.members = {}; // Recently Changed to be stored as an object and not an array
+        for (let i = 0; i < team.length; i++) { this.members[team[i]['_id']] = team[i]; }
         this.mode = mode;
         this.mmr = 0;
         this.validate()

@@ -7,15 +7,15 @@ module.exports = {
         .addSubcommand(subCommand => subCommand
             .setName('cancel')
             .addStringOption(option => option
-                .setName('game-id')
+                .setName('gameid')
                 .setDescription('The ID of the game you want to cancel')
                 .setRequired(true)
             )
         )
         .addSubcommand(subCommand => subCommand
-            .setName('remove-user')
+            .setName('removeuser')
             .addStringOption(option => option
-                .setName('game-id')
+                .setName('gameid')
                 .setDescription('The ID of the game you want to cancel')
                 .setRequired(true)
             )

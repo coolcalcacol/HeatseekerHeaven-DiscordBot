@@ -74,8 +74,8 @@ module.exports = {
 					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'twos', 1);
 				} break;
 				case 'threes': {
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 4);
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1);
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 4);
 					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
 					// await queueData.actions.fillQueueWithPlayers(['362052637400498187'], 'threes', 1);
 					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
