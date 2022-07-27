@@ -1,8 +1,12 @@
 const GeneralData = require('./generalData');
 const PlayerDataStorage = require('./database/playerDataStorage');
+const queueSettings = require('../data/queueSettings');
+const guildSettings = require('./database/guildSettings');
+const generalData = require('./generalData');
 const generalUtilities = require('../utils/generalUtilities');
 const cConsole = require('../utils/customConsoleLog');
-const generalData = require('./generalData');
+const clientSendMessage = require('../utils/clientSendMessage');
+const { clearPlayerDataPass } = require('../config/private.json');
 
 async function getPlayerDataById(id, createIfNull = false) {
     var output;
@@ -126,9 +130,43 @@ async function getPlayerDataObject(userData) { // The user data that discord gen
     return newData;
 }
 
-async function clearPlayerData() {
-    console.log('Deleting PlayerData...');
-    console.log(await PlayerDataStorage.deleteMany({}));
+async function clearPlayerData(interaction, password) {
+    const queueConfig = await queueSettings.getQueueDatabaseById(interaction.guild.id);
+    const guildData = await guildSettings.findOne({_id: interaction.guild.id}).catch(console.error);
+    console.log(guildData);
+    if (password != clearPlayerDataPass) {
+        const message = [
+            `<@&${guildData.adminRole}>`,
+            `A user just tried to clear all of the PlayerData but didnt enter the correct password.`,
+            `-------- User Info --------`,
+            `${interaction.user.username}#${interaction.user.discriminator}`,
+            `<@${interaction.user.id}> ${interaction.user.id}`
+        ].join('\n');
+        console.log(message);
+        console.log(interaction);
+        if (queueConfig.channelSettings.logChannel) {
+            clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, message);
+        }
+        return false;
+    }
+    else {
+        console.log(interaction); console.log('');
+        console.log('Deleting PlayerData...'); console.log('');
+        console.log(await PlayerDataStorage.deleteMany({}));
+
+        queueConfig.gameId = 100;
+        queueSettings.updateQueueDatabase(queueConfig);
+
+        if (queueConfig.channelSettings.logChannel) {
+            clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
+                `<@&${guildData.adminRole}>`,
+                `PlayerData has been cleard by <@${interaction.user.id}>`,
+                `${interaction.user.id}`,
+                `${interaction.user.username}#${interaction.user.discriminator}`
+            ].join('\n'));
+        }
+        return true;
+    }
 }
 
 module.exports = {

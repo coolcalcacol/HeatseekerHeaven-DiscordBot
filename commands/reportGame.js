@@ -130,6 +130,7 @@ module.exports = {
                     }).catch(console.error);
 
                     gameData.reportStatus = true;
+                    gameData.gameResults = gameResults;
                     queueData.info.globalQueueData.gameHistory.push(gameData);
 
                     const inProgressList = queueData.info.globalQueueData.gamesInProgress;

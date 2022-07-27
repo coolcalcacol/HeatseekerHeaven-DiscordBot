@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const GuildSettingsSchema = new mongoose.Schema({
-    guildId: String,
-    welcomeChannelId: String
+    _id: String,
+    adminRole: String
 });
 
 module.exports = mongoose.model('GuildSettings', GuildSettingsSchema);

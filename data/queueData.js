@@ -60,6 +60,7 @@ class GameLobbyData {
         this.gameId;
         this.startTime = new Date();
         this.reportStatus;
+        this.gameResults;
         this.bypassTeamGeneration = bypass;
         this.requestGameId();
         this.getTeams();

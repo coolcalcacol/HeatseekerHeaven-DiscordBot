@@ -120,9 +120,21 @@ function sleep(ms) {
     });
 }
 
+function isObject(target) {
+	try {
+		var o = JSON.parse(JSON.stringify(target));
+		if (o && typeof o === "object"  && !Array.isArray(target)) {
+			return true;
+		}
+	}
+	catch (e) { }
+	return false;
+}
+
 module.exports.info = {
     getUserById,
-	getMemberById
+	getMemberById,
+	isObject
 }
 module.exports.generate = {
     randomizeArray,

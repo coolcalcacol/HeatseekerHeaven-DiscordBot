@@ -9,7 +9,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('leave')
         .setDescription('Removes your from the queue'),
-    async execute(interaction, client) {
+    async execute(interaction) {
         const lobby = await queueSettings.getRankedLobbyById(interaction.channel, interaction.guild.id);
         if (!['ones', 'twos', 'threes'].includes(lobby)) {
             await interaction.reply({
@@ -21,7 +21,7 @@ module.exports = {
         const response = queueData.actions.removePlayerFromQueue(interaction, lobby);
         
         if (response == 'removedFromQueue') {
-            await client.emit('queueEvent', interaction, 'removed');
+            await interaction.client.emit('queueEvent', interaction, 'removed');
             await interaction.reply({
                 embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'removed', interaction)
             });

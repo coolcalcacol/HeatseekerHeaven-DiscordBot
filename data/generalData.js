@@ -3,8 +3,11 @@
 module.exports = {
     client: null,
     debugMode: true,
+    botConfig: {
+        defaultGuildId: '811667577985302528',
+    },
     debugOptions: {
-        createGameOnStart: true,
+        createGameOnStart: false,
         gameOnStartLobby: 'threes'
     },
     logOptions : {
@@ -15,5 +18,6 @@ module.exports = {
         gameMmrResults: true,
         playerData: false,
         queueSettings: true,
+        queueAdmin: true,
     },
 }

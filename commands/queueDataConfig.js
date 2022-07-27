@@ -68,10 +68,6 @@ module.exports = {
                 .setName('threesmultiplier')
                 .setDescription('When Global MMR is calculated, the 3v3 MMR is miltiplied by this value [DEFAULT = 1]')
             )
-        )
-        .addSubcommand(subcommand => subcommand // Tmp in this script
-                .setName('clearplayerdata')
-                .setDescription('Clears the PlayerDatabase')
         ),
     async execute(interaction) {
         if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {

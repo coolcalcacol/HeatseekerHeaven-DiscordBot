@@ -9,7 +9,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('queue')
         .setDescription('Adds your to the queue'),
-    async execute(interaction, client) {
+    async execute(interaction) {
         const lobby = await queueSettings.getRankedLobbyById(interaction.channel, interaction.guild.id);
         if (!['ones', 'twos', 'threes'].includes(lobby)) {
             await interaction.reply({
@@ -22,7 +22,7 @@ module.exports = {
         console.log('response: ' + response)
         switch (response) {
             case 'enteredQueue': {
-                await client.emit('queueEvent', interaction, 'add');
+                await interaction.client.emit('queueEvent', interaction, 'add');
                 await interaction.reply({
                     embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)
                 });
