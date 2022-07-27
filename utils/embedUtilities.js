@@ -44,7 +44,7 @@ function queueStatusEmbed(lobby, context, interaction = null) {
     return [embed];
 }
 
-function queueGameStartPreset(gameData) {
+function queueGameStartPreset(gameData, teamsOnly = false) {
     const header = new MessageEmbed()
         .setColor('#000000')
         .setTitle('Teams have been selected!')
@@ -58,7 +58,8 @@ function queueGameStartPreset(gameData) {
         .setColor('#FF9100')
         .addFields({name: 'Team Orange', value: getTeamMembers(gameData.teams.orange)});
     
-    return [header, teamBlue, teamOrange]
+    const output = !teamsOnly ? [header, teamBlue, teamOrange] : [teamBlue, teamOrange];
+    return output;
 }
 
 function reportGamePreset(gameData) {
