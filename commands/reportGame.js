@@ -118,12 +118,12 @@ module.exports = {
 
                     const storedQueueData = await QueueDatabase.findOne({});
                     await clientSendMessage.sendMessageTo(storedQueueData.channelSettings.matchReportChannel, {
-                        embeds: [embedUtilities.presets.gameResultPreset(gameData, gameResults, interaction.user.username, winningTeamName)],
+                        embeds: [embedUtilities.presets.gameResultPreset(gameData, gameResults, interaction.user, winningTeamName)],
                         components: []
                     }).catch(console.error);
 
                     await interaction.update({
-                        embeds: [embedUtilities.presets.gameResultPreset(gameData, gameResults, interaction.user.username, winningTeamName)],
+                        embeds: [embedUtilities.presets.gameResultPreset(gameData, gameResults, interaction.user, winningTeamName)],
                         components: []
                     }).catch(console.error);
                     gameData.reportStatus = true;

@@ -20,6 +20,13 @@ module.exports = {
             .setName('target-user')
             .setDescription('Which user to show the stats for')
             .setRequired(false)
+        )
+        .addBooleanOption(option => option
+            .setName('visable')
+            .setDescription('Display stats for everyone and not only for you?')
+            .setRequired(false)
+                // .addChoice('Public', 'true')
+                // .addChoice('Private', 'false')
         ),
     async execute(interaction) {
         const userId = interaction.options.get('target-user') ? 
@@ -28,14 +35,20 @@ module.exports = {
             interaction.options.getString('mode') : 'global';
         const data = await PlayerData.getPlayerDataById(userId);
 
+        
+
         if (!data) {
+            const message = interaction.options.getUser('target-user') ? 
+            `<@${interaction.options.getUser('target-user').id}> does not have any stats yet, they need to Queue first.` : 
+            `You do not have any stats yet. You need to Queue first.`;
             await interaction.reply({
                 ephemeral: true,
-                content: 'You do not have any stats yet. You need to Queue first.'
+                content: message
             });
             return;
         }
         await interaction.reply({
+            ephemeral: interaction.options.getBoolean('visable') ? false : true,
             embeds: [EmbedUtilities.presets.playerStatsPreset(data, mode)]
         })
     },

@@ -107,7 +107,7 @@ function gameResultPreset(gameData, gameResults, reporter, winningTeamName) {
         { name: 'Game ID', value: '```' + gameData.gameId.toString() + '```', inline: true },
         { 
             name: 'Reported By', 
-            value: '```' + reporter + '```',
+            value: '```' + reporter.username + '```',
             inline: true
         },
         { name: 'Winners', value: '```Team ' + winningTeamName + '```', inline: true },
@@ -120,6 +120,8 @@ function gameResultPreset(gameData, gameResults, reporter, winningTeamName) {
         mmrFields.push({ name: gameResults[i][0], value: gameResults[i][1], inline: true })
     }
     embed.addFields(mmrFields);
+    embed.setFooter({text: reporter.username, iconURL: reporter.displayAvatarURL()});
+    embed.setTimestamp(new Date().getTime());
 
 
     return embed;
@@ -128,7 +130,7 @@ function gameResultPreset(gameData, gameResults, reporter, winningTeamName) {
 function playerStatsPreset(playerData, mode = 'global') {
     const modeDisplay = mode == 'ones' ? '1v1' : mode == 'twos' ? '2v2' : mode == 'threes' ? '3v3' : 'Global';
     const embed = new MessageEmbed();
-    embed.setTitle(`${modeDisplay} Stats for ${playerData.userData.name}`);
+    embed.setAuthor({name: `${playerData.userData.name} - ${modeDisplay} Stats`, iconURL: playerData.userData.avatar});
     embed.setColor(playerData.userData.displayColor);
     const bgMarker = '```';
     if (mode == 'global') {
@@ -196,20 +198,25 @@ async function leaderboardPreset(page, returnMaxPage = false) {
     }
 
     const embed = new MessageEmbed();
-    embed.addFields(
-        { name: '#   Player Name\n' + lineBreak, 
-            value: nameDisplay,
-            inline: true 
-        },
-        { name: `${seperator} ${ws(0.1)}MMR${ws(2)}${seperator}${ws(1.11)}Wins${ws(2)}${seperator}${ws(2.11)}Lost${ws(2.01)} ${seperator}\n` + lineBreak, 
-            value: statsDisplay,
-            inline: true 
-        },
-        { name: `${seperator} ${ws(3.1)}Total${ws(5)}${seperator}${ws(3.1)}Win Rate${ws(1.2)} ${seperator}\n` + lineBreak, 
-            value: totalDisplay,
-            inline: true 
-        },
-    );
+    try {
+        embed.addFields(
+            { name: '#   Player Name\n' + lineBreak, 
+                value: nameDisplay,
+                inline: true 
+            },
+            { name: `${seperator} ${ws(0.1)}MMR${ws(2)}${seperator}${ws(1.11)}Wins${ws(2)}${seperator}${ws(2.11)}Lost${ws(2.01)} ${seperator}\n` + lineBreak, 
+                value: statsDisplay,
+                inline: true 
+            },
+            { name: `${seperator} ${ws(3.1)}Total${ws(5)}${seperator}${ws(3.1)}Win Rate${ws(1.2)} ${seperator}\n` + lineBreak, 
+                value: totalDisplay,
+                inline: true 
+            },
+        );
+    } catch (err) {
+        console.error(err);
+    }
+    
     embed.setColor(topPlayerData.displayColor);
     embed.setAuthor({name: topPlayerData.name, iconURL: topPlayerData.avatar});
 

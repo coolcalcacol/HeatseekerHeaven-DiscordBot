@@ -6,6 +6,7 @@ const generalData = require('../data/generalData');
 const playerData = require('../data/playerData');
 const queueData = require('../data/queueData');
 const QueueDatabase = require('../data/database/queueDataStorage');
+const queueSettings = require('../data/queueSettings');
 const sleep = require('node:timers/promises').setTimeout;
 // const config = require('../config/config.json');
 // const mmrSystem = require('../examples/mmr/mmrSystem');
@@ -103,6 +104,15 @@ module.exports = {
 				default: break;
 			}
 		}
+
+		// var data = {
+		// 	_id: '811667577985302528',
+		// 	mmrSettings: {
+		// 		startingMmr: 500,
+		// 		baseGain: 50,
+		// 	}
+		// }
+		// await queueSettings.updateQueueDatabase(data, false);
 
 		// cConsole.test();
 		// embedCreator.info.test();

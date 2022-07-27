@@ -1,17 +1,18 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 const QueueDatabase = require('../data/database/queueDataStorage');
-const PlayerData = require('../data/playerData');
+const queueSettings = require('../data/queueSettings');
+const playerData = require('../data/playerData');
+const generalData = require('../data/generalData');
 const cConsole = require('../utils/customConsoleLog');
 
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('queueconfig')
-        .setDescription('Replies with Pong!')
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('setrankedchannel')
+        .setDescription('Define how the queue system should act')
+        .addSubcommand(subcommand => subcommand
+                .setName('set-channel')
                 .setDescription('Set a channel for ranked match making')
                 .addStringOption(option =>
                     option.setName('type')
@@ -28,8 +29,47 @@ module.exports = {
                         .setRequired(true)
                 )
         )
-        .addSubcommand(subcommand =>
-            subcommand
+        .addSubcommand(subcommand => subcommand
+            .setName('mmrsettings')
+            .setDescription('Set some MMR related values for the MMR equation')
+            .addNumberOption(option => option
+                .setName('startingmmr')
+                .setDescription('This is the number that the equation starts on [DEFAULT = 15]')
+            )
+            .addNumberOption(option => option
+                .setName('basegain')
+                .setDescription('This is the number that the equation starts on [DEFAULT = 15]')
+            )
+            .addNumberOption(option => option
+                .setName('minstart')
+                .setDescription('If MMR is less then this value, the player looses less points [DEFAULT = 100]')
+            )
+            .addNumberOption(option => option
+                .setName('mincap')
+                .setDescription('Mmr cant get below this value (Value must be >= 0 and < minStart) [DEFAULT = 0]')
+            )
+            .addNumberOption(option => option
+                .setName('maxstart')
+                .setDescription('If MMR is greater then this value, the player gains less points [DEFAULT = 1500]')
+            )
+            .addNumberOption(option => option
+                .setName('maxcap')
+                .setDescription('Mmr cant get above this value (Value must be > maxStart) [DEFAULT = 2500]')
+            )
+            .addNumberOption(option => option
+                .setName('onesmultiplier')
+                .setDescription('When Global MMR is calculated, the 1v1 MMR is miltiplied by this value [DEFAULT = 0.5]')
+            )
+            .addNumberOption(option => option
+                .setName('twosmultiplier')
+                .setDescription('When Global MMR is calculated, the 2v2 MMR is miltiplied by this value [DEFAULT = 0.85]')
+            )
+            .addNumberOption(option => option
+                .setName('threesmultiplier')
+                .setDescription('When Global MMR is calculated, the 3v3 MMR is miltiplied by this value [DEFAULT = 1]')
+            )
+        )
+        .addSubcommand(subcommand => subcommand // Tmp in this script
                 .setName('clearplayerdata')
                 .setDescription('Clears the PlayerDatabase')
         ),
@@ -42,83 +82,67 @@ module.exports = {
             return
         }
         
+        const guildId = interaction.guild.id;
+        const queueSettingsData = await queueSettings.getQueueDatabaseById(guildId, true)
+
         switch (interaction.options.getSubcommand()) {
-            case 'setrankedchannel': {
-                var type = interaction.options.getString('type');
-                var onesInput = '';
-                var twosInput = '';
-                var threesInput = '';
-                var reportChannelInput = '';
-                switch (type) {
-                    case 'ones': onesInput = interaction.options.getChannel('channel').id; type = '1v1'; break;
-                    case 'twos': twosInput = interaction.options.getChannel('channel').id; type = '2v2'; break;
-                    case 'threes': threesInput = interaction.options.getChannel('channel').id; type = '3v3'; break;
-                    case 'reportChannel': reportChannelInput = interaction.options.getChannel('channel').id; type = 'matchReport'; break;
-                    default: break;
-                }
+            case 'set-channel': {
+                const targetChannel = await interaction.options.getString('type');
+                try {
+                    queueSettingsData.channelSettings[targetChannel] = interaction.options.getChannel('channel').id;
+                } catch (err) {console.error(err);}
+                await queueSettings.updateQueueDatabase(queueSettingsData, true)
+                    .catch(console.error);
 
-                var query = QueueDatabase.find({});
-                var queueData = (await query.select())[0];
-                var channelSettings = {};
-                if (queueData != null) {
-                    channelSettings = queueData.channelSettings
-                }
-                
-                QueueDatabase.findOne({ channelSettings: channelSettings}, (error, data) => {
-                    if (error) {
-                        console.log(error);
-                        interaction.reply('ERROR\n```' + error + '```')
-                    }
-
-                    if (!data) {
-                        // Data doesnt exist yet, create the first data document
-                        data = new QueueDatabase({
-                            matchId: 0,
-                            channelSettings: {
-                                onesChannel: onesInput,
-                                twosChannel: twosInput,
-                                threesChannel: threesInput,
-                                matchReportChannel: reportChannelInput,
-                            }
-                        });
-                        cConsole.log('New data document created.\n' + data);
-                    }
-                    else {
-                        // Overwrite the date to the current input
-                        data.channelSettings[interaction.options.getString('type') + 'Channel'] = interaction.options.getChannel('channel').id;
-                        cConsole.log(
-                            '[style=bold][style=underscore]Queue data channel settings adjusted[/>]\n' + 
-                            type + ' channel is now set to ' + 
-                            data.channelSettings[interaction.options.getString('type') + 'Channel'] + 
-                            '\n---- [style=underscore]Document[/>] ----\n' + data
-                        )
-                    }
-                    
-                    // Save the newly created/edited data to the database
-                    data.save(error => {
-                        if (error) {
-                            cConsole.log(error);
-                            interaction.reply('ERROR\n```' + error + '```')
-                        }
-                        return data.matchId + '$';
-                    });
+                await interaction.reply({
+                    ephemeral: true,
+                    content: '<#' + interaction.options.getChannel('channel') + '>' +
+                    ' is now set as the **' + targetChannel + '** channel'
                 });
-                await interaction.reply(
-                    '<#' + interaction.options.getChannel('channel') + '>' +
-                    ' is now set as the **' + type + '** ranked channel'
-                );
-            }
-            break;
+            } break;
+            case 'mmrsettings': {
+                const eq = queueSettingsData.mmrSettings;
+                eq.startingMmr = interaction.options.getNumber('startingmmr') ? interaction.options.getNumber('startingmmr') : eq.startingMmr;
+                eq.baseGain = interaction.options.getNumber('basegain') ? interaction.options.getNumber('basegain') : eq.baseGain;
+                eq.minStart = interaction.options.getNumber('minstart') ? interaction.options.getNumber('minstart') : eq.minStart;
+                eq.minCap = interaction.options.getNumber('mincap') ? interaction.options.getNumber('mincap') : eq.minCap;
+                eq.maxStart = interaction.options.getNumber('maxstart') ? interaction.options.getNumber('maxstart') : eq.maxStart;
+                eq.maxCap = interaction.options.getNumber('maxcap') ? interaction.options.getNumber('maxcap') : eq.maxCap;
+                eq.onesMultiplier = interaction.options.getNumber('onesmultiplier') ? interaction.options.getNumber('onesmultiplier') : eq.onesMultiplier;
+                eq.twosMultiplier = interaction.options.getNumber('twosmultiplier') ? interaction.options.getNumber('twosmultiplier') : eq.twosMultiplier;
+                eq.threesMultiplier = interaction.options.getNumber('threesmultiplier') ? interaction.options.getNumber('threesmultiplier') : eq.threesMultiplier;
+
+                var replyContent = '__**New MMR values have been set**__\n> Adjusted Values:\n```js\n{';
+
+                queueSettingsData.mmrSettings = eq;
+                await queueSettings.updateQueueDatabase(queueSettingsData, true)
+                    .catch(console.error);
+
+                await interaction.reply({
+                    ephemeral: true,
+                    content: 'New MMR values have been set'
+                });
+            } break;
             case 'clearplayerdata': {
-                await PlayerData.clearPlayerData();
+                await playerData.clearPlayerData();
                 await interaction.reply({
                     content: 'Data hase been cleared',
                     ephemeral: true
                 })
             }
             break;
-            default:
-                break;
+            default: break;
         }
+
+        if (generalData.logOptions.queueConfigCommands) {
+            cConsole.log(
+                '[style=bold][style=underscore]Queue data settings adjusted[/>]\n' + 
+                '\n---- [style=underscore]Document[/>] ----\n' + queueSettingsData
+            )
+        }
+        await interaction.followUp({
+            ephemeral: true,
+            content: '__**New Config Document**__:\n```js\n' + queueSettingsData + '```',
+        });
     },
 };
