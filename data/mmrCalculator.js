@@ -6,10 +6,9 @@ const embedUtilities = require('../utils/embedUtilities');
 const cConsole = require('../utils/customConsoleLog');
 const clientSendMessage = require('../utils/clientSendMessage');
 
-
 var debugLog = {'[fg=green]winners[/>]': {team: {}}, '[fg=red]losers[/>]': {team: {}}}
 
-function getGameResults(winningTeam, losingTeam) {
+function getGameResults(winningTeam, losingTeam, equationValues) {
     const combinedMmr = winningTeam.mmr + losingTeam.mmr;
     const lobbySize = Object.keys(winningTeam.members).length + Object.keys(losingTeam.members).length
     const mode = lobbySize == 2 ? 'ones' : lobbySize == 4 ? 'twos' : lobbySize == 6 ? 'threes' : 'ERROR';
@@ -22,7 +21,7 @@ function getGameResults(winningTeam, losingTeam) {
     for (const player in winningTeam.members) {
         const data = winningTeam.members[player];
         
-        const equation = calculatePlayerMmr(combinedMmr, data.stats[mode], winningTeam.mmr, 'won', lobbySize);
+        const equation = calculatePlayerMmr(equationValues, combinedMmr, data.stats[mode], winningTeam.mmr, 'won', lobbySize);
         resultOutput.push([data.userData.name, `+${equation.output}`])
         equationDebug('winners', equation, data, mode)
 
@@ -30,12 +29,12 @@ function getGameResults(winningTeam, losingTeam) {
         data.stats[mode].gamesWon++;
         data.stats.global.gamesWon++;
 
-        updatePlayerStats(data, mode);
+        updatePlayerStats(data, mode, equationValues);
     }
     for (const player in losingTeam.members) {
         const data = losingTeam.members[player];
 
-        const equation = calculatePlayerMmr(combinedMmr, data.stats[mode], losingTeam.mmr, 'lost', lobbySize);
+        const equation = calculatePlayerMmr(equationValues, combinedMmr, data.stats[mode], losingTeam.mmr, 'lost', lobbySize);
         resultOutput.push([data.userData.name, `-${equation.output}`])
         equationDebug('losers', equation, data, mode)
 
@@ -43,7 +42,7 @@ function getGameResults(winningTeam, losingTeam) {
         data.stats[mode].gamesLost++;
         data.stats.global.gamesLost++;
 
-        updatePlayerStats(data, mode);
+        updatePlayerStats(data, mode, equationValues);
     }
     if (GeneralData.logOptions.gameMmrResults) { 
         cConsole.log(debugLog)
@@ -60,8 +59,8 @@ function getGameResults(winningTeam, losingTeam) {
     }
     return resultOutput;
 }
-function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
-    const baseGain = 15;
+function calculatePlayerMmr(equationValues, combined, stats, teamMmr, gameOutcome, lobbySize) {
+    const baseGain = equationValues.baseGain;
     var result = 0;
     var soloBonus = 0; // [20]
     var teamBonus = 0;
@@ -82,8 +81,8 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
             soloBonus = (teamRatio - ratio) / teamRatio * (2 - lobbySize * 0.25);
             teamBonus = (lobbySize * baseGain) * (1 - extremeTeamRatio);
             totalBonus = lobbySize == 2 ? teamBonus : soloBonus * teamBonus;
-            if (stats.mmr > 1500) { // Modify the bonus so the player doesnt reach >= 2500 mmr
-                totalBonus -= (stats.mmr - 1500) * totalBonus / 1000
+            if (stats.mmr > equationValues.maxStart) { // Modify the bonus so the player doesnt reach >= maxCap (2500) mmr
+                totalBonus -= (stats.mmr - equationValues.maxStart) * totalBonus / (equationValues.maxCap - equationValues.maxStart)
             }
             soloBonusEq = `(${teamRatioDisplay} - ${ratioDisplay}) / ${teamRatioDisplay} * (2 - ${lobbySize} * 0.25)`; // Debug Log
             teamBonusEq = `(${lobbySize} * ${baseGain}) * (1 - ${extremeTeamRatioDisplay}))`; // Debug Log
@@ -92,8 +91,8 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
             soloBonus = ratio / teamRatio;
             teamBonus = (lobbySize * baseGain) * extremeTeamRatio;
             totalBonus = lobbySize == 2 ? teamBonus : soloBonus * teamBonus;
-            if (stats.mmr < 100) { // Modify the bonus so the player doesnt reach <= 0 mmr
-                totalBonus -= (100 - stats.mmr) * totalBonus / 100
+            if (stats.mmr < equationValues.minStart) { // Modify the bonus so the player doesnt reach <= minCap (0) mmr
+                totalBonus -= (equationValues.minStart - stats.mmr) * totalBonus / (equationValues.minStart - equationValues.minCap)
             }
             soloBonusEq = `(${teamRatioDisplay} - ${ratioDisplay}) / ${teamRatioDisplay} * (2 - ${lobbySize} * 0.25)`; // Debug Log
             teamBonusEq = `(${lobbySize} * ${baseGain}) * ${extremeTeamRatioDisplay}`; // Debug Log
@@ -123,7 +122,7 @@ function calculatePlayerMmr(combined, stats, teamMmr, gameOutcome, lobbySize) {
     };
 }
 
-function updatePlayerStats(data, mode) {
+function updatePlayerStats(data, mode, equationValues) {
     const w = data.stats[mode].gamesWon;
     const l = data.stats[mode].gamesLost;
     data.stats[mode].gamesPlayed = w + l;
@@ -134,7 +133,7 @@ function updatePlayerStats(data, mode) {
     data.stats.global.gamesPlayed = globalW + globalL;
     data.stats.global.winRate = generalUtilities.generate.roundToFloat((globalW / (globalW + globalL) * 100), 2);
 
-    PlayerData.updatePlayerData(data);
+    PlayerData.updatePlayerData(data, equationValues);
 }
 
 function equationDebug(target, equation, playerData, mode) {

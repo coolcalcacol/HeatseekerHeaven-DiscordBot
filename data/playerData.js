@@ -45,7 +45,7 @@ async function createPlayerData(userData) {
     return output;
 }
 
-async function updatePlayerData(data) {
+async function updatePlayerData(data, equationValues) {
     const user = await generalUtilities.info.getUserById(data['_id']);
     const newData = await getPlayerDataObject(user);
     const gameModes = ['ones', 'twos', 'threes', 'global']
@@ -70,13 +70,13 @@ async function updatePlayerData(data) {
         const multiplier = mode == 'ones' ? 0.5 : mode == 'twos' ? 0.75 : 1;
         const mmrMultiplier = 
             mode == 'ones' ? 
-                (data.stats.ones.mmr - 600) * 
-                0.5 + 600 : 
+                (data.stats.ones.mmr - equationValues.startingMmr) * 
+                equationValues.onesMultiplier + equationValues.startingMmr : 
             mode == 'twos' ? 
-                (data.stats.twos.mmr - 600) * 
-                0.85 + 600 : 
-            (data.stats.threes.mmr - 600) * 
-            1 + 600
+                (data.stats.twos.mmr - equationValues.startingMmr) * 
+                equationValues.twosMultiplier + equationValues.startingMmr : 
+            (data.stats.threes.mmr - equationValues.startingMmr) * 
+            equationValues.threesMultiplier + equationValues.startingMmr
         ;
 
         gameCountMultiplier += data.stats[mode].gamesPlayed * multiplier;
@@ -109,13 +109,6 @@ async function getPlayerDataObject(userData) { // The user data that discord gen
     const memberData = await generalUtilities.info.getMemberById(userData.id).catch(console.error);
     const forcedUserData = await userData.fetch(true);
 
-    const defaultStats = {
-        mmr: 600,
-        gamesPlayed: 0,
-        gamesWon: 0,
-        gamesLost: 0,
-        winRate: 0,
-    }
     const newData = new PlayerDataStorage({
         _id: userData.id,
         userData: {
@@ -128,12 +121,6 @@ async function getPlayerDataObject(userData) { // The user data that discord gen
             avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=1024`,
             createdAt: new Date(userData.createdAt),
             joinedAt: new Date(memberData.joinedAt)
-        },
-        stats: {
-            global: defaultStats,
-            ones: defaultStats,
-            twos: defaultStats,
-            threes: defaultStats,
         }
     });
     return newData;

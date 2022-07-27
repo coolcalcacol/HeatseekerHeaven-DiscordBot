@@ -4,15 +4,15 @@ module.exports = {
     client: null,
     debugMode: true,
     debugOptions: {
-        createGameOnStart: false,
-        gameOnStartLobby: 'twos'
+        createGameOnStart: true,
+        gameOnStartLobby: 'threes'
     },
     logOptions : {
         interactions: true,
         database: false,
         gameData: false,
         teamGeneration: false,
-        gameMmrResults: false,
+        gameMmrResults: true,
         playerData: false,
         queueSettings: true,
     },

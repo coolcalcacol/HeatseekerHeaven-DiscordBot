@@ -1,3 +1,4 @@
+const config = require('../config/config.json');
 const GeneralData = require('./generalData');
 const QueueDatabase = require('./database/queueDataStorage');
 // const { client } = require('./generalData');
@@ -8,6 +9,7 @@ const cConsole = require('../utils/customConsoleLog');
 const generalUtilities = require('../utils/generalUtilities');
 const PlayerData = require('./playerData');
 const generalData = require('./generalData');
+const queueSettings = require('./queueSettings');
 const { logOptions } = require('./generalData');
 
 var globalQueueData = {
@@ -196,25 +198,8 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null) {
     if (!interaction && !userId) {console.log('No interaction param.'); return}
     if (userId == null) { userId = interaction.user.id; }
 
-    for (const room in globalQueueData.lobby) {
-        for (const player in globalQueueData.lobby[room].players) {
-            const user = globalQueueData.lobby[room].players[player];
-            if (userId != null) {continue;}
-            if (userId == player)  {
-                return 'alreadyInQueue';
-            }
-        }
-    }
-    for (let i = 0; i < globalQueueData.gamesInProgress.length; i++) {
-        const game = globalQueueData.gamesInProgress[i];
-        for (const playerData in game.players) {
-            const player = game.players[playerData];
-            if (player['_id'] == userId) {
-                return 'inOngoingGame';
-            } 
-        }
-    }
-
+    const playerReservedStatus = userReservedStatus(userId);
+    if (playerReservedStatus != false) return playerReservedStatus;
     
     await PlayerData.getPlayerDataById(userId, true)
         .then(async (foundData) => {
@@ -230,7 +215,7 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null) {
     if (Object.keys(globalQueueData.lobby[lobby].players).length == globalQueueData.lobby[lobby].queueSize) {
         // Start the queue
         if (GeneralData.logOptions.gameData) { console.log('Starting the queue for lobby: ' + lobby); }
-        await startQueue(lobby);
+        await startQueue(lobby, interaction ? interaction.guild.id : config.botSetupGuildId);
         return 'gameStarted';
     }
     else {
@@ -254,9 +239,9 @@ function removePlayerFromQueue(interaction, lobby) {
     return 'wasNotInQueue'
 }
 
-async function startQueue(lobby, gameData = null) {
+async function startQueue(lobby, guildId, gameData = null) {
     const game = gameData ? gameData : new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
-    const channelId = await databaseUtilities.get.getRankedLobbyByName(lobby)
+    const channelId = await queueSettings.getRankedLobbyByName(lobby, guildId)
         .then(globalQueueData.clearLobbyQueue(lobby));
 
     globalQueueData.gamesInProgress.push(game);
@@ -287,6 +272,29 @@ function getCurrentQueue(lobby = 0) {
     }
 }
 
+function userReservedStatus(userId, returnGameData = false) {
+    for (const room in globalQueueData.lobby) {
+        for (const player in globalQueueData.lobby[room].players) {
+            const user = globalQueueData.lobby[room].players[player];
+            if (userId != null) {continue;}
+            if (userId == player)  {
+                return 'inQueue';
+            }
+        }
+    }
+    for (let i = 0; i < globalQueueData.gamesInProgress.length; i++) {
+        const game = globalQueueData.gamesInProgress[i];
+        for (const playerData in game.players) {
+            const player = game.players[playerData];
+            if (playerData == userId) {
+                if (returnGameData) return game;
+                else return 'inOngoingGame';
+            }
+        }
+    }
+    return false;
+}
+
 module.exports.actions = {
     addPlayerToQueue,
     fillQueueWithPlayers,
@@ -295,6 +303,7 @@ module.exports.actions = {
 }
 module.exports.info = {
     getCurrentQueue,
+    userReservedStatus,
     globalQueueData,
     GameLobbyData
     // getCurrentQueueMessage

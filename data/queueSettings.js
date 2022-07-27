@@ -4,7 +4,7 @@ const generalUtilities = require('../utils/generalUtilities');
 const cConsole = require('../utils/customConsoleLog.js');
 
 async function createQueueDatabase(data) {
-    thisLog('[fg=green]QDBS[/>]: Creating new Queuedatabase Object')
+    thisLog('Creating new Queuedatabase Object')
     var newData = new QueueDatabase();
     newData = comparedDataObject(newData, data, newData.schema.obj);
     newData['_id'] = data['_id'];
@@ -21,25 +21,25 @@ async function createQueueDatabase(data) {
 }
 async function updateQueueDatabase(update, createIfNull = true) {
     const guildId = update['_id'];
-    thisLog('\n[fg=green]QDBS[/>]: Starting to update Object by id: ' + guildId)
+    thisLog('\nStarting to update Object by id: ' + guildId)
     var target = await QueueDatabase.findOne({_id: guildId})
         .catch(console.error);
     if (target) {
-        thisLog('[fg=green]QDBS[/>]: Found target to update');
+        thisLog('Found target to update');
         thisLog(target['_doc']);
 
-        thisLog('[fg=green]QDBS[/>]: Starting to compare data and updating it');
+        thisLog('Starting to compare data and updating it');
         const comparedData = comparedDataObject(target, update, target.schema.obj);
         comparedData['_id'] = target['_id'];
         comparedData['__v'] = target['__v'] + 1;
         const updateData = await QueueDatabase.updateOne({_id: guildId}, comparedData).catch(console.error);
 
-        thisLog('[fg=green]QDBS[/>]: Updated the compared data');
+        thisLog('Updated the compared data');
         thisLog(updateData);
     }
     else if (createIfNull) {
         thisLog(
-            '[fg=green]QDBS[/>]: Did not find target data by id: ' + guildId + 
+            'Did not find target data by id: ' + guildId + 
             '\nCreating new Data Object'
         );
         return await createQueueDatabase(update)
@@ -69,7 +69,11 @@ function comparedDataObject(target, data, keys) {
             .catch(console.error)
         ;
         
-        if (target) { console.log(target.schema); return target; }
+        if (target) { 
+            thisLog(`Found QueueSettings by guild id: ${guildId}`);
+            thisLog(target['_doc']);
+            return target; 
+        }
         else if (createIfNull) {
             var output = await createQueueDatabase({_id: guildId});
             output['_id'] = guildId;
@@ -102,7 +106,7 @@ function comparedDataObject(target, data, keys) {
 
         var queueData = await QueueDatabase.findOne({_id: guildId});
         if (queueData == null) {
-            thisLog('[fg=green]QDBS[/>]: ERROR: QueueData is not defined')
+            thisLog('ERROR: QueueData is not defined')
             return;
         }
         var channelData = queueData.channelSettings;
@@ -126,7 +130,7 @@ function thisLog(log) {
         console.log('');
     }
     else {
-        cConsole.log(log)
+        cConsole.log('[fg=green]QDBS[/>]: ' + log)
     }
 }
 
