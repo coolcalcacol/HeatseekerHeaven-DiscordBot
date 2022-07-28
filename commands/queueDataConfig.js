@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder,ChannelT} = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 const QueueDatabase = require('../data/database/queueDataStorage');
 const queueSettings = require('../data/queueSettings');
@@ -14,14 +14,17 @@ module.exports = {
         .addSubcommand(subcommand => subcommand
                 .setName('set-channel')
                 .setDescription('Set a channel for ranked match making')
-                .addStringOption(option =>
-                    option.setName('type')
-                        .setDescription('The type of queue')
-                        .setRequired(true)
-                            .addChoice('1v1', 'ones')
-                            .addChoice('2v2', 'twos')
-                            .addChoice('3v3', 'threes')
-                            .addChoice('Report Channel', 'reportChannel')
+                .addStringOption(option =>option
+                    .setName('type')
+                    .setDescription('The type of queue')
+                    .setRequired(true)
+                        .addChoice('1v1', 'onesChannel')
+                        .addChoice('2v2', 'twosChannel')
+                        .addChoice('3v3', 'threesChannel')
+                        .addChoice('Report Channel', 'matchReportChannel')
+                        .addChoice('VC Waiting Room', 'vcWaitingRoom')
+                        .addChoice('Team Channel Category', 'teamChannelCategory')
+                        .addChoice('Log Channel', 'logChannel')
                 )
                 .addChannelOption(option =>
                     option.setName('channel')
