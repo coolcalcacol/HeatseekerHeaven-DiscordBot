@@ -26,7 +26,7 @@ module.exports = {
         this.validate(interaction);
         var currentPage = this.interactors[interaction.user.id].page;
         
-        const response = await embedUtilities.presets.leaderboardPreset(currentPage, true);
+        const response = await embedUtilities.presets.leaderboardPreset(currentPage, interaction.user.id, true);
         if (currentPage <= response[1]) this.nextPageButton.setDisabled(false);
         else this.nextPageButton.setDisabled(true);
 
@@ -74,8 +74,6 @@ module.exports = {
         if (this.buttonRow.components.length == 0) {
             this.buttonRow.addComponents(this.prevPageButton, this.nextPageButton);
         }
-        if (!Object.keys(this.interactors).includes(interaction.user.id)) {
-            this.interactors[interaction.user.id] = {page: 0};
-        }
+        this.interactors[interaction.user.id] = {page: 0};
     }
 };

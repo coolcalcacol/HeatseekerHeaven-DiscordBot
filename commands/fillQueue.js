@@ -25,6 +25,7 @@ const userWhitelist = [
     '568449733228756993', // Bramble
     // '382279435828723716', // FinnayBusiness [Bypass]
     '178625919559270409', // ncj
+    '510636937489416196', // Nate
 ]
 
 module.exports = {

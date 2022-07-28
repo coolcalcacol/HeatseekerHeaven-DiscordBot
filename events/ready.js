@@ -119,11 +119,12 @@ module.exports = {
 		// startCombTest()
 		// mmrSystem.methods.init();
 		// mmrCalculation.methods.init()
-		// clientSend.editMessage(
-		// 	'945703058657120266', 
-		// 	'1000191851476828210', 
-		// 	{ embeds: await embedUtilities.presets.leaderboardPreset(0) }
-		// );
+		// clientSend.sendMessageTo('945703058657120266', {embeds: await embedUtilities.presets.leaderboardPreset(0)})
+		clientSend.editMessage(
+			'945703058657120266', 
+			'1002252270458654860', 
+			{ embeds: await embedUtilities.presets.leaderboardPreset(0) }
+		);
 
 		// const x = 'ones';
 		// const y = 'twos';

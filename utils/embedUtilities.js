@@ -5,6 +5,7 @@ const queueData = require('../data/queueData.js');
 const generalUtilities = require('../utils/generalUtilities')
 const playerData = require('../data/playerData');
 const playerDataStorage = require('../data/database/playerDataStorage');
+const { data } = require('../commands/displayLeaderboard.js');
 
 
 function queueStatusEmbed(lobby, context, interaction = null) {
@@ -165,25 +166,46 @@ function playerStatsPreset(playerData, mode = 'global') {
     return embed;
 }
 
-async function leaderboardPreset(page, returnMaxPage = false) {
+async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
     const playerDataList = await playerDataStorage.find().sort({
         "stats.global.mmr": -1, 
         "stats.global.winRate": -1, 
         "stats.global.gamesPlayed": -1
     });
+    var targetUser = {};
+    interactorId = '306395424690929674';
+    for (let i = 0; i < playerDataList.length; i++) {
+        const target = playerDataList[i];
+        if (target['_id'] == interactorId) {
+            targetUser['data'] = target;
+            targetUser['index'] = i;
+            break;
+        }
+    }
     const topPlayerData = playerDataList[0].userData;
     const listStart = 10 * page;
     const dataList = playerDataList.splice(listStart, 10);
 
-    const lineBreak = '───────────────';
+
+    var lineBreakChar = '─';
+    var lineBreak = '───────────────';
+    var longLineBreak = '─────────────────';
     const seperator = '|'
 
     var nameDisplay = '';
     var statsDisplay = '';
     var totalDisplay = '';
-    for (let i = 0; i < dataList.length; i++) {
-        const player = dataList[i];
-        var index = getFieldSpacing(listStart + i + 1, 2);
+    for (let i = 0; i <= dataList.length; i++) {
+        var lb = lineBreak;
+        var player = dataList[i];
+        if (i == dataList.length) {
+            player = targetUser.data;
+            i = targetUser.index;
+            lb = '';
+        }
+        if (i == dataList.length - 1) lb += '\n' + lb;
+        
+        var index = getFieldSpacing(listStart + i + 1, 3);
         var userName = player.userData.mention;
 
         var mmr = getFieldSpacing(player.stats.global.mmr, 5);
@@ -193,15 +215,16 @@ async function leaderboardPreset(page, returnMaxPage = false) {
         var gamesPlayed = getFieldSpacing(player.stats.global.gamesPlayed, 5);
         var winRate = getFieldSpacing(player.stats.global.winRate.toFixed(2) + '%', 8);
 
-        nameDisplay += `\`${index}\`: ${userName}\n${lineBreak}\n`;
-        statsDisplay += `${seperator} ${ws(0.01)}\`${mmr}\`${ws(1)}${seperator}${ws(1.01)}\`${gamesWon}\`${ws(1.01)}${seperator}${ws(0.11)}\`${gamesLost}\` ${seperator}\n${lineBreak}\n`;
-        totalDisplay += `${seperator} ${ws(3)}\`${gamesPlayed}\`${ws(3.11)}${seperator}${ws(2.12)}\`${winRate}\`${ws(1.02)} ${seperator}\n${lineBreak}\n`;
+        
+        nameDisplay += `\`${index}\`: ${userName}\n${lb}\n`;
+        statsDisplay += `${seperator} ${ws(0.01)}\`${mmr}\`${ws(1)}${seperator}${ws(1.01)}\`${gamesWon}\`${ws(1.01)}${seperator}${ws(0.11)}\`${gamesLost}\` ${seperator}\n${lb}\n`;
+        totalDisplay += `${seperator} ${ws(3)}\`${gamesPlayed}\`${ws(3.11)}${seperator}${ws(2.12)}\`${winRate}\`${ws(1.02)} ${seperator}\n${lb}\n`;
     }
 
     const embed = new MessageEmbed();
     try {
         embed.addFields(
-            { name: '#   Player Name\n' + lineBreak, 
+            { name: `#        Player Name\n${lineBreak}`, 
                 value: nameDisplay,
                 inline: true 
             },
