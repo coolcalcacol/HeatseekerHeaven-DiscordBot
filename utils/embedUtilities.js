@@ -173,7 +173,7 @@ async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
         "stats.global.gamesPlayed": -1
     });
     var targetUser = {};
-    interactorId = '306395424690929674';
+    // interactorId = '306395424690929674';
     for (let i = 0; i < playerDataList.length; i++) {
         const target = playerDataList[i];
         if (target['_id'] == interactorId) {
@@ -198,14 +198,15 @@ async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
     for (let i = 0; i <= dataList.length; i++) {
         var lb = lineBreak;
         var player = dataList[i];
-        if (i == dataList.length) {
+        var index = getFieldSpacing(listStart + i + 1, 3);
+        if (targetUser.data && i == dataList.length) {
             player = targetUser.data;
-            i = targetUser.index;
+            index = getFieldSpacing(targetUser.index + 1, 3);
             lb = '';
         }
+        else if (!targetUser.data && i == dataList.length) continue;
         if (i == dataList.length - 1) lb += '\n' + lb;
         
-        var index = getFieldSpacing(listStart + i + 1, 3);
         var userName = player.userData.mention;
 
         var mmr = getFieldSpacing(player.stats.global.mmr, 5);

@@ -9,6 +9,7 @@ const QueueDataSchema = new mongoose.Schema({
         threesChannel: {type: String, default: ''},
         matchReportChannel: {type: String, default: ''},
         vcWaitingRoom: {type: String, default: ''},
+        teamChannelCategory: {type: String, default: ''},
         logChannel: {type: String, default: ''},
     },
     mmrSettings: {
