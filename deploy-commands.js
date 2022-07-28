@@ -17,7 +17,7 @@ function getCommandFiles(dir) {
 			registerCommand(dir, file);
 		}
 		else if (file.match(/[a-zA-Z0-9 -_]+/i)) {
-			if (file == 'Archive') { continue; }
+			if (file == 'Archive' || file == 'MessageActions') { continue; }
 			getCommandFiles(dir + '/' + file);
 		}
 	}

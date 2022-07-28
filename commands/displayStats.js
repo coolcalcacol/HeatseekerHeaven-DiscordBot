@@ -22,7 +22,7 @@ module.exports = {
             .setRequired(false)
         )
         .addBooleanOption(option => option
-            .setName('visable')
+            .setName('visible')
             .setDescription('Display stats for everyone and not only for you?')
             .setRequired(false)
                 // .addChoice('Public', 'true')

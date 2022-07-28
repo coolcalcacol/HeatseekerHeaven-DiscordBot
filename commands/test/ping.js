@@ -1,24 +1,40 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageSelectMenu, TextInputComponent, Modal } = require('discord.js');
-const generalData = require('../data/generalData.js');
-const cConsole = require('../utils/customConsoleLog');
-const databaseUtilities = require('../utils/databaseUtilities');
-const clientSendMessage = require('../utils/clientSendMessage');
-const playerData = require('../data/playerData');
+const { SlashCommandBuilder,  } = require('@discordjs/builders');
+const { Permissions, MessageActionRow, MessageSelectMenu, TextInputComponent, Modal } = require('discord.js');
+const generalData = require('../../data/generalData.js');
+const cConsole = require('../../utils/customConsoleLog');
+const databaseUtilities = require('../../utils/databaseUtilities');
+const clientSendMessage = require('../../utils/clientSendMessage');
+const playerData = require('../../data/playerData');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Replies with Pong!')
-		.addStringOption(option => option.setName('name').setDescription('some description')),
+		.addUserOption(option => option
+			.setName('target-user')
+			.setDescription('Which user to get the data from to display')
+			.setRequired(false)	
+		),
 	async execute(interaction) {
+		if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+            await interaction.reply({
+                ephemeral: true,
+                content: 'You do not have permission to use this command.',
+            }).catch(console.error);
+            cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
+            return;
+        }
 		var data;
-		await playerData.getPlayerDataById(interaction.user.id, true)
+		const target = interaction.options.getUser('target-user') ? 
+			interaction.options.getUser('target-user') :
+			interaction.user
+		;
+		await playerData.getPlayerDataById(target.id, true)
 			.then(async (foundData) => {
-				console.log('Received PlayerData')
 				data = foundData;
 			});
 		interaction.reply({
+			ephemeral: true,
 			content: '```js\n' + data + '```'
 		});
 		

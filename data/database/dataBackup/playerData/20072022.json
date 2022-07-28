@@ -1,0 +1,717 @@
+[{
+  "_id": "646927153614553122",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "949293757805764668"
+    ],
+    "name": "Vll Vlone",
+    "mention": "<@646927153614553122>",
+    "discriminator": "3041",
+    "displayColor": "#6d0e24",
+    "avatar": "https://cdn.discordapp.com/avatars/646927153614553122/20ccf3e806317ebd575f0380aeafce63.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1574309852747"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658960025110"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 558,
+      "gamesPlayed": 6,
+      "gamesWon": 2,
+      "gamesLost": 4,
+      "winRate": 33.33
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 558,
+      "gamesPlayed": 6,
+      "gamesWon": 2,
+      "gamesLost": 4,
+      "winRate": 33.33
+    }
+  },
+  "__v": 5,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658960109379"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658964940924"
+    }
+  }
+},{
+  "_id": "399024946631802891",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "949293757805764668",
+      "811667577985302533",
+      "946028315934851162"
+    ],
+    "name": "Wesh",
+    "mention": "<@399024946631802891>",
+    "discriminator": "4386",
+    "displayColor": "#ff5354",
+    "avatar": "https://cdn.discordapp.com/avatars/399024946631802891/aebcb80089834b78b482fe0306f80970.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1515205360802"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1649884540741"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 630,
+      "gamesPlayed": 2,
+      "gamesWon": 2,
+      "gamesLost": 0,
+      "winRate": 100
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 630,
+      "gamesPlayed": 2,
+      "gamesWon": 2,
+      "gamesLost": 0,
+      "winRate": 100
+    }
+  },
+  "__v": 2,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658960121744"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658961861904"
+    }
+  }
+},{
+  "_id": "306395424690929674",
+  "userData": {
+    "roles": [
+      "946028315934851162",
+      "811667577998671923",
+      "811667577998671924",
+      "811667577985302533"
+    ],
+    "name": "CTN",
+    "mention": "<@306395424690929674>",
+    "discriminator": "3460",
+    "displayColor": "#0000ff",
+    "avatar": "https://cdn.discordapp.com/avatars/306395424690929674/aaa31030ccc52d26f0c57ce07cb86134.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1493120761798"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1613587030715"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 599,
+      "gamesPlayed": 7,
+      "gamesWon": 4,
+      "gamesLost": 3,
+      "winRate": 57.14
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 599,
+      "gamesPlayed": 7,
+      "gamesWon": 4,
+      "gamesLost": 3,
+      "winRate": 57.14
+    }
+  },
+  "__v": 6,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658960122445"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658964940350"
+    }
+  }
+},{
+  "_id": "467786597878857740",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "949293757805764668"
+    ],
+    "name": "DarthShadoww",
+    "mention": "<@467786597878857740>",
+    "discriminator": "4004",
+    "displayColor": "#e67e22",
+    "avatar": "https://cdn.discordapp.com/avatars/467786597878857740/a_89f8a87ac457a73e2b6086f4c7ae6c19.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1531599415989"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658661133583"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 585,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "winRate": 0
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 585,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "winRate": 0
+    }
+  },
+  "__v": 1,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658960231478"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658961186074"
+    }
+  }
+},{
+  "_id": "614257446654967813",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "949293757805764668"
+    ],
+    "name": "orangecod",
+    "mention": "<@614257446654967813>",
+    "discriminator": "4274",
+    "displayColor": "#e67e22",
+    "avatar": "https://cdn.discordapp.com/avatars/614257446654967813/d0f0dc7700f81c66008109f71169149c.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1566520787634"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658960438026"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 570,
+      "gamesPlayed": 2,
+      "gamesWon": 0,
+      "gamesLost": 2,
+      "winRate": 0
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 570,
+      "gamesPlayed": 2,
+      "gamesWon": 0,
+      "gamesLost": 2,
+      "winRate": 0
+    }
+  },
+  "__v": 2,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658960464008"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658961862353"
+    }
+  }
+},{
+  "_id": "382279435828723716",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "949293757805764668",
+      "811667577985302533",
+      "945703151426760774"
+    ],
+    "name": "FinnayBusiness",
+    "mention": "<@382279435828723716>",
+    "discriminator": "0565",
+    "displayColor": "#fdff2e",
+    "avatar": "https://cdn.discordapp.com/avatars/382279435828723716/f1d26ae2699fba3734535f22ae17a104.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1511212919910"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658076237921"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 628,
+      "gamesPlayed": 7,
+      "gamesWon": 5,
+      "gamesLost": 2,
+      "winRate": 71.42
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 628,
+      "gamesPlayed": 7,
+      "gamesWon": 5,
+      "gamesLost": 2,
+      "winRate": 71.42
+    }
+  },
+  "__v": 6,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658960598941"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658964940493"
+    }
+  }
+},{
+  "_id": "700707631915991051",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "949293757805764668"
+    ],
+    "name": "ZebbyMcNutty",
+    "mention": "<@700707631915991051>",
+    "discriminator": "9813",
+    "displayColor": "#e67e22",
+    "avatar": "https://cdn.discordapp.com/avatars/700707631915991051/5d7c1ff85631deebc1aa91fb59ef9479.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1587132117967"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658880044774"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 557,
+      "gamesPlayed": 6,
+      "gamesWon": 2,
+      "gamesLost": 4,
+      "winRate": 33.33
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 557,
+      "gamesPlayed": 6,
+      "gamesWon": 2,
+      "gamesLost": 4,
+      "winRate": 33.33
+    }
+  },
+  "__v": 5,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658961154913"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658964940643"
+    }
+  }
+},{
+  "_id": "510829824483524638",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "949293757805764668"
+    ],
+    "name": "coco_ice44",
+    "mention": "<@510829824483524638>",
+    "discriminator": "8355",
+    "displayColor": "#ff0000",
+    "avatar": "https://cdn.discordapp.com/avatars/510829824483524638/55f70360230df16ea24276364c080d3d.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1541861720916"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658531656053"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 629,
+      "gamesPlayed": 4,
+      "gamesWon": 3,
+      "gamesLost": 1,
+      "winRate": 75
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 629,
+      "gamesPlayed": 4,
+      "gamesWon": 3,
+      "gamesLost": 1,
+      "winRate": 75
+    }
+  },
+  "__v": 4,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658961361939"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658964940782"
+    }
+  }
+},{
+  "_id": "862875902621777951",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531"
+    ],
+    "name": "Zerkoxito",
+    "mention": "<@862875902621777951>",
+    "discriminator": "8833",
+    "displayColor": "#7a02ef",
+    "avatar": "https://cdn.discordapp.com/avatars/862875902621777951/655889978ddcbb7bc28059f6757cafde.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1625796046644"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658961388636"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 600,
+      "gamesPlayed": 4,
+      "gamesWon": 2,
+      "gamesLost": 2,
+      "winRate": 50
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 600,
+      "gamesPlayed": 4,
+      "gamesWon": 2,
+      "gamesLost": 2,
+      "winRate": 50
+    }
+  },
+  "__v": 4,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658961509255"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658964940188"
+    }
+  }
+},{
+  "_id": "437259152574906368",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "949293757805764668"
+    ],
+    "name": "SuperSpaceMonke",
+    "mention": "<@437259152574906368>",
+    "discriminator": "9111",
+    "displayColor": "#e67e22",
+    "avatar": "https://cdn.discordapp.com/avatars/437259152574906368/7e643140453a63cf3944a4766706f4ce.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1524321105856"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1656183523040"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 585,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "winRate": 0
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 585,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "winRate": 0
+    }
+  },
+  "__v": 1,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658961883110"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658962930814"
+    }
+  }
+},{
+  "_id": "510636937489416196",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "949293757805764668"
+    ],
+    "name": "Nate°",
+    "mention": "<@510636937489416196>",
+    "discriminator": "2930",
+    "displayColor": "#3a363f",
+    "avatar": "https://cdn.discordapp.com/avatars/510636937489416196/33cd34ff6e74fa630f1f963e71fb9373.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1541815733073"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1658960276959"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "ones": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "twos": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    },
+    "threes": {
+      "mmr": 600,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0
+    }
+  },
+  "__v": 0,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658964114207"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1658964114207"
+    }
+  }
+}]
