@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+
+
 const QueueDataSchema = new mongoose.Schema({
     _id: String,
     gameId: {type: Number, default: 100},
@@ -22,6 +24,12 @@ const QueueDataSchema = new mongoose.Schema({
         minCap: {type: Number, default: 0}, // 0,
         maxStart: {type: Number, default: 1500}, // 1500,
         maxCap: {type: Number, default: 2500}, // 2500,
+    },
+    rankRoles: {
+        global: {type: Array, default: []},
+        ones: {type: Array, default: []},
+        twos: {type: Array, default: []},
+        threes: {type: Array, default: []},
     }
 }, {timestamps: true});
 

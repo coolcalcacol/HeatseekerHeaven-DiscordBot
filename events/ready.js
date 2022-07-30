@@ -6,6 +6,7 @@ const generalData = require('../data/generalData');
 const playerData = require('../data/playerData');
 const queueData = require('../data/queueData');
 const QueueDatabase = require('../data/database/queueDataStorage');
+const PlayerDatabase = require('../data/database/playerDataStorage');
 const queueSettings = require('../data/queueSettings');
 const sleep = require('node:timers/promises').setTimeout;
 // const config = require('../config/config.json');
@@ -14,10 +15,10 @@ const sleep = require('node:timers/promises').setTimeout;
 // const { databaseUtilities } = require('../utils/utilityManager');
 
 const userWhitelist = [
+    // '267442458638417921', // NoLimitGoten [lEFT THE SERVER]
     // '479936093047750659', // 888% [Bypass]
     // '382279435828723716', // FinnayBusiness [Bypass]
-    // '614257446654967813', // orangecod [lEFT THE SERVER]
-    // '267442458638417921', // NoLimitGoten [lEFT THE SERVER]
+    '614257446654967813', // orangecod
     '280432147695665163', // Joshh
     '599339755662082057', // Darn
     '688819598686289952', // Lxyer
@@ -38,6 +39,12 @@ const userWhitelist = [
     '723703418274971700', // j.
     '457617584033103892', // Orcas
 	'362052637400498187', // Senior Bubbles
+	'653453312271581205', // RedRockGaming69
+	'862875902621777951', // Zerkoxito
+	'467786597878857740', // DarthShadoww
+	'510636937489416196', // Nate
+	'700707631915991051', // Zebby
+	'646927153614553122', // Mxnny
 ]
 
 module.exports = {
@@ -65,8 +72,10 @@ module.exports = {
 		if (generalData.debugOptions.createGameOnStart) {
 			switch (generalData.debugOptions.gameOnStartLobby) {
 				case 'ones': {
-					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1);
 					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
+					await queueData.actions.fillQueueWithPlayers(['653453312271581205'], 'ones', 1);
+					// await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1);
+					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
 				} break;
 				case 'twos': {
 					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 2);
@@ -76,9 +85,9 @@ module.exports = {
 				} break;
 				case 'threes': {
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1);
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 3);
-					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
-					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 5);
+					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
+					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
 					// await queueData.actions.fillQueueWithPlayers(['362052637400498187'], 'threes', 1);
 				} break;
 				case 'custom': {
@@ -104,6 +113,15 @@ module.exports = {
 				default: break;
 			}
 		}
+
+		// playerData.updatePlayerRanks('811667577985302528');
+		
+		// const data = await PlayerDatabase.find();
+		// const v = await QueueDatabase.findOne({_id: '811667577985302528'});
+		// for (let i = 0; i < data.length; i++) {
+		// 	const player = data[i];
+		// 	playerData.updatePlayerData(player, v.mmrSettings);
+		// }
 
 		// var data = {
 		// 	_id: '811667577985302528',

@@ -136,9 +136,10 @@ function playerStatsPreset(playerData, mode = 'global') {
     embed.setColor(playerData.userData.displayColor);
     const bgMarker = '```';
     if (mode == 'global') {
+        const rank = playerData.stats.global.rank != null ? playerData.stats.global.rank.name : 'Un-ranked';
         embed.addFields(
             { name: 'Global MMR', value: bgMarker + playerData.stats.global.mmr.toString() + bgMarker, inline: true },
-            { name: 'Rank', value: bgMarker + 'Plastic ' + generalUtilities.generate.getRandomInt(-5, 5) + bgMarker, inline: true },
+            { name: 'Rank', value: bgMarker + rank + bgMarker, inline: true },
             { name: 'Win Rate', value: bgMarker + playerData.stats[mode].winRate.toString() + '%' + bgMarker, inline: true },
             { name: '1v1 MMR', value: bgMarker + 'js\n' + playerData.stats.ones.mmr.toString() + bgMarker, inline: true },
             { name: '2v2 MMR', value: bgMarker + 'js\n' + playerData.stats.twos.mmr.toString() + bgMarker, inline: true },
@@ -149,13 +150,14 @@ function playerStatsPreset(playerData, mode = 'global') {
         );
     }
     else {
+        const rank = playerData.stats[mode].rank != null ? playerData.stats[mode].rank.name : 'Un-ranked';
         embed.addFields(
-            { name: 'MMR', value: '```js\n' + playerData.stats[mode].mmr.toString() + '```', inline: true },
-            { name: 'Rank', value: '```' + 'Plastic 5' + '```', inline: true },
-            { name: 'Win Rate', value: '```' + playerData.stats[mode].winRate.toString() + '%```', inline: true },
-            { name: 'Games Played', value: '```' + playerData.stats[mode].gamesPlayed.toString() + '```', inline: true },
-            { name: 'Games Won', value: '```' + playerData.stats[mode].gamesWon.toString() + '```', inline: true },
-            { name: 'Games Lost', value: '```' + playerData.stats[mode].gamesLost.toString() + '```', inline: true },
+            { name: 'MMR', value: bgMarker + 'js\n' + playerData.stats[mode].mmr.toString() + bgMarker, inline: true },
+            { name: 'Rank', value: bgMarker + rank + bgMarker, inline: true },
+            { name: 'Win Rate', value: bgMarker + playerData.stats[mode].winRate.toString() + '%```', inline: true },
+            { name: 'Games Played', value: bgMarker + playerData.stats[mode].gamesPlayed.toString() + bgMarker, inline: true },
+            { name: 'Games Won', value: bgMarker + playerData.stats[mode].gamesWon.toString() + bgMarker, inline: true },
+            { name: 'Games Lost', value: bgMarker + playerData.stats[mode].gamesLost.toString() + bgMarker, inline: true },
         );
     }
     // mmr: 600,

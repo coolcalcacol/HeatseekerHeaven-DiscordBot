@@ -45,10 +45,10 @@ module.exports = {
                 ephemeral: true,
                 content: message
             });
-            return;
+            return;``
         }
         await interaction.reply({
-            ephemeral: interaction.options.getBoolean('visable') ? false : true,
+            ephemeral: interaction.options.getBoolean('visible') ? false : true,
             embeds: [EmbedUtilities.presets.playerStatsPreset(data, mode)]
         })
     },

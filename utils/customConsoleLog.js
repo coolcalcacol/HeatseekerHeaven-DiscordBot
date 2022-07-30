@@ -130,7 +130,7 @@ module.exports = {
     /**
      * @param {(String|String[]|JSON)} msg The message(s) to log
      * @param {JSON} customOptions The options for the output like colorization
-     */
+    */
     log(msg, customOptions = this.logOptions) {
         const options = this.logOptions;
         var output = msg;
@@ -272,15 +272,34 @@ module.exports = {
         return str;
     },
 
+    /**
+     * @param {Object} obj The Object to unfold
+     * @param {Integer} indent The options for the output like colorization
+     * @param {Character} indentChar The options for the output like colorization
+     * @returns The object as string with colorization syntax
+    */
     unfoldNestedObject(obj, indent, indentChar, indentInc = 2, parent = true, isJson = true) {
-        var output = '';
-		var currentIndent = '';
+        var currentIndent = '';
 		var currentIndentCount = 0;
 		if (parent) {indentInc = indent; indent = 0}
 		for (let ind = 0; ind < indent + indentInc; ind++) {
             currentIndent += indentChar;
 			currentIndentCount += 1;
 		}
+
+        if (Object.keys(obj).includes('name') || Object.keys(obj).includes('id')) {
+            var output = '\n' + currentIndent;
+            if (Object.keys(obj).includes('name')) {
+                output += 'name: ' + obj['name'] + ', ';
+            }
+            if (Object.keys(obj).includes('id')) {
+                output += 'id: ' + obj['id'];
+            }
+            return output;
+        }
+        if (Object.keys(obj).length > 20) return `\n${currentIndent}[Object]`;
+
+        var output = '';
         var lineStart = parent ? currentIndent : '\n' + currentIndent;
 
 		for (const key in obj) {
@@ -300,7 +319,7 @@ module.exports = {
 					output += lineStart + '[fg=green]' + obj[key] + '[/>]';
 				}
 			}
-			lineStart = ',\n' + currentIndent
+			lineStart = ',\n' + currentIndent;
 		}
 		return parent ? '{\n' + output + '\n}' : output;
     },

@@ -20,6 +20,7 @@ const PlayerDataSchema = new mongoose.Schema({
             gamesWon: {type: Number, default: 0},
             gamesLost: {type: Number, default: 0},
             winRate: {type: Number, default: 0},
+            rank: {type: Object, default: null},
         },
         ones: {
             mmr: {type: Number, default: 600},
@@ -27,6 +28,7 @@ const PlayerDataSchema = new mongoose.Schema({
             gamesWon: {type: Number, default: 0},
             gamesLost: {type: Number, default: 0},
             winRate: {type: Number, default: 0},
+            rank: {type: Object, default: null},
         },
         twos: {
             mmr: {type: Number, default: 600},
@@ -34,6 +36,7 @@ const PlayerDataSchema = new mongoose.Schema({
             gamesWon: {type: Number, default: 0},
             gamesLost: {type: Number, default: 0},
             winRate: {type: Number, default: 0},
+            rank: {type: Object, default: null},
         },
         threes: {
             mmr: {type: Number, default: 600},
@@ -41,6 +44,7 @@ const PlayerDataSchema = new mongoose.Schema({
             gamesWon: {type: Number, default: 0},
             gamesLost: {type: Number, default: 0},
             winRate: {type: Number, default: 0},
+            rank: {type: Object, default: null},
         },
     }
 }, {timestamps: true});

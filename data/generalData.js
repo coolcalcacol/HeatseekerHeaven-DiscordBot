@@ -2,22 +2,23 @@
 
 module.exports = {
     client: null,
-    debugMode: false,
+    debugMode: true,
     botConfig: {
         defaultGuildId: '811667577985302528',
     },
     debugOptions: {
         createGameOnStart: false,
-        gameOnStartLobby: 'threes'
+        gameOnStartLobby: 'ones'
     },
     logOptions : {
         interactions: true,
         database: false,
+        queueAdmin: true,
+        playerData: false,
         gameData: false,
         teamGeneration: false,
-        gameMmrResults: true,
-        playerData: false,
-        queueSettings: true,
-        queueAdmin: true,
+        gameMmrResults: false,
+        queueSettings: false,
+        queueConfigCommands: false,
     },
 }

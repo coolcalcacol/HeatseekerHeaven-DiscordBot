@@ -8,16 +8,17 @@ module.exports = {
     async execute(interaction) {
         leaderboardCommand.validate(interaction);
         const context = interaction.customId.split('_')[1];
+        var currentPage;
 
         if (context === 'next-page') {
-            var currentPage = leaderboardCommand.interactors[interaction.user.id].page + 1;
+            currentPage = leaderboardCommand.interactors[interaction.user.id].page + 1;
             leaderboardCommand.interactors[interaction.user.id].page = currentPage;
         }
         else if (context === 'prev-page') {
-            var currentPage = leaderboardCommand.interactors[interaction.user.id].page - 1;
+            currentPage = leaderboardCommand.interactors[interaction.user.id].page - 1;
             leaderboardCommand.interactors[interaction.user.id].page = currentPage;
         }
-
+        
         const response = await embedUtilities.presets.leaderboardPreset(currentPage, interaction.user.id, true);
         var embed = response[0];
         if (currentPage < 0) {

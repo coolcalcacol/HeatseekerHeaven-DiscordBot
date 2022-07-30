@@ -3,6 +3,7 @@ const generalData = require('./generalData.js');
 const generalUtilities = require('../utils/generalUtilities');
 const cConsole = require('../utils/customConsoleLog.js');
 
+
 async function createQueueDatabase(data) {
     thisLog('Creating new Queuedatabase Object')
     var newData = new QueueDatabase();
@@ -19,7 +20,7 @@ async function createQueueDatabase(data) {
     
     return newData;
 }
-async function updateQueueDatabase(update, createIfNull = true) {
+async function updateQueueDatabase(update, createIfNull = true, compare = true) {
     const guildId = update['_id'];
     thisLog('\nStarting to update Object by id: ' + guildId)
     var target = await QueueDatabase.findOne({_id: guildId})
@@ -29,7 +30,7 @@ async function updateQueueDatabase(update, createIfNull = true) {
         thisLog(target['_doc']);
 
         thisLog('Starting to compare data and updating it');
-        const comparedData = comparedDataObject(target, update, target.schema.obj);
+        const comparedData = compare ? comparedDataObject(target, update, target.schema.obj) : update;
         comparedData['_id'] = target['_id'];
         comparedData['__v'] = target['__v'] + 1;
         const updateData = await QueueDatabase.updateOne({_id: guildId}, comparedData).catch(console.error);

@@ -24,6 +24,7 @@ module.exports = {
             cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
             return;
         }
+		console.log(interaction.user)
 		var data;
 		const target = interaction.options.getUser('target-user') ? 
 			interaction.options.getUser('target-user') :

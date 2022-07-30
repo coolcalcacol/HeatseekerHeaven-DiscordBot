@@ -5,16 +5,17 @@ const queueSettings = require('../data/queueSettings');
 const playerData = require('../data/playerData');
 const generalData = require('../data/generalData');
 const cConsole = require('../utils/customConsoleLog');
+const clientSendMessage = require('../utils/clientSendMessage');
 
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('queueconfig')
         .setDescription('Define how the queue system should act')
-        .addSubcommand(subcommand => subcommand
+        .addSubcommand(subcommand => subcommand // set-channel
                 .setName('set-channel')
                 .setDescription('Set a channel for ranked match making')
-                .addStringOption(option =>option
+                .addStringOption(option => option // type
                     .setName('type')
                     .setDescription('The type of queue')
                     .setRequired(true)
@@ -26,50 +27,92 @@ module.exports = {
                         .addChoice('Team Channel Category', 'teamChannelCategory')
                         .addChoice('Log Channel', 'logChannel')
                 )
-                .addChannelOption(option =>
-                    option.setName('channel')
-                        .setDescription('The channel to be used for the queue')
-                        .setRequired(true)
+                .addChannelOption(option => option // channel
+                    .setName('channel')
+                    .setDescription('The channel to be used for the queue')
+                    .setRequired(true)
                 )
         )
-        .addSubcommand(subcommand => subcommand
-            .setName('mmrsettings')
+        .addSubcommand(subcommand => subcommand // mmr-settings
+            .setName('mmr-settings')
             .setDescription('Set some MMR related values for the MMR equation')
-            .addNumberOption(option => option
+            .addNumberOption(option => option // startingmmr
                 .setName('startingmmr')
                 .setDescription('This is the number that the equation starts on [DEFAULT = 15]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // basegain
                 .setName('basegain')
                 .setDescription('This is the number that the equation starts on [DEFAULT = 15]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // minstart
                 .setName('minstart')
                 .setDescription('If MMR is less then this value, the player looses less points [DEFAULT = 100]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // mincap
                 .setName('mincap')
                 .setDescription('Mmr cant get below this value (Value must be >= 0 and < minStart) [DEFAULT = 0]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // maxstart
                 .setName('maxstart')
                 .setDescription('If MMR is greater then this value, the player gains less points [DEFAULT = 1500]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // maxcap
                 .setName('maxcap')
                 .setDescription('Mmr cant get above this value (Value must be > maxStart) [DEFAULT = 2500]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // onesmultiplier
                 .setName('onesmultiplier')
                 .setDescription('When Global MMR is calculated, the 1v1 MMR is miltiplied by this value [DEFAULT = 0.5]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // twosmultiplier
                 .setName('twosmultiplier')
                 .setDescription('When Global MMR is calculated, the 2v2 MMR is miltiplied by this value [DEFAULT = 0.85]')
             )
-            .addNumberOption(option => option
+            .addNumberOption(option => option // threesmultiplier
                 .setName('threesmultiplier')
                 .setDescription('When Global MMR is calculated, the 3v3 MMR is miltiplied by this value [DEFAULT = 1]')
+            )
+        )
+        .addSubcommand(subcommand => subcommand // set-rank-role
+            .setName('set-rank-role')
+            .setDescription('Set a channel for ranked match making')
+            .addRoleOption(option => option // role
+                .setName('role')
+                .setDescription('The role to be used for this rank')
+                .setRequired(true)
+            )
+            .addStringOption(option => option // mode
+                .setName('mode')
+                .setDescription('The mode that the rank is going to apply for')
+                .setRequired(true)
+                    .addChoice('global', 'global')
+                    .addChoice('1v1', 'ones')
+                    .addChoice('2v2', 'twos')
+                    .addChoice('3v3', 'threes')
+            )
+            .addStringOption(option => option // distribution
+                .setName('distribution')
+                .setDescription('The distribution of the rank (1-10 for the top 10) (20% to apply to the remaining 20%)')
+                .setRequired(true)
+                    .addChoice('Top 10', 'top')
+                    .addChoice('25%', '25%')
+                    .addChoice('50%', '50%')
+                    .addChoice('Meet Requirements', 'meet-requirements')
+            )
+            .addIntegerOption(option => option // min-mmr
+                .setName('min-mmr')
+                .setDescription('Must meet requirement: >= x mmr [-1 to disable]')
+                .setRequired(false)
+            )
+            .addIntegerOption(option => option // min-gp
+                .setName('min-games-played')
+                .setDescription('Must meet requirement: >= x Games Played [-1 to disable]')
+                .setRequired(false)
+            )
+            .addNumberOption(option => option // min-wr
+                .setName('min-winrate')
+                .setDescription('Must meet requirement: >= x% Win Rate [-1 to disable]')
+                .setRequired(false)
             )
         ),
     async execute(interaction) {
@@ -83,6 +126,7 @@ module.exports = {
         
         const guildId = interaction.guild.id;
         const queueSettingsData = await queueSettings.getQueueDatabaseById(guildId, true)
+        var compare = true;
 
         switch (interaction.options.getSubcommand()) {
             case 'set-channel': {
@@ -90,8 +134,6 @@ module.exports = {
                 try {
                     queueSettingsData.channelSettings[targetChannel] = interaction.options.getChannel('channel').id;
                 } catch (err) {console.error(err);}
-                await queueSettings.updateQueueDatabase(queueSettingsData, true)
-                    .catch(console.error);
 
                 await interaction.reply({
                     ephemeral: true,
@@ -99,7 +141,7 @@ module.exports = {
                     ' is now set as the **' + targetChannel + '** channel'
                 });
             } break;
-            case 'mmrsettings': {
+            case 'mmr-settings': {
                 const eq = queueSettingsData.mmrSettings;
                 eq.startingMmr = interaction.options.getNumber('startingmmr') ? interaction.options.getNumber('startingmmr') : eq.startingMmr;
                 eq.baseGain = interaction.options.getNumber('basegain') ? interaction.options.getNumber('basegain') : eq.baseGain;
@@ -111,37 +153,77 @@ module.exports = {
                 eq.twosMultiplier = interaction.options.getNumber('twosmultiplier') ? interaction.options.getNumber('twosmultiplier') : eq.twosMultiplier;
                 eq.threesMultiplier = interaction.options.getNumber('threesmultiplier') ? interaction.options.getNumber('threesmultiplier') : eq.threesMultiplier;
 
-                var replyContent = '__**New MMR values have been set**__\n> Adjusted Values:\n```js\n{';
-
                 queueSettingsData.mmrSettings = eq;
-                await queueSettings.updateQueueDatabase(queueSettingsData, true)
-                    .catch(console.error);
 
                 await interaction.reply({
                     ephemeral: true,
-                    content: 'New MMR values have been set'
+                    content: 
+                        '__**New MMR values have been set**__\n```js\n' + 
+                        queueSettingsData.mmrSettings + 
+                        '\n```'
                 });
             } break;
-            case 'clearplayerdata': {
-                await playerData.clearPlayerData();
+            case 'set-rank-role': {
+                compare = false;
+                const role = interaction.options.getRole('role');
+                const rankRole = {
+                    role: {name: role.name, id: role.id},
+                    distribution: interaction.options.getString('distribution'),
+                    requirements: {
+                        mmr: interaction.options.getInteger('min-mmr') ? 
+                            interaction.options.getInteger('min-mmr') : -1,
+                        gamesPlayed: interaction.options.getInteger('min-games-played') ? 
+                            interaction.options.getInteger('min-games-played') : -1,
+                        winRate: interaction.options.getNumber('min-winrate') ? 
+                            interaction.options.getNumber('min-winrate') : -1,
+                    }
+                };
+                
+                const mode = interaction.options.getString('mode');
+                const targetModeRanks = queueSettingsData.rankRoles[mode];
+                
+                var updated = false;
+                for (let i = 0; i < targetModeRanks.length; i++) {
+                    const rank = targetModeRanks[i];
+                    if (rank.role.id == rankRole.role.id || rank.distribution == rankRole.distribution) {
+                        targetModeRanks[i] = rankRole;
+                        updated = true;
+                        break;
+                    }
+                }
+                if (!updated) {
+                    targetModeRanks.push(rankRole);
+                }
+
+                await queueSettings.updateQueueDatabase(queueSettingsData, true, compare).catch(console.error);
                 await interaction.reply({
-                    content: 'Data hase been cleared',
-                    ephemeral: true
-                })
+                    ephemeral: true,
+                    content: 
+                        'Set new rank role!\n```js\n' + 
+                        cConsole.decolorize(cConsole.unfoldNestedObject(rankRole, 2, ' ')) + 
+                        '\n```'
+                }).catch(console.error);
             }
-            break;
             default: break;
         }
+
+        // await queueSettings.updateQueueDatabase(queueSettingsData, true, compare).catch(console.error);
 
         if (generalData.logOptions.queueConfigCommands) {
             cConsole.log(
                 '[style=bold][style=underscore]Queue data settings adjusted[/>]\n' + 
                 '\n---- [style=underscore]Document[/>] ----\n' + queueSettingsData
-            )
+            );
         }
-        await interaction.followUp({
-            ephemeral: true,
-            content: '__**New Config Document**__:\n```js\n' + queueSettingsData + '```',
-        });
+        if (queueSettingsData.channelSettings.logChannel) {
+            clientSendMessage.sendMessageTo(
+                queueSettingsData.channelSettings.logChannel,
+                '__**New/Updated Config Document**__:\n```js\n' + queueSettingsData + '```',
+            );
+        }
+        // await interaction.followUp({
+        //     ephemeral: true,
+        //     content: '__**New Config Document**__:\n```js\n' + queueSettingsData + '```',
+        // });
     },
 };

@@ -74,6 +74,8 @@ module.exports = {
         if (this.buttonRow.components.length == 0) {
             this.buttonRow.addComponents(this.prevPageButton, this.nextPageButton);
         }
-        this.interactors[interaction.user.id] = {page: 0};
+        if (!this.interactors[interaction.user.id]) {
+            this.interactors[interaction.user.id] = {page: 0};
+        }
     }
 };
