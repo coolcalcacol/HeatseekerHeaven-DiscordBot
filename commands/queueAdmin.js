@@ -193,7 +193,7 @@ module.exports = {
                     return;
                 }
                 
-                for (let i = 0; i < targetGame.gameResults.length; i++) {
+                for (let i = 0; i < targetGame.gameResults.length; i++) { // for each result
                     const results = targetGame.gameResults[i];
                     var player;
                     for (const p in targetGame.players) {
@@ -201,10 +201,24 @@ module.exports = {
                         if (data.userData.name == results[0]) player = data;
                     }
                     const mmr =  player.stats[targetGame.lobby].mmr;
-                    player.stats[targetGame.lobby].mmr = results[1] > 0 ? 
-                        mmr - Math.round(results[1]) : 
-                        mmr + Math.round(results[1])
-                    ;
+                    // player.stats[targetGame.lobby].mmr = Math.round(results[1].replace('+', '').replace('-', ''));
+
+                    if (results[1].split('').includes('+')) {
+                        player.stats[targetGame.lobby].mmr = mmr - Math.round(results[1].replace('+', ''));
+                        player.stats[targetGame.lobby].gamesWon -= 1;
+                        player.stats.global.gamesWon -= 1;
+                    }
+                    else {
+                        player.stats[targetGame.lobby].mmr = mmr + Math.round(results[1].replace('-', ''));
+                        player.stats[targetGame.lobby].gamesLost -= 1;
+                        player.stats.global.gamesLost -= 1;
+                    }
+                    player.stats[targetGame.lobby].gamesPlayed -= 1;
+                    player.stats.global.gamesPlayed -= 1;
+                    // player.stats[targetGame.lobby].mmr = results[1].split('').includes('+') ? 
+                    //     mmr - Math.round(results[1].replace('+', '')) : 
+                    //     mmr + Math.round(results[1].replace('-', ''))
+                    // ;
 
                     playerData.updatePlayerData(player, queueSettingsData.mmrSettings);
                 }

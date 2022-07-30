@@ -39,44 +39,51 @@ async function updatePlayerData(data, equationValues) {
         newData.stats[mode].winRate = data.stats[mode].winRate;
     }
     
-    // (teamRatio - 0.5) * 2 + 0.5
-    var globalEqLog = `${data.stats.global.mmr} + (`;
-    var gameCountMultiplier = 0;
     for (let i = 0; i < gameModes.length; i++) {
         const mode = gameModes[i];
         if (mode == 'global') continue;
-        
-        const multiplier = mode == 'ones' ? 0.5 : mode == 'twos' ? 0.75 : 1;
-        const mmrMultiplier = 
-            mode == 'ones' ? 
-                (data.stats.ones.mmr - equationValues.startingMmr) * 
-                equationValues.onesMultiplier + equationValues.startingMmr : 
-            mode == 'twos' ? 
-                (data.stats.twos.mmr - equationValues.startingMmr) * 
-                equationValues.twosMultiplier + equationValues.startingMmr : 
-            (data.stats.threes.mmr - equationValues.startingMmr) * 
-            equationValues.threesMultiplier + equationValues.startingMmr
-        ;
-
-        gameCountMultiplier += data.stats[mode].gamesPlayed * multiplier;
-        newData.stats.global.mmr += data.stats[mode].gamesPlayed * multiplier * mmrMultiplier;
-
-        const lineEnd = i < gameModes.length -2 ? '+' : ')';
-        globalEqLog += `(${data.stats[mode].gamesPlayed} * ${multiplier} * ${mmrMultiplier})${lineEnd}`;
+        console.log(`${newData.stats.global.mmr} + ${data.stats[mode].mmr} * ${equationValues[mode + 'Multiplier']}`)
+        newData.stats.global.mmr += data.stats[mode].mmr * equationValues[mode + 'Multiplier']
     }
-    globalEqLog += ` / ${gameCountMultiplier}`;
 
-    newData.stats.global.mmr = newData.stats.global.mmr / gameCountMultiplier;
-    newData.stats.global.mmr = Math.round(newData.stats.global.mmr);
+    // //(teamRatio - 0.5) * 2 + 0.5
+    // var globalEqLog = `${data.stats.global.mmr} + (`;
+    // var gameCountMultiplier = 0;
+    // for (let i = 0; i < gameModes.length; i++) {
+    //     const mode = gameModes[i];
+    //     if (mode == 'global') continue;
+        
+    //     const multiplier = mode == 'ones' ? 0.5 : mode == 'twos' ? 0.75 : 1;
+    //     const mmrMultiplier = 
+    //         mode == 'ones' ? 
+    //             (data.stats.ones.mmr - equationValues.startingMmr) * 
+    //             equationValues.onesMultiplier + equationValues.startingMmr : 
+    //         mode == 'twos' ? 
+    //             (data.stats.twos.mmr - equationValues.startingMmr) * 
+    //             equationValues.twosMultiplier + equationValues.startingMmr : 
+    //         (data.stats.threes.mmr - equationValues.startingMmr) * 
+    //         equationValues.threesMultiplier + equationValues.startingMmr
+    //     ;
+
+    //     gameCountMultiplier += data.stats[mode].gamesPlayed * multiplier;
+    //     newData.stats.global.mmr += data.stats[mode].gamesPlayed * multiplier * mmrMultiplier;
+
+    //     const lineEnd = i < gameModes.length -2 ? '+' : ')';
+    //     globalEqLog += `(${data.stats[mode].gamesPlayed} * ${multiplier} * ${mmrMultiplier})${lineEnd}`;
+    // }
+    // globalEqLog += ` / ${gameCountMultiplier}`;
+
+    // newData.stats.global.mmr = newData.stats.global.mmr / gameCountMultiplier;
+    // newData.stats.global.mmr = Math.round(newData.stats.global.mmr);
     
 
-    if (generalData.logOptions.gameMmrResults) {
-        cConsole.log([
-            `[fg=green]${data.userData.name}[/>]`,
-            `${newData.stats.global.mmr}`,
-            `${newData.stats.global.gamesPlayed}\n${globalEqLog}\n`,
-        ].join(' | '));
-    }
+    // if (generalData.logOptions.gameMmrResults) {
+    //     cConsole.log([
+    //         `[fg=green]${data.userData.name}[/>]`,
+    //         `${newData.stats.global.mmr}`,
+    //         `${newData.stats.global.gamesPlayed}\n${globalEqLog}\n`,
+    //     ].join(' | '));
+    // }
 
     newData['__v'] = (data['__v'] + 1);
     await PlayerDatabase.updateMany({_id: data['_id']}, newData);

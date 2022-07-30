@@ -8,7 +8,7 @@ module.exports = {
     },
     debugOptions: {
         createGameOnStart: true,
-        gameOnStartLobby: 'ones'
+        gameOnStartLobby: 'threes'
     },
     logOptions : {
         interactions: true,

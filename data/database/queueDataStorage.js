@@ -17,9 +17,9 @@ const QueueDataSchema = new mongoose.Schema({
     mmrSettings: {
         startingMmr: {type: Number, default: 600}, // 600,
         baseGain: {type: Number, default: 15}, // 15,
-        onesMultiplier: {type: Number, default: 0.5}, // 0.5,
-        twosMultiplier: {type: Number, default: 0.85}, // 0.85,
-        threesMultiplier: {type: Number, default: 1}, // 1,
+        onesMultiplier: {type: Number, default: 0.2}, // 0.5,
+        twosMultiplier: {type: Number, default: 0.3}, // 0.85,
+        threesMultiplier: {type: Number, default: 0.5}, // 1,
         minStart: {type: Number, default: 100}, // 100,
         minCap: {type: Number, default: 0}, // 0,
         maxStart: {type: Number, default: 1500}, // 1500,
