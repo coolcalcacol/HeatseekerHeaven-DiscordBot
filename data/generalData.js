@@ -7,7 +7,7 @@ module.exports = {
         defaultGuildId: '811667577985302528',
     },
     debugOptions: {
-        createGameOnStart: false,
+        createGameOnStart: true,
         gameOnStartLobby: 'ones'
     },
     logOptions : {
@@ -17,7 +17,7 @@ module.exports = {
         playerData: false,
         gameData: false,
         teamGeneration: false,
-        gameMmrResults: false,
+        gameMmrResults: true,
         queueSettings: false,
         queueConfigCommands: false,
     },

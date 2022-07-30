@@ -78,9 +78,7 @@ async function updatePlayerData(data, equationValues) {
         ].join(' | '));
     }
 
-
     newData['__v'] = (data['__v'] + 1);
-
     await PlayerDatabase.updateMany({_id: data['_id']}, newData);
 }
 async function updatePlayerRanks(guildId) {

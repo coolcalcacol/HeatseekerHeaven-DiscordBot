@@ -72,9 +72,10 @@ module.exports = {
 		if (generalData.debugOptions.createGameOnStart) {
 			switch (generalData.debugOptions.gameOnStartLobby) {
 				case 'ones': {
-					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
-					await queueData.actions.fillQueueWithPlayers(['653453312271581205'], 'ones', 1);
-					// await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1);
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1);
+					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'ones', 1);
+					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
+					// await queueData.actions.fillQueueWithPlayers(['653453312271581205'], 'ones', 1);
 					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
 				} break;
 				case 'twos': {
@@ -85,8 +86,8 @@ module.exports = {
 				} break;
 				case 'threes': {
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1);
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 5);
-					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 4);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
 					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
 					// await queueData.actions.fillQueueWithPlayers(['362052637400498187'], 'threes', 1);
 				} break;

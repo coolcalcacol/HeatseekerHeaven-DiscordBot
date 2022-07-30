@@ -75,6 +75,7 @@ for (const file of eventFiles) {
 client.on('interactionCreate', async interaction => {
 	if (interaction.isCommand()) executeCommand(interaction);
 	else if (interaction.isButton()) executeButton(interaction);
+	else if (interaction.isSelectMenu()) executeSelectMenue(interaction);
 });
 
 async function executeCommand(interaction) {
@@ -104,6 +105,20 @@ async function executeButton(interaction) {
 		console.log(error.stack);
 	}
 }
+async function executeSelectMenue(interaction) {
+	const selectTarget = interaction.customId.split('_')[0] + '_select';
+	const selectMenue = client.messageActions.get(selectTarget);
+
+	if (!selectMenue) return;
+	try {
+		await selectMenue.execute(interaction);
+		// cConsole.log(command);
+	} catch (error) {
+		// await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+		cConsole.log('Error: ' + error.message);
+		console.log(error.stack);
+	}
+}
 
 // client.on('interactionCreate', async interaction => {
 // 	if (!interaction.isSelectMenu()) return;
@@ -126,6 +141,7 @@ async function executeButton(interaction) {
 
 // Login to Discord with your client's token
 client.login(token);
+// console.log(client.messageActions);
 
 module.exports.info = {
 	database: db
