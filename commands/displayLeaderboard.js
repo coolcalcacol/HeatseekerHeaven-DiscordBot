@@ -23,7 +23,7 @@ module.exports = {
     }),
     buttonRow: new MessageActionRow(),
     async execute(interaction) {
-        this.validate(interaction);
+        this.validate(interaction, true);
         var currentPage = this.interactors[interaction.user.id].page;
         
         const response = await embedUtilities.presets.leaderboardPreset(currentPage, interaction.user.id, true);
@@ -70,12 +70,15 @@ module.exports = {
         //     }
         // });
     },
-    validate(interaction) {
+    validate(interaction, initiation) {
         if (this.buttonRow.components.length == 0) {
             this.buttonRow.addComponents(this.prevPageButton, this.nextPageButton);
         }
         if (!this.interactors[interaction.user.id]) {
             this.interactors[interaction.user.id] = {page: 0};
+        }
+        else if (initiation) {
+            this.interactors[interaction.user.id].page = 0;
         }
     }
 };

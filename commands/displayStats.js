@@ -35,8 +35,6 @@ module.exports = {
             interaction.options.getString('mode') : 'global';
         const data = await PlayerData.getPlayerDataById(userId);
 
-        
-
         if (!data) {
             const message = interaction.options.getUser('target-user') ? 
             `<@${interaction.options.getUser('target-user').id}> does not have any stats yet, they need to Queue first.` : 

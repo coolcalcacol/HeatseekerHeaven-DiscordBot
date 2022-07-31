@@ -30,7 +30,8 @@ module.exports = {
 			interaction.options.getUser('target-user') :
 			interaction.user
 		;
-		await playerData.getPlayerDataById(target.id, true)
+		const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id).catch(console.error);
+		await playerData.getPlayerDataById(target.id, true, queueSettingsData)
 			.then(async (foundData) => {
 				data = foundData;
 			});

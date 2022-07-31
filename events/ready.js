@@ -70,26 +70,28 @@ module.exports = {
 	},
 	async runTestActions(client) {
 		if (generalData.debugOptions.createGameOnStart) {
+			const queueSettingsData = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).catch(console.error);
 			switch (generalData.debugOptions.gameOnStartLobby) {
 				case 'ones': {
-					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1);
-					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'ones', 1);
-					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
-					// await queueData.actions.fillQueueWithPlayers(['653453312271581205'], 'ones', 1);
-					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1);
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'ones', 1, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['653453312271581205'], 'ones', 1, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData);
 				} break;
 				case 'twos': {
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 2);
-					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'twos', 1);
-					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'twos', 1);
-					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'twos', 1);
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 2, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'twos', 1, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'twos', 1, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'twos', 1, queueSettingsData);
 				} break;
 				case 'threes': {
-					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1);
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 4);
-					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1);
-					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1);
-					// await queueData.actions.fillQueueWithPlayers(['362052637400498187'], 'threes', 1);
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 5, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['88109760729088000'], 'threes', 1, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(['362052637400498187'], 'threes', 1, queueSettingsData);
 				} break;
 				case 'custom': {
 					const currentGame = [

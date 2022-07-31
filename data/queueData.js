@@ -194,7 +194,7 @@ class TeamData {
 }
 
 
-async function addPlayerToQueue(interaction = null, lobby, userId = null) {
+async function addPlayerToQueue(interaction = null, lobby, userId = null, queueSettingsData) {
     var playerData;
     if (!interaction && !userId) {console.log('No interaction param.'); return}
     if (userId == null) { userId = interaction.user.id; }
@@ -202,7 +202,8 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null) {
     const playerReservedStatus = userReservedStatus(userId);
     if (playerReservedStatus != false) return playerReservedStatus;
     
-    await PlayerData.getPlayerDataById(userId, true)
+
+    await PlayerData.getPlayerDataById(userId, true, queueSettingsData)
         .then(async (foundData) => {
             if (GeneralData.logOptions.playerData) {
                 console.log('Received PlayerData [addPlayerToQueue]');
@@ -223,10 +224,10 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null) {
         return 'enteredQueue';
     }
 }
-async function fillQueueWithPlayers(players, lobby, amount) {
+async function fillQueueWithPlayers(players, lobby, amount, queueSettingsData) {
     const p = generalUtilities.generate.randomizeArray(players);
     for (let i = 0; i < amount; i++) {
-        await addPlayerToQueue(null, lobby, p[i].toString());
+        await addPlayerToQueue(null, lobby, p[i].toString(), queueSettingsData);
     }
 }
 function removePlayerFromQueue(interaction, lobby) {

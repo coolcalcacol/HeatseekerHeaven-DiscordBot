@@ -18,7 +18,8 @@ module.exports = {
             });
             return;
         }
-        const response = await queueData.actions.addPlayerToQueue(interaction, lobby);
+        const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id).catch(console.error);
+        const response = await queueData.actions.addPlayerToQueue(interaction, lobby, null, queueSettingsData);
         console.log('response: ' + response)
         switch (response) {
             case 'enteredQueue': {

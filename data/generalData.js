@@ -17,8 +17,8 @@ module.exports = {
         playerData: false,
         gameData: false,
         teamGeneration: false,
-        gameMmrResults: true,
-        queueSettings: false,
+        gameMmrResults: false,
+        queueSettings: true,
         queueConfigCommands: false,
     },
 }

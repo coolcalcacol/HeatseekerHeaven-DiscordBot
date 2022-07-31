@@ -10,9 +10,9 @@ const clientSendMessage = require('../utils/clientSendMessage');
 const { clearPlayerDataPass } = require('../config/private.json');
 
 
-async function createPlayerData(userData) {
+async function createPlayerData(userData, queueSettingsData) {
     var output;
-    const newData = await getPlayerDataObject(userData);
+    const newData = await getPlayerDataObject(userData, queueSettingsData);
     await PlayerDatabase.insertMany(newData)
         .then((result) => {
             if (GeneralData.logOptions.playerData) {
@@ -45,45 +45,7 @@ async function updatePlayerData(data, equationValues) {
         console.log(`${newData.stats.global.mmr} + ${data.stats[mode].mmr} * ${equationValues[mode + 'Multiplier']}`)
         newData.stats.global.mmr += data.stats[mode].mmr * equationValues[mode + 'Multiplier']
     }
-
-    // //(teamRatio - 0.5) * 2 + 0.5
-    // var globalEqLog = `${data.stats.global.mmr} + (`;
-    // var gameCountMultiplier = 0;
-    // for (let i = 0; i < gameModes.length; i++) {
-    //     const mode = gameModes[i];
-    //     if (mode == 'global') continue;
-        
-    //     const multiplier = mode == 'ones' ? 0.5 : mode == 'twos' ? 0.75 : 1;
-    //     const mmrMultiplier = 
-    //         mode == 'ones' ? 
-    //             (data.stats.ones.mmr - equationValues.startingMmr) * 
-    //             equationValues.onesMultiplier + equationValues.startingMmr : 
-    //         mode == 'twos' ? 
-    //             (data.stats.twos.mmr - equationValues.startingMmr) * 
-    //             equationValues.twosMultiplier + equationValues.startingMmr : 
-    //         (data.stats.threes.mmr - equationValues.startingMmr) * 
-    //         equationValues.threesMultiplier + equationValues.startingMmr
-    //     ;
-
-    //     gameCountMultiplier += data.stats[mode].gamesPlayed * multiplier;
-    //     newData.stats.global.mmr += data.stats[mode].gamesPlayed * multiplier * mmrMultiplier;
-
-    //     const lineEnd = i < gameModes.length -2 ? '+' : ')';
-    //     globalEqLog += `(${data.stats[mode].gamesPlayed} * ${multiplier} * ${mmrMultiplier})${lineEnd}`;
-    // }
-    // globalEqLog += ` / ${gameCountMultiplier}`;
-
-    // newData.stats.global.mmr = newData.stats.global.mmr / gameCountMultiplier;
-    // newData.stats.global.mmr = Math.round(newData.stats.global.mmr);
-    
-
-    // if (generalData.logOptions.gameMmrResults) {
-    //     cConsole.log([
-    //         `[fg=green]${data.userData.name}[/>]`,
-    //         `${newData.stats.global.mmr}`,
-    //         `${newData.stats.global.gamesPlayed}\n${globalEqLog}\n`,
-    //     ].join(' | '));
-    // }
+    newData.stats.global.mmr = Math.round(newData.stats.global.mmr);
 
     newData['__v'] = (data['__v'] + 1);
     await PlayerDatabase.updateMany({_id: data['_id']}, newData);
@@ -170,27 +132,12 @@ async function updatePlayerRanks(guildId) {
     thisLog('');
 }
 
-async function getPlayerDataObject(userData) { // The user data that discord generates for a user
-    const memberData = await generalUtilities.info.getMemberById(userData.id).catch(console.error);
-    const forcedUserData = await userData.fetch(true);
-
-    const newData = new PlayerDatabase({
-        _id: userData.id,
-        userData: {
-            name: userData.username,
-            nickName: memberData.nickName,
-            mention: `<@${userData.id}>`,
-            discriminator: userData.discriminator,
-            roles: memberData._roles,
-            displayColor: forcedUserData.hexAccentColor ? forcedUserData.hexAccentColor : memberData.displayHexColor,
-            avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=1024`,
-            createdAt: new Date(userData.createdAt),
-            joinedAt: new Date(memberData.joinedAt)
-        }
-    });
-    return newData;
-}
-async function getPlayerDataById(id, createIfNull = false) {
+/**
+ * @param {String} id The user id of the userdata to get
+ * @param {Boolean} createIfNull Create if the player data doesnt exist
+ * @param {Object} queueSettingsData If [createIfNull] is True, pass in the relevant queueSettings for this guild
+*/
+async function getPlayerDataById(id, createIfNull = false, queueSettingsData) {
     var output;
     await PlayerDatabase.findById(id)
         .then(async (result) => {
@@ -204,7 +151,7 @@ async function getPlayerDataById(id, createIfNull = false) {
         })
         .catch((err) => {console.log(err)});
     if (!output && createIfNull) {
-        await createPlayerData(await generalUtilities.info.getUserById(id))
+        await createPlayerData(await generalUtilities.info.getUserById(id), queueSettingsData)
             .then((createdData) => {
                 if (GeneralData.logOptions.playerData) console.log('Creating data');
                 output = createdData;
@@ -215,6 +162,41 @@ async function getPlayerDataById(id, createIfNull = false) {
     else {
         return output;
     }
+}
+
+async function getPlayerDataObject(userData, queueSettingsData) { // The user data that discord generates for a user
+    const memberData = await generalUtilities.info.getMemberById(userData.id).catch(console.error);
+    const forcedUserData = await userData.fetch(true);
+
+    const startingMmr = queueSettingsData.mmrSettings.startingMmr;
+
+    const newData = new PlayerDatabase({
+        _id: userData.id,
+        userData: {
+            name: userData.username,
+            nickName: memberData.nickName,
+            mention: `<@${userData.id}>`,
+            discriminator: userData.discriminator,
+            roles: memberData._roles,
+            displayColor: forcedUserData.hexAccentColor ? forcedUserData.hexAccentColor : memberData.displayHexColor,
+            avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=1024`,
+            createdAt: new Date(userData.createdAt),
+            joinedAt: new Date(memberData.joinedAt)
+        },
+    });
+    if (startingMmr) {
+        newData['stats'] = {
+            global: {mmr: startingMmr},
+            ones: {mmr: startingMmr},
+            twos: {mmr: startingMmr},
+            threes: {mmr: startingMmr},
+        }
+    }
+    return newData;
+}
+
+async function resetPlayerStats(interaction) {
+    
 }
 
 async function clearPlayerData(interaction, password) {

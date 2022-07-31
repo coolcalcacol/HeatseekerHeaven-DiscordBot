@@ -66,12 +66,12 @@ module.exports = {
                 .setRequired(true)
             )
             .addUserOption(option => option
-                .setName('targetuser')
+                .setName('replacing')
                 .setDescription('The user that you want to swithc out')
                 .setRequired(true)
             )
             .addUserOption(option => option
-                .setName('replaceuser')
+                .setName('replaced-by')
                 .setDescription('The user that replaces the target user')
                 .setRequired(true)
             )
@@ -137,8 +137,8 @@ module.exports = {
             },
             substitute: {
                 gameId: overwrite ? overwriteOptions.substitute.gameId : interaction.options.getInteger('gameid'),
-                targetUser: overwrite ? overwriteOptions.substitute.targetUser : interaction.options.getUser('targetuser'),
-                replaceUser: overwrite ? overwriteOptions.substitute.replaceUser : interaction.options.getUser('replaceuser'),
+                targetUser: overwrite ? overwriteOptions.substitute.targetUser : interaction.options.getUser('replacing'),
+                replaceUser: overwrite ? overwriteOptions.substitute.replaceUser : interaction.options.getUser('replaced-by'),
             },
             removeUser: {
                 user: overwrite ? overwriteOptions.substitute.user : interaction.options.getUser('user'),

@@ -56,7 +56,9 @@ module.exports = {
         }
         var queueAmount = interaction.options.getNumber('queueamount');
         if (queueAmount == 0 || queueAmount == null) {queueAmount = 6;}
-        await queueData.actions.fillQueueWithPlayers(userWhitelist, lobby, queueAmount);
+
+        const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id).catch(console.error);
+        await queueData.actions.fillQueueWithPlayers(userWhitelist, lobby, queueAmount, queueSettingsData);
         
         await interaction.client.emit('queueEvent', interaction, 'add');
         await interaction.reply({

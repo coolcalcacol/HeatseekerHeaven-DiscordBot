@@ -44,6 +44,18 @@ module.exports = {
                 .setName('basegain')
                 .setDescription('This is the number that the equation starts on [DEFAULT = 15]')
             )
+            .addNumberOption(option => option // onesmultiplier
+                .setName('onesmultiplier')
+                .setDescription('When Global MMR is calculated, the 1v1 MMR is miltiplied by this value [DEFAULT = 0.2]')
+            )
+            .addNumberOption(option => option // twosmultiplier
+                .setName('twosmultiplier')
+                .setDescription('When Global MMR is calculated, the 2v2 MMR is miltiplied by this value [DEFAULT = 0.3]')
+            )
+            .addNumberOption(option => option // threesmultiplier
+                .setName('threesmultiplier')
+                .setDescription('When Global MMR is calculated, the 3v3 MMR is miltiplied by this value [DEFAULT = 0.5]')
+            )
             .addNumberOption(option => option // minstart
                 .setName('minstart')
                 .setDescription('If MMR is less then this value, the player looses less points [DEFAULT = 100]')
@@ -59,18 +71,6 @@ module.exports = {
             .addNumberOption(option => option // maxcap
                 .setName('maxcap')
                 .setDescription('Mmr cant get above this value (Value must be > maxStart) [DEFAULT = 2500]')
-            )
-            .addNumberOption(option => option // onesmultiplier
-                .setName('onesmultiplier')
-                .setDescription('When Global MMR is calculated, the 1v1 MMR is miltiplied by this value [DEFAULT = 0.5]')
-            )
-            .addNumberOption(option => option // twosmultiplier
-                .setName('twosmultiplier')
-                .setDescription('When Global MMR is calculated, the 2v2 MMR is miltiplied by this value [DEFAULT = 0.85]')
-            )
-            .addNumberOption(option => option // threesmultiplier
-                .setName('threesmultiplier')
-                .setDescription('When Global MMR is calculated, the 3v3 MMR is miltiplied by this value [DEFAULT = 1]')
             )
         )
         .addSubcommand(subcommand => subcommand // set-rank-role
@@ -145,13 +145,13 @@ module.exports = {
                 const eq = queueSettingsData.mmrSettings;
                 eq.startingMmr = interaction.options.getNumber('startingmmr') ? interaction.options.getNumber('startingmmr') : eq.startingMmr;
                 eq.baseGain = interaction.options.getNumber('basegain') ? interaction.options.getNumber('basegain') : eq.baseGain;
+                eq.onesMultiplier = interaction.options.getNumber('onesmultiplier') ? interaction.options.getNumber('onesmultiplier') : eq.onesMultiplier;
+                eq.twosMultiplier = interaction.options.getNumber('twosmultiplier') ? interaction.options.getNumber('twosmultiplier') : eq.twosMultiplier;
+                eq.threesMultiplier = interaction.options.getNumber('threesmultiplier') ? interaction.options.getNumber('threesmultiplier') : eq.threesMultiplier;
                 eq.minStart = interaction.options.getNumber('minstart') ? interaction.options.getNumber('minstart') : eq.minStart;
                 eq.minCap = interaction.options.getNumber('mincap') ? interaction.options.getNumber('mincap') : eq.minCap;
                 eq.maxStart = interaction.options.getNumber('maxstart') ? interaction.options.getNumber('maxstart') : eq.maxStart;
                 eq.maxCap = interaction.options.getNumber('maxcap') ? interaction.options.getNumber('maxcap') : eq.maxCap;
-                eq.onesMultiplier = interaction.options.getNumber('onesmultiplier') ? interaction.options.getNumber('onesmultiplier') : eq.onesMultiplier;
-                eq.twosMultiplier = interaction.options.getNumber('twosmultiplier') ? interaction.options.getNumber('twosmultiplier') : eq.twosMultiplier;
-                eq.threesMultiplier = interaction.options.getNumber('threesmultiplier') ? interaction.options.getNumber('threesmultiplier') : eq.threesMultiplier;
 
                 queueSettingsData.mmrSettings = eq;
 
@@ -207,7 +207,7 @@ module.exports = {
             default: break;
         }
 
-        // await queueSettings.updateQueueDatabase(queueSettingsData, true, compare).catch(console.error);
+        await queueSettings.updateQueueDatabase(queueSettingsData, true, compare).catch(console.error);
 
         if (generalData.logOptions.queueConfigCommands) {
             cConsole.log(
