@@ -42,7 +42,6 @@ async function updatePlayerData(data, equationValues) {
     for (let i = 0; i < gameModes.length; i++) {
         const mode = gameModes[i];
         if (mode == 'global') continue;
-        console.log(`${newData.stats.global.mmr} + ${data.stats[mode].mmr} * ${equationValues[mode + 'Multiplier']}`)
         newData.stats.global.mmr += data.stats[mode].mmr * equationValues[mode + 'Multiplier']
     }
     newData.stats.global.mmr = Math.round(newData.stats.global.mmr);
@@ -168,7 +167,7 @@ async function getPlayerDataObject(userData, queueSettingsData) { // The user da
     const memberData = await generalUtilities.info.getMemberById(userData.id).catch(console.error);
     const forcedUserData = await userData.fetch(true);
 
-    const startingMmr = queueSettingsData.mmrSettings.startingMmr;
+    const startingMmr = queueSettingsData ? queueSettingsData.mmrSettings.startingMmr : null;
 
     const newData = new PlayerDatabase({
         _id: userData.id,
@@ -195,11 +194,38 @@ async function getPlayerDataObject(userData, queueSettingsData) { // The user da
     return newData;
 }
 
-async function resetPlayerStats(interaction) {
-    
+async function resetPlayerStats(interaction, reason) {
+    const queueConfig = await queueSettings.getQueueDatabaseById(interaction.guild.id);
+    const guildData = await guildSettings.findOne({_id: interaction.guild.id}).catch(console.error);
+    const playerDataList = await PlayerDatabase.find().catch(console.error);
+
+    for (let i = 0; i < playerDataList.length; i++) {
+        const data = playerDataList[i];
+        for (const mode in data.stats) {
+            const target = data.stats[mode];
+            target.mmr = queueConfig.mmrSettings.startingMmr;
+            target.gamesPlayed = 0;
+            target.gamesWon = 0;
+            target.gamesLost = 0;
+            target.winRate = 0;
+            target.rank = null;
+        }
+        console.log(data.stats.global.mmr);
+        await PlayerDatabase.updateOne({_id: data['_id']}, data)
+    }
+
+    if (queueConfig.channelSettings.logChannel) {
+        clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
+            `||<@&${guildData.adminRole}>||`,
+            `**PlayerData has been __Reset__** by <@${interaction.user.id}>`,
+            `user ID: \`${interaction.user.id}\``,
+            `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
+            `> Reason: \`${reason}\``
+        ].join('\n'));
+    }
 }
 
-async function clearPlayerData(interaction, password) {
+async function clearPlayerData(interaction, password, reason) {
     const queueConfig = await queueSettings.getQueueDatabaseById(interaction.guild.id);
     const guildData = await guildSettings.findOne({_id: interaction.guild.id}).catch(console.error);
     console.log(guildData);
@@ -228,10 +254,11 @@ async function clearPlayerData(interaction, password) {
 
         if (queueConfig.channelSettings.logChannel) {
             clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
-                `<@&${guildData.adminRole}>`,
-                `PlayerData has been cleard by <@${interaction.user.id}>`,
-                `${interaction.user.id}`,
-                `${interaction.user.username}#${interaction.user.discriminator}`
+                `||<@&${guildData.adminRole}>||`,
+                `**PlayerData has been __Cleared__** by <@${interaction.user.id}>`,
+                `user ID: \`${interaction.user.id}\``,
+                `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
+                `> Reason: \`${reason}\``
             ].join('\n'));
         }
         return true;
@@ -254,5 +281,6 @@ module.exports = {
     createPlayerData,
     updatePlayerData,
     updatePlayerRanks,
-    clearPlayerData
+    resetPlayerStats,
+    clearPlayerData,
 }

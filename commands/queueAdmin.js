@@ -77,7 +77,7 @@ module.exports = {
             )
         )
         .addSubcommand(subCommand => subCommand // removeuser
-            .setName('removeuser')
+            .setName('remove-user')
             .setDescription('Remove a user from the queue')
             .addUserOption(option => option
                 .setName('user')
@@ -85,8 +85,27 @@ module.exports = {
                 .setRequired(true)
             )
         )
-        .addSubcommand(subCommand => subCommand // clearplayerdata
-            .setName('clearplayerdata')
+        .addSubcommand(subCommand => subCommand // reset-player-stats
+            .setName('reset-player-stats')
+            .setDescription('Reset all player stats to the default')
+            .addUserOption(option => option
+                .setName('userpass')
+                .setDescription('The usre that is executing this command')
+                .setRequired(true)
+            )
+            .addStringOption(option => option
+                .setName('creatorpass')
+                .setDescription('The discord username of the user who created this bot')
+                .setRequired(true)
+            )
+            .addStringOption(option => option
+                .setName('reason')
+                .setDescription('The reason to reset all the player stats')
+                .setRequired(true)
+            )
+        )
+        .addSubcommand(subCommand => subCommand // clear-player-data
+            .setName('clear-player-data')
             .setDescription('Clear the player database')
             .addUserOption(option => option
                 .setName('userpass')
@@ -96,6 +115,11 @@ module.exports = {
             .addStringOption(option => option
                 .setName('creatorpass')
                 .setDescription('The discord username of the user who created this bot')
+                .setRequired(true)
+            )
+            .addStringOption(option => option
+                .setName('reason')
+                .setDescription('The reason to clear all the player data')
                 .setRequired(true)
             )
             .addStringOption(option => option
@@ -333,7 +357,7 @@ module.exports = {
                     content: `Succesfully replaced <@${targetUser.id}> for <@${replaceUser.id}> in game \`${targetGame.gameId}\``
                 }).catch(console.error);
             } break;
-            case 'removeuser': {
+            case 'remove-user': {
                 const targetUser = options.removeUser.user;
                 const qData = queueData.info.globalQueueData;
                 
@@ -383,7 +407,39 @@ module.exports = {
                     content: `Succesfully Removed <@${targetUser.id}> from the queue`
                 }).catch(console.error);
             } break;
-            case 'clearplayerdata': {
+            case 'reset-player-stats': {
+                console.log([
+                    `${interaction.user.id}`,
+                    `${interaction.user.username}#${interaction.user.discriminator}`,
+                    `is atempting to reset the PlayerData`
+                ].join('\n'))
+                console.log(interaction);
+                console.log('');
+
+                const userPass = interaction.options.getUser('userpass');
+                const creatorPass = interaction.options.getString('creatorpass');
+                const reason = interaction.options.getString('reason');
+                
+                if (userPass == interaction.user && creatorPass == 'CTN') {
+                    await playerData.resetPlayerStats(interaction, reason);
+                    await interaction.reply({
+                        ephemeral: true,
+                        content: 'PlayerData has been Reset.'
+                    }).catch(console.error);
+                    return;
+                }
+                else {
+                    await interaction.reply({
+                        ephemeral: true,
+                        content: [
+                            `You did not enter the right information.`,
+                            `If you dont know the information you should not be using this command.`,
+                            `If you get it wrong to many times you might risk to be banned from the server.`
+                        ].join('\n')
+                    }).catch(console.error);
+                }
+            } break;
+            case 'clear-player-data': {
                 console.log([
                     `${interaction.user.id}`,
                     `${interaction.user.username}#${interaction.user.discriminator}`,
@@ -395,10 +451,11 @@ module.exports = {
                 const userPass = interaction.options.getUser('userpass');
                 const creatorPass = interaction.options.getString('creatorpass');
                 const secretPass = interaction.options.getString('secretpass');
+                const reason = interaction.options.getString('reason');
                 
                 var response;
                 if (userPass == interaction.user && creatorPass == 'CTN') {
-                    response = await playerData.clearPlayerData(interaction, secretPass);
+                    response = await playerData.clearPlayerData(interaction, secretPass, reason);
                 }
                 if (response) {
                     await interaction.reply({
