@@ -205,7 +205,7 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null, queueS
 
     await PlayerData.getPlayerDataById(userId, true, queueSettingsData)
         .then(async (foundData) => {
-            if (GeneralData.logOptions.playerData) {
+            if (GeneralData.logOptions.getPlayerData) {
                 console.log('Received PlayerData [addPlayerToQueue]');
                 console.log(foundData);
             }

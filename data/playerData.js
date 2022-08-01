@@ -15,7 +15,7 @@ async function createPlayerData(userData, queueSettingsData) {
     const newData = await getPlayerDataObject(userData, queueSettingsData);
     await PlayerDatabase.insertMany(newData)
         .then((result) => {
-            if (GeneralData.logOptions.playerData) {
+            if (GeneralData.logOptions.getPlayerData) {
                 cConsole.log('New PlayerData created');
                 console.log(result[0]);
             }
@@ -57,48 +57,66 @@ async function updatePlayerRanks(guildId) {
         "stats.global.winRate": -1, 
         "stats.global.gamesPlayed": -1
     });
+    const debug = generalData.debugMode;
 
     var spliceStart = 0;
     var spliceEnd;
-    var effectedPlayers = [];
-    var remainingPlayers = [];
+    var remainingPlayers = playerData.concat();
     for (let i = 0; i < rankData.length; i++) {
         const rank = rankData[i];
         const dist = rank.distribution;
+        
+        var effectedPlayers = [];
+
         if (dist == 'top') {
-            effectedPlayers = playerData.splice(0, 10);
+            effectedPlayers = getRankEffectedPlayers(playerData, 0, 10, rank.requirements);
+            for (let e = 0; e < effectedPlayers.length; e++) {
+                const player = effectedPlayers[e];
+                playerData.splice(playerData.indexOf(player), 1);
+                remainingPlayers.splice(remainingPlayers.indexOf(player), 1)
+            }
+            // effectedPlayers = playerData.splice(0, 10);
         }
         else if (dist.split('').includes('%')) {
             const percent = parseInt(dist.replace('%', ''));
-
+            
             spliceEnd = Math.round((percent / 100) * (playerData.length - 1));
-            effectedPlayers = playerData.concat().splice(spliceStart, spliceEnd + 1);
+            effectedPlayers = getRankEffectedPlayers(remainingPlayers, 0, spliceEnd + 1, rank.requirements);
+            // effectedPlayers = playerData.concat().splice(spliceStart, spliceEnd + 1);
+            for (let e = 0; e < effectedPlayers.length; e++) {
+                const player = effectedPlayers[e];
+                remainingPlayers.splice(remainingPlayers.indexOf(player), 1)
+            }
             spliceStart += spliceEnd + 1;
         }
         else if (dist == 'meet-requirements') {
-            remainingPlayers = playerData.concat().splice(spliceStart, spliceEnd + 1);
-            effectedPlayers = [];
-            for (let r = 0; r < remainingPlayers.length; r++) {
-                const player = remainingPlayers[r];
-                for (const req in rank.requirements) {
-                    const value = rank.requirements[req];
-                    if (value == '-1') continue;
-                    if (player.stats.global[req] >= value) {
-                        effectedPlayers.push(player)
-                    }
-                }
+            effectedPlayers = getRankEffectedPlayers(remainingPlayers, 0, spliceEnd + 1, rank.requirements);
+            for (let e = 0; e < effectedPlayers.length; e++) {
+                const player = effectedPlayers[e];
+                remainingPlayers.splice(remainingPlayers.indexOf(player), 1)
             }
-            for (let efect = 0; efect < effectedPlayers.length; efect++) {
-                const player = effectedPlayers[efect];
-                remainingPlayers.splice(remainingPlayers.indexOf(player), 1);
-            }
+            // remainingPlayers = playerData.concat().splice(spliceStart, spliceEnd + 1);
+            // for (let r = 0; r < remainingPlayers.length; r++) {
+            //     const player = remainingPlayers[r];
+            //     for (const req in rank.requirements) {
+            //         const value = rank.requirements[req];
+            //         if (value == '-1') continue;
+            //         if (player.stats.global[req] >= value) {
+            //             effectedPlayers.push(player)
+            //         }
+            //     }
+            // }
+            // for (let efect = 0; efect < effectedPlayers.length; efect++) {
+            //     const player = effectedPlayers[efect];
+            //     remainingPlayers.splice(remainingPlayers.indexOf(player), 1);
+            // }
         }
         
         thisLog('\n---- [fg=green]' + dist + '[/>] ---- [' + effectedPlayers.length + ' | ' + spliceStart + ' | ' + spliceEnd +']');
         for (const effected in effectedPlayers) {
             const player = effectedPlayers[effected];
             thisLog(player.userData.name);
-            if (player.stats.global.rank != rank.role) {
+            if (!debug && player.stats.global.rank != rank.role) {
                 const memberData = await generalUtilities.info.getMemberById(player['_id']);
                 for (let r = 0; r < rankData.length; r++) {
                     const rRank = rankData[r];
@@ -109,7 +127,7 @@ async function updatePlayerRanks(guildId) {
                 }
                 memberData.roles.add(rank.role.id);
                 player.stats.global.rank = rank.role;
-                await PlayerDatabase.updateMany({_id: player['_id']}, player);
+                await PlayerDatabase.updateOne({_id: player['_id']}, player);
             }
         }
     }
@@ -118,18 +136,51 @@ async function updatePlayerRanks(guildId) {
     for (const remaining in remainingPlayers) {
         const player = remainingPlayers[remaining];
         thisLog(player.userData.name);
-        const memberData = await generalUtilities.info.getMemberById(player['_id']);
-        for (let r = 0; r < rankData.length; r++) {
-            const rRank = rankData[r];
-            if (memberData._roles.includes(rRank.role.id)) {
-                memberData.roles.remove(rRank.role.id);
+        if (!debug) {
+            const memberData = await generalUtilities.info.getMemberById(player['_id']);
+            for (let r = 0; r < rankData.length; r++) {
+                const rRank = rankData[r];
+                if (memberData._roles.includes(rRank.role.id)) {
+                    memberData.roles.remove(rRank.role.id);
+                }
             }
+            player.stats.global.rank = null;
+            PlayerDatabase.updateOne({_id: player['_id']}, player);
         }
-        player.stats.global.rank = null;
-        PlayerDatabase.updateMany({_id: player['_id']}, player);
     }
     thisLog('');
 }
+function getRankEffectedPlayers(list, start, count, requirements) {
+    var output = [];
+    var validRequirements = false;
+    for (const req in requirements) {if (requirements[req] != '-1') {validRequirements = true; break;}}
+    for (let i = start; i < count; i++) {
+        if (i >= list.length) break;
+        const player = list[i];
+        if (validRequirements) {
+            var validPlayer = true;
+            for (const req in requirements) {
+                const value = requirements[req];
+                if (value == '-1') continue;
+                if (player.stats.global[req] < value) {
+                    validPlayer = false;
+                    break;
+                }
+            }
+            if (validPlayer) {
+                output.push(player)
+            }
+            else {
+                count++;
+            }
+        }
+        else {
+            output.push(player);
+        }
+    }
+    return output;
+}
+
 
 /**
  * @param {String} id The user id of the userdata to get
@@ -141,7 +192,7 @@ async function getPlayerDataById(id, createIfNull = false, queueSettingsData) {
     await PlayerDatabase.findById(id)
         .then(async (result) => {
             if (result) {
-                if (GeneralData.logOptions.playerData) {
+                if (GeneralData.logOptions.getPlayerData) {
                     console.log('Found player data');
                     console.log(result);
                 }
@@ -150,11 +201,10 @@ async function getPlayerDataById(id, createIfNull = false, queueSettingsData) {
         })
         .catch((err) => {console.log(err)});
     if (!output && createIfNull) {
-        await createPlayerData(await generalUtilities.info.getUserById(id), queueSettingsData)
-            .then((createdData) => {
-                if (GeneralData.logOptions.playerData) console.log('Creating data');
-                output = createdData;
-            })
+        const userData = await generalUtilities.info.getUserById(id);
+        thisLog('Creating data for: [fg=green]' + userData.username + '[/>]');
+        await createPlayerData(userData, queueSettingsData)
+            .then((createdData) => { output = createdData; })
             .catch(console.error);
         return output;
     }
@@ -210,9 +260,9 @@ async function resetPlayerStats(interaction, reason) {
             target.winRate = 0;
             target.rank = null;
         }
-        console.log(data.stats.global.mmr);
         await PlayerDatabase.updateOne({_id: data['_id']}, data)
     }
+    updatePlayerRanks(interaction.guild.id);
 
     if (queueConfig.channelSettings.logChannel) {
         clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [

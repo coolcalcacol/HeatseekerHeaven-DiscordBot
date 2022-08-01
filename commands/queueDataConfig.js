@@ -200,7 +200,7 @@ module.exports = {
                     ephemeral: true,
                     content: 
                         'Set new rank role!\n```js\n' + 
-                        cConsole.decolorize(cConsole.unfoldNestedObject(rankRole, 2, ' ')) + 
+                        cConsole.decolorize(cConsole.unfoldNestedObject(JSON.parse(JSON.stringify(rankRole)), 2, ' ')) + 
                         '\n```'
                 }).catch(console.error);
             }

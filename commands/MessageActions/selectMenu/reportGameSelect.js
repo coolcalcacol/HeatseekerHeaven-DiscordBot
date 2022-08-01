@@ -83,11 +83,7 @@ module.exports = {
             
             delete reportCommand.reportData[gameData.gameId];
 
-            if (!generalData.debugMode) {
-                playerData.updatePlayerRanks(interaction.guild.id);
-            }
-
-
+            playerData.updatePlayerRanks(interaction.guild.id);
         } catch(err) {
             console.error(err);
         }

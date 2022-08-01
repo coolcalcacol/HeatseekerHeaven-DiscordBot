@@ -5,8 +5,6 @@ const queueData = require('../data/queueData.js');
 const generalUtilities = require('../utils/generalUtilities')
 const playerData = require('../data/playerData');
 const playerDataStorage = require('../data/database/playerDataStorage');
-const { data } = require('../commands/displayLeaderboard.js');
-
 
 function queueStatusEmbed(lobby, context, interaction = null) {
     const embed = new MessageEmbed();
@@ -199,46 +197,64 @@ async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
     var totalDisplay = '';
     for (let i = 0; i <= dataList.length; i++) {
         var lb = lineBreak;
+        var lbc = lineBreakChar;
+        var lbName = lb + lbc + lbc;
         var player = dataList[i];
         var index = getFieldSpacing(listStart + i + 1, 3);
         if (targetUser.data && i == dataList.length) {
             player = targetUser.data;
             index = getFieldSpacing(targetUser.index + 1, 3);
             lb = '';
+            lbc = '';
+            lbName = '';
         }
         else if (!targetUser.data && i == dataList.length) continue;
-        if (i == dataList.length - 1) lb += '\n' + lb;
-        
+        if (i == dataList.length - 1) {
+            lb += '\n' + lb;
+            lbName += '\n' + lbName;
+        }
+
         var userName = player.userData.mention;
 
-        var mmr = getFieldSpacing(player.stats.global.mmr, 5);
-        var gamesWon = getFieldSpacing(player.stats.global.gamesWon, 5);
-        var gamesLost = getFieldSpacing(player.stats.global.gamesLost, 5);
+        var mmr = getFieldSpacing(player.stats.global.mmr, 6);
+        var gamesWon = getFieldSpacing(player.stats.global.gamesWon, 4);
+        var gamesLost = getFieldSpacing(player.stats.global.gamesLost, 4);
 
-        var gamesPlayed = getFieldSpacing(player.stats.global.gamesPlayed, 5);
+        var gamesPlayed = getFieldSpacing(player.stats.global.gamesPlayed, 4);
         var winRate = getFieldSpacing(player.stats.global.winRate.toFixed(2) + '%', 8);
 
         
-        nameDisplay += `\`${index}\`: ${userName}\n${lb}\n`;
-        statsDisplay += `${seperator} ${ws(0.01)}\`${mmr}\`${ws(1)}${seperator}${ws(1.01)}\`${gamesWon}\`${ws(1.01)}${seperator}${ws(0.11)}\`${gamesLost}\` ${seperator}\n${lb}\n`;
-        totalDisplay += `${seperator} ${ws(3)}\`${gamesPlayed}\`${ws(3.11)}${seperator}${ws(2.12)}\`${winRate}\`${ws(1.02)} ${seperator}\n${lb}\n`;
+        nameDisplay += `\`${index}\`: ${userName}\n${lbName}\n`;
+        statsDisplay += `${seperator} ${ws(2)}\`${mmr}\`${ws(3.1)}${seperator}${ws(1.12)}\`${winRate}\`${ws(1.02)} ${seperator}\n${lb}\n`;
+        totalDisplay += `${seperator} ${ws(0.12)}\`${gamesPlayed}\`${ws(2.01)}${seperator}${ws(1.03)}\`${gamesWon}\`${ws(1.03)}${seperator}${ws(1.12)}\`${gamesLost}\`${ws(1.12)}${seperator}\n${lb}\n`;
+        
+        // statsDisplay += `${seperator} ${ws(0.1)}\`${mmr}\`${ws(3)}${seperator}${ws(1.03)}\`${gamesWon}\`${ws(1.03)}${seperator}${ws(1.12)}\`${gamesLost}\`${ws(1.11)}${seperator}\n${lb}\n`;
+        // totalDisplay += `${seperator} ${ws(4)}\`${gamesPlayed}\`${ws(4.1)}${seperator}${ws(2.12)}\`${winRate}\`${ws(1.02)} ${seperator}\n${lb}\n`;
     }
 
     const embed = new MessageEmbed();
     try {
         embed.addFields(
-            { name: `#        Player Name\n${lineBreak}`, 
+            { name: `#        Player Name\n${lineBreak + lineBreakChar + lineBreakChar}`, 
                 value: nameDisplay,
                 inline: true 
             },
-            { name: `${seperator} ${ws(0.1)}MMR${ws(2)}${seperator}${ws(1.11)}Wins${ws(2)}${seperator}${ws(2.11)}Lost${ws(2.01)} ${seperator}\n` + lineBreak, 
+            { name: `${seperator} ${ws(3.1)}MMR${ws(5)}${seperator}${ws(3.1)}Win Rate${ws(1)} ${seperator}\n` + lineBreak, 
                 value: statsDisplay,
                 inline: true 
             },
-            { name: `${seperator} ${ws(3.1)}Total${ws(5)}${seperator}${ws(3.1)}Win Rate${ws(1.2)} ${seperator}\n` + lineBreak, 
+            { name: `${seperator} ${ws(1)}Total${ws(2.02)}${seperator}${ws(1.11)}Wins${ws(2)}${seperator}${ws(2.11)}Lost${ws(2.01)} ${seperator}\n` + lineBreak, 
                 value: totalDisplay,
                 inline: true 
             },
+            // { name: `${seperator} ${ws(0.1)}MMR${ws(2)}${seperator}${ws(1.11)}Wins${ws(2)}${seperator}${ws(2.11)}Lost${ws(2.01)} ${seperator}\n` + lineBreak, 
+            //     value: statsDisplay,
+            //     inline: true 
+            // },
+            // { name: `${seperator} ${ws(3.1)}Total${ws(5)}${seperator}${ws(3.1)}Win Rate${ws(1.2)} ${seperator}\n` + lineBreak, 
+            //     value: totalDisplay,
+            //     inline: true 
+            // },
         );
     } catch (err) {
         console.error(err);
