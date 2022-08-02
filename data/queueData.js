@@ -32,10 +32,10 @@ var globalQueueData = {
     gameHistory: [],
 
     async getGameID(readOnly = false) {
-        if (!readOnly) { 
+        if (!readOnly) {
             this.gameId++;
             await QueueDatabase.updateOne({}, {gameId: this.gameId}).catch(console.error);
-        }        
+        }
         return this.gameId;
     },
     clearLobbyQueue(lobby) {
@@ -66,7 +66,9 @@ class GameLobbyData {
         this.getTeams();
     }
     async requestGameId() {
-        this.gameId = await globalQueueData.getGameID();
+        globalQueueData.gameId += 1;
+        this.gameId = globalQueueData.gameId;
+        await QueueDatabase.updateOne({}, {gameId: this.gameId}).catch(console.error);
     }
     getTeams() {
         switch (this.lobby) {
@@ -98,7 +100,7 @@ class GameLobbyData {
                     ], this.lobby);
                 }
             } break;
-        
+
             default: break;
         }
         // console.log(this.teams);
@@ -122,7 +124,7 @@ class GameLobbyData {
                 var scoreY = 0;
                 var totalScore = 0;
                 if (x == y) {continue;}
-                
+
                 var valid = true;
                 for (let i = 0; i < teamX.length; i++) {
                     for (let k = 0; k < teamY.length; k++) {
@@ -134,7 +136,7 @@ class GameLobbyData {
                     if (!valid) {break;}
                 }
                 if (!valid) {continue;}
-                
+
                 for (let i = 0; i < teamX.length; i++) {
                     scoreX += teamX[i].stats[this.lobby].mmr;
                     scoreY += teamY[i].stats[this.lobby].mmr;
@@ -154,7 +156,7 @@ class GameLobbyData {
                 `[style=bold][fg=green]${this.getTeamMembersLog(bestTeams[0], bestTeams[1])}[/>]`,
                 {autoColorize: false}
             );
-                
+
             if (generalData.logOptions.gameData) {
                 cConsole.log(`-------- [fg=blue]Generated Team Data[/>] --------`);
                 console.log(bestTeams);
@@ -201,7 +203,7 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null, queueS
 
     const playerReservedStatus = userReservedStatus(userId);
     if (playerReservedStatus != false) return playerReservedStatus;
-    
+
 
     await PlayerData.getPlayerDataById(userId, true, queueSettingsData)
         .then(async (foundData) => {
@@ -277,18 +279,13 @@ function getCurrentQueue(lobby = 0) {
 function userReservedStatus(userId, returnGameData = false) {
     for (const room in globalQueueData.lobby) {
         for (const player in globalQueueData.lobby[room].players) {
-            const user = globalQueueData.lobby[room].players[player];
-            if (userId != null) {continue;}
-            if (userId == player)  {
-                return 'inQueue';
-            }
+            if (userId == player)  return 'inQueue';
         }
     }
     for (let i = 0; i < globalQueueData.gamesInProgress.length; i++) {
         const game = globalQueueData.gamesInProgress[i];
-        for (const playerData in game.players) {
-            const player = game.players[playerData];
-            if (playerData == userId) {
+        for (const player in game.players) {
+            if (player == userId) {
                 if (returnGameData) return game;
                 else return 'inOngoingGame';
             }

@@ -2,7 +2,7 @@ const GeneralData = require('./generalData');
 const PlayerDatabase = require('./database/playerDataStorage');
 const QueueDatabase = require('./database/queueDataStorage');
 const queueSettings = require('../data/queueSettings');
-const guildSettings = require('./database/guildSettings');
+const guildSettings = require('./database/guildDataStorage');
 const generalData = require('./generalData');
 const generalUtilities = require('../utils/generalUtilities');
 const cConsole = require('../utils/customConsoleLog');
@@ -16,7 +16,7 @@ async function createPlayerData(userData, queueSettingsData) {
     await PlayerDatabase.insertMany(newData)
         .then((result) => {
             if (GeneralData.logOptions.getPlayerData) {
-                cConsole.log('New PlayerData created');
+                cConsole.log('New PlayerData created for: [fg=green]' + newData.userData.name + '[/>]');
                 console.log(result[0]);
             }
             output = result[0];
@@ -26,17 +26,17 @@ async function createPlayerData(userData, queueSettingsData) {
 }
 async function updatePlayerData(data, equationValues) {
     const user = await generalUtilities.info.getUserById(data['_id']);
-    const newData = await getPlayerDataObject(user);
+    const newData = await getPlayerDataObject(user, {mmrSettings: equationValues});
     const gameModes = ['ones', 'twos', 'threes', 'global']
     
     for (let i = 0; i < gameModes.length; i++) {
         const mode = gameModes[i];
         
-        newData.stats[mode].mmr = mode == 'global' ? 0 : data.stats[mode].mmr;
-        newData.stats[mode].gamesPlayed = data.stats[mode].gamesPlayed;
-        newData.stats[mode].gamesWon = data.stats[mode].gamesWon;
-        newData.stats[mode].gamesLost = data.stats[mode].gamesLost;
-        newData.stats[mode].winRate = data.stats[mode].winRate;
+        newData.stats[mode].mmr = mode == 'global' ? 0 : data.stats[mode].mmr ? data.stats[mode].mmr : equationValues.startingMmr;
+        newData.stats[mode].gamesPlayed = data.stats[mode].gamesPlayed ? data.stats[mode].gamesPlayed : 0;
+        newData.stats[mode].gamesWon = data.stats[mode].gamesWon ? data.stats[mode].gamesWon : 0;
+        newData.stats[mode].gamesLost = data.stats[mode].gamesLost ? data.stats[mode].gamesLost : 0;
+        newData.stats[mode].winRate = data.stats[mode].winRate ? data.stats[mode].winRate : 0;
     }
     
     for (let i = 0; i < gameModes.length; i++) {
@@ -58,6 +58,7 @@ async function updatePlayerRanks(guildId) {
         "stats.global.gamesPlayed": -1
     });
     const debug = generalData.debugMode;
+    // const debug = false;
 
     var spliceStart = 0;
     var spliceEnd;
@@ -218,6 +219,14 @@ async function getPlayerDataObject(userData, queueSettingsData) { // The user da
     const forcedUserData = await userData.fetch(true);
 
     const startingMmr = queueSettingsData ? queueSettingsData.mmrSettings.startingMmr : null;
+    const defualtStats = {
+        mmr: startingMmr,
+        gamesPlayed: 0,
+        gamesWon: 0,
+        gamesLost: 0,
+        winRate: 0,
+        rank: null,
+    }
 
     const newData = new PlayerDatabase({
         _id: userData.id,
@@ -235,10 +244,10 @@ async function getPlayerDataObject(userData, queueSettingsData) { // The user da
     });
     if (startingMmr) {
         newData['stats'] = {
-            global: {mmr: startingMmr},
-            ones: {mmr: startingMmr},
-            twos: {mmr: startingMmr},
-            threes: {mmr: startingMmr},
+            global: defualtStats,
+            ones: defualtStats,
+            twos: defualtStats,
+            threes: defualtStats,
         }
     }
     return newData;

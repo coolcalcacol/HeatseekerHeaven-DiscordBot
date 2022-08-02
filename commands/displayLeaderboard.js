@@ -26,7 +26,7 @@ module.exports = {
         this.validate(interaction, true);
         var currentPage = this.interactors[interaction.user.id].page;
         
-        const response = await embedUtilities.presets.leaderboardPreset(currentPage, interaction.user.id, true);
+        const response = await embedUtilities.presets.leaderboardPreset(currentPage, interaction, true);
         if (currentPage <= response[1]) this.nextPageButton.setDisabled(false);
         else this.nextPageButton.setDisabled(true);
 

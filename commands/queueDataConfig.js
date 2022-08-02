@@ -37,39 +37,39 @@ module.exports = {
             .setName('mmr-settings')
             .setDescription('Set some MMR related values for the MMR equation')
             .addNumberOption(option => option // startingmmr
-                .setName('startingmmr')
-                .setDescription('This is the number that the equation starts on [DEFAULT = 15]')
+                .setName('starting-mmr')
+                .setDescription('This is the number that the equation starts on [DEFAULT = 1000]')
             )
-            .addNumberOption(option => option // basegain
-                .setName('basegain')
-                .setDescription('This is the number that the equation starts on [DEFAULT = 15]')
+            .addNumberOption(option => option // base-gain
+                .setName('base-gain')
+                .setDescription('This is the number that the equation starts on [DEFAULT = 50]')
             )
             .addNumberOption(option => option // onesmultiplier
-                .setName('onesmultiplier')
+                .setName('ones-multiplier')
                 .setDescription('When Global MMR is calculated, the 1v1 MMR is miltiplied by this value [DEFAULT = 0.2]')
             )
             .addNumberOption(option => option // twosmultiplier
-                .setName('twosmultiplier')
+                .setName('twos-multiplier')
                 .setDescription('When Global MMR is calculated, the 2v2 MMR is miltiplied by this value [DEFAULT = 0.3]')
             )
             .addNumberOption(option => option // threesmultiplier
-                .setName('threesmultiplier')
+                .setName('threes-multiplier')
                 .setDescription('When Global MMR is calculated, the 3v3 MMR is miltiplied by this value [DEFAULT = 0.5]')
             )
             .addNumberOption(option => option // minstart
-                .setName('minstart')
+                .setName('min-start')
                 .setDescription('If MMR is less then this value, the player looses less points [DEFAULT = 100]')
             )
             .addNumberOption(option => option // mincap
-                .setName('mincap')
+                .setName('min-cap')
                 .setDescription('Mmr cant get below this value (Value must be >= 0 and < minStart) [DEFAULT = 0]')
             )
             .addNumberOption(option => option // maxstart
-                .setName('maxstart')
+                .setName('max-start')
                 .setDescription('If MMR is greater then this value, the player gains less points [DEFAULT = 1500]')
             )
             .addNumberOption(option => option // maxcap
-                .setName('maxcap')
+                .setName('max-cap')
                 .setDescription('Mmr cant get above this value (Value must be > maxStart) [DEFAULT = 2500]')
             )
         )
@@ -143,15 +143,15 @@ module.exports = {
             } break;
             case 'mmr-settings': {
                 const eq = queueSettingsData.mmrSettings;
-                eq.startingMmr = interaction.options.getNumber('startingmmr') ? interaction.options.getNumber('startingmmr') : eq.startingMmr;
-                eq.baseGain = interaction.options.getNumber('basegain') ? interaction.options.getNumber('basegain') : eq.baseGain;
-                eq.onesMultiplier = interaction.options.getNumber('onesmultiplier') ? interaction.options.getNumber('onesmultiplier') : eq.onesMultiplier;
-                eq.twosMultiplier = interaction.options.getNumber('twosmultiplier') ? interaction.options.getNumber('twosmultiplier') : eq.twosMultiplier;
-                eq.threesMultiplier = interaction.options.getNumber('threesmultiplier') ? interaction.options.getNumber('threesmultiplier') : eq.threesMultiplier;
-                eq.minStart = interaction.options.getNumber('minstart') ? interaction.options.getNumber('minstart') : eq.minStart;
-                eq.minCap = interaction.options.getNumber('mincap') ? interaction.options.getNumber('mincap') : eq.minCap;
-                eq.maxStart = interaction.options.getNumber('maxstart') ? interaction.options.getNumber('maxstart') : eq.maxStart;
-                eq.maxCap = interaction.options.getNumber('maxcap') ? interaction.options.getNumber('maxcap') : eq.maxCap;
+                eq.startingMmr = interaction.options.getNumber('starting-mmr') ? interaction.options.getNumber('starting-mmr') : eq.startingMmr;
+                eq.baseGain = interaction.options.getNumber('base-gain') ? interaction.options.getNumber('base-gain') : eq.baseGain;
+                eq.onesMultiplier = interaction.options.getNumber('ones-multiplier') ? interaction.options.getNumber('ones-multiplier') : eq.onesMultiplier;
+                eq.twosMultiplier = interaction.options.getNumber('twos-multiplier') ? interaction.options.getNumber('twos-multiplier') : eq.twosMultiplier;
+                eq.threesMultiplier = interaction.options.getNumber('threes-multiplier') ? interaction.options.getNumber('threes-multiplier') : eq.threesMultiplier;
+                eq.minStart = interaction.options.getNumber('min-start') ? interaction.options.getNumber('min-start') : eq.minStart;
+                eq.minCap = interaction.options.getNumber('min-cap') ? interaction.options.getNumber('min-cap') : eq.minCap;
+                eq.maxStart = interaction.options.getNumber('max-start') ? interaction.options.getNumber('max-start') : eq.maxStart;
+                eq.maxCap = interaction.options.getNumber('max-cap') ? interaction.options.getNumber('max-cap') : eq.maxCap;
 
                 queueSettingsData.mmrSettings = eq;
 

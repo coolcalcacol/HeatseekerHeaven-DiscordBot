@@ -5,6 +5,7 @@ const queueData = require('../data/queueData.js');
 const generalUtilities = require('../utils/generalUtilities')
 const playerData = require('../data/playerData');
 const playerDataStorage = require('../data/database/playerDataStorage');
+const QueueDatabase = require('../data/database/queueDataStorage.js');
 
 function queueStatusEmbed(lobby, context, interaction = null) {
     const embed = new MessageEmbed();
@@ -166,22 +167,39 @@ function playerStatsPreset(playerData, mode = 'global') {
     return embed;
 }
 
-async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
+async function leaderboardPreset(page, interaction, returnMaxPage = false) {
     const playerDataList = await playerDataStorage.find().sort({
         "stats.global.mmr": -1, 
         "stats.global.winRate": -1, 
         "stats.global.gamesPlayed": -1
-    });
+    }).catch(console.error);
+    var staleStart;
+    var staleEnd;
+    for (let i = 0; i < playerDataList.length; i++) {
+        const target = playerDataList[i];
+        if (!staleStart && (target.stats.global.winRate == 0 && target.stats.global.gamesPlayed == 0)) {
+            staleStart = i
+        }
+        else if (staleStart && (target.stats.global.winRate != 0 || target.stats.global.gamesPlayed != 0)) {
+            staleEnd = i;
+            break
+        }
+    }
+    
+    const interactorId = interaction ? interaction.user.id : '306395424690929674';
     var targetUser = {};
-    // interactorId = '306395424690929674';
     for (let i = 0; i < playerDataList.length; i++) {
         const target = playerDataList[i];
         if (target['_id'] == interactorId) {
             targetUser['data'] = target;
-            targetUser['index'] = i;
+            targetUser['index'] = i - (staleEnd - staleStart);
             break;
         }
     }
+    playerDataList.splice(staleStart, (staleEnd - staleStart));
+
+    // const queueConfig = await QueueDatabase.findOne({_id: interaction.guild.id});
+    // const startingMmr = queueConfig.mmrSettings.startingMmr;  
     const topPlayerData = playerDataList[0].userData;
     const listStart = 10 * page;
     const dataList = playerDataList.splice(listStart, 10);
@@ -189,7 +207,6 @@ async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
 
     var lineBreakChar = '─';
     var lineBreak = '───────────────';
-    var longLineBreak = '─────────────────';
     const seperator = '|'
 
     var nameDisplay = '';
@@ -213,6 +230,7 @@ async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
             lb += '\n' + lb;
             lbName += '\n' + lbName;
         }
+        // console.log(i + ': ' + player.userData.name)
 
         var userName = player.userData.mention;
 
@@ -239,7 +257,7 @@ async function leaderboardPreset(page, interactorId, returnMaxPage = false) {
                 value: nameDisplay,
                 inline: true 
             },
-            { name: `${seperator} ${ws(3.1)}MMR${ws(5)}${seperator}${ws(3.1)}Win Rate${ws(1)} ${seperator}\n` + lineBreak, 
+            { name: `${seperator} ${ws(3.1)}MMR${ws(5)}${seperator}${ws(2.1)}Win Rate${ws(1.12)} ${seperator}\n` + lineBreak, 
                 value: statsDisplay,
                 inline: true 
             },

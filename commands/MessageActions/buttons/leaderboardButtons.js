@@ -19,15 +19,15 @@ module.exports = {
             leaderboardCommand.interactors[interaction.user.id].page = currentPage;
         }
         
-        const response = await embedUtilities.presets.leaderboardPreset(currentPage, interaction.user.id, true);
+        const response = await embedUtilities.presets.leaderboardPreset(currentPage, interaction, true);
         var embed = response[0];
         if (currentPage < 0) {
             currentPage = 0;
-            embed = await embedUtilities.presets.leaderboardPreset(currentPage, interaction.user.id);
+            embed = await embedUtilities.presets.leaderboardPreset(currentPage, interaction);
         }
         if (currentPage > response[1]) {
             currentPage = response[1];
-            embed = await embedUtilities.presets.leaderboardPreset(currentPage, interaction.user.id);
+            embed = await embedUtilities.presets.leaderboardPreset(currentPage, interaction);
         }
 
         if (currentPage < response[1]) leaderboardCommand.nextPageButton.setDisabled(false);

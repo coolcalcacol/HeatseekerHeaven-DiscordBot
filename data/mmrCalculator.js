@@ -27,7 +27,10 @@ function getGameResults(winningTeam, losingTeam, equationValues) {
 
         data.stats[mode].mmr += Math.round(equation.output);
         data.stats[mode].gamesWon++;
+        data.stats[mode].gamesPlayed++;
+        
         data.stats.global.gamesWon++;
+        data.stats.global.gamesPlayed++;
 
         updatePlayerStats(data, mode, equationValues);
     }
@@ -40,7 +43,10 @@ function getGameResults(winningTeam, losingTeam, equationValues) {
 
         data.stats[mode].mmr -= Math.round(equation.output);
         data.stats[mode].gamesLost++;
+        data.stats[mode].gamesPlayed++;
+
         data.stats.global.gamesLost++;
+        data.stats.global.gamesPlayed++;
 
         updatePlayerStats(data, mode, equationValues);
     }
@@ -125,12 +131,12 @@ function calculatePlayerMmr(equationValues, combined, stats, teamMmr, gameOutcom
 function updatePlayerStats(data, mode, equationValues) {
     const w = data.stats[mode].gamesWon;
     const l = data.stats[mode].gamesLost;
-    data.stats[mode].gamesPlayed = w + l;
+    // data.stats[mode].gamesPlayed = w + l;
     data.stats[mode].winRate = generalUtilities.generate.roundToFloat((w / (w + l) * 100), 2);
 
     const globalW = data.stats.global.gamesWon;
     const globalL = data.stats.global.gamesLost;
-    data.stats.global.gamesPlayed = globalW + globalL;
+    // data.stats.global.gamesPlayed = globalW + globalL;
     data.stats.global.winRate = generalUtilities.generate.roundToFloat((globalW / (globalW + globalL) * 100), 2);
 
     PlayerData.updatePlayerData(data, equationValues);
