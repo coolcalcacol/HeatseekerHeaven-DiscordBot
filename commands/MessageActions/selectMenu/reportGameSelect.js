@@ -15,7 +15,6 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('report_select'),
     async execute(interaction) {
-        console.log(interaction);
         const report = reportCommand.reportData[interaction.customId.split('_')[2]];
         const gameData = report.gameData;
         const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id, true);
@@ -24,7 +23,6 @@ module.exports = {
         var oponentTeam; // The oposite team;
         var targetTeamName;
         var oponentTeamName; 
-        console.log('Searchig Target Team containing reporter')
         for (const team in gameData.teams) {
             for (const playerData in gameData.teams[team].members) {
                 const player = gameData.teams[team].members[playerData];

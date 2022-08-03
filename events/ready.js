@@ -8,6 +8,7 @@ const queueData = require('../data/queueData');
 const QueueDatabase = require('../data/database/queueDataStorage');
 const PlayerDatabase = require('../data/database/playerDataStorage');
 const queueSettings = require('../data/queueSettings');
+const BotDatabase = require('../data/database/botDataStorage');
 const sleep = require('node:timers/promises').setTimeout;
 // const config = require('../config/config.json');
 // const mmrSystem = require('../examples/mmr/mmrSystem');
@@ -36,6 +37,10 @@ module.exports = {
 			console.log('Updating GameID to 100')
 			await QueueDatabase.updateOne({}, {gameId: 100}).catch(console.error);
 		}
+
+		const botConfig = await BotDatabase.findOne({});
+		cConsole.log(`\nSetting the default guild id to: [fg=green]${botConfig._id}[/>]`);
+		generalData.botConfig.defaultGuildId = botConfig._id;
 	},
 	async runTestActions(client) {
 		if (generalData.debugOptions.createGameOnStart) {

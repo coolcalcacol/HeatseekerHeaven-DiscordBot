@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const GuildSettingsSchema = new mongoose.Schema({
+const BotSettingsSchema = new mongoose.Schema({
     _id: String,
     bypassUsers: Array,
 });
 
-module.exports = mongoose.model('GuildSettings', GuildSettingsSchema);
+module.exports = mongoose.model('BotSettings', BotSettingsSchema);
