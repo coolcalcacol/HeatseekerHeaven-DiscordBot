@@ -41,7 +41,7 @@ module.exports = {
                 await interaction.reply({
                     ephemeral: true,
                     content: 
-                        'Set new rank role!\n```js\n' + 
+                        'Bot Config has been updated!\n```js\n' + 
                         cConsole.decolorize(cConsole.unfoldNestedObject(JSON.parse(JSON.stringify(updatedConfig)), 2, ' ')) + 
                         '\n```'
                 }).catch(console.error);
