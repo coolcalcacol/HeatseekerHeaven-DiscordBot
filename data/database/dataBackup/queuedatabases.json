@@ -1,0 +1,90 @@
+[{
+  "_id": "811667577985302528",
+  "mmrSettings": {
+    "startingMmr": 1000,
+    "baseGain": 50,
+    "onesMultiplier": 0.2,
+    "twosMultiplier": 0.3,
+    "threesMultiplier": 0.5,
+    "minStart": 100,
+    "minCap": 0,
+    "maxStart": 1500,
+    "maxCap": 2500
+  },
+  "__v": 190,
+  "gameId": 115,
+  "channelSettings": {
+    "onesChannel": "988155328027848736",
+    "twosChannel": "988155383581397084",
+    "threesChannel": "988155424186458152",
+    "matchReportChannel": "988156314532331530",
+    "vcWaitingRoom": "999776641163202701",
+    "teamChannelCategory": "1000723221190029362",
+    "logChannel": "842093944502616104"
+  },
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1658664351789"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1659605876141"
+    }
+  },
+  "rankRoles": {
+    "global": [
+      {
+        "role": {
+          "name": "Champion",
+          "id": "1002551222479360000"
+        },
+        "distribution": "top",
+        "requirements": {
+          "mmr": -1,
+          "gamesPlayed": 5,
+          "winRate": -1
+        }
+      },
+      {
+        "role": {
+          "name": "Rising Star",
+          "id": "1002551031500115988"
+        },
+        "distribution": "25%",
+        "requirements": {
+          "mmr": -1,
+          "gamesPlayed": 3,
+          "winRate": -1
+        }
+      },
+      {
+        "role": {
+          "name": "Challenger",
+          "id": "1002550833755455648"
+        },
+        "distribution": "50%",
+        "requirements": {
+          "mmr": -1,
+          "gamesPlayed": 2,
+          "winRate": -1
+        }
+      },
+      {
+        "role": {
+          "name": "Prospect",
+          "id": "1002550472562982912"
+        },
+        "distribution": "meet-requirements",
+        "requirements": {
+          "mmr": -1,
+          "gamesPlayed": 1,
+          "winRate": -1
+        }
+      }
+    ],
+    "ones": [],
+    "twos": [],
+    "threes": []
+  }
+}]

@@ -6,10 +6,10 @@ const clientSend = require('../utils/clientSendMessage');
 const generalData = require('../data/generalData');
 const playerData = require('../data/playerData');
 const queueData = require('../data/queueData');
-const QueueDatabase = require('../data/database/queueConfigStorage');
+const QueueConfigDatabase = require('../data/database/queueConfigStorage');
 const PlayerDatabase = require('../data/database/playerDataStorage');
 const queueSettings = require('../data/queueSettings');
-const BotDatabase = require('../data/database/botConfigStorage');
+const BotConfigDatabase = require('../data/database/botConfigStorage');
 const sleep = require('node:timers/promises').setTimeout;
 // const config = require('../config/config.json');
 // const mmrSystem = require('../examples/mmr/mmrSystem');
@@ -29,24 +29,33 @@ module.exports = {
 		await this.runTestActions(client);
 	},
 	async Awake(client) {
-		const storedQueueData = await QueueDatabase.findOne({});
+		generalData.botStats.upTime = new Date();
+
+		var botConfig = await BotConfigDatabase.findOne({});
+		if (!botConfig) {
+			await BotConfigDatabase.insertMany({_id: generalData.botConfig.defaultGuildId});
+			botConfig = await BotConfigDatabase.findOne({});
+		}
+
+		cConsole.log(`\nSetting the default guild id to: [fg=green]${botConfig._id}[/>]`);
+		generalData.botConfig.defaultGuildId = botConfig._id;
+
+		cConsole.log(`Debug mode is: ${generalData.debugMode}`);
+		console.log('');
+
+		var storedQueueData = await QueueConfigDatabase.findOne({});
+		if (!storedQueueData) {
+			await QueueConfigDatabase.insertMany({_id: generalData.botConfig.defaultGuildId});
+			storedQueueData = await QueueConfigDatabase.findOne({});
+		}
 		if (storedQueueData.gameId >= 100) {
 			queueData.info.globalQueueData.gameId = storedQueueData.gameId;
 		}
 		else {
 			queueData.info.globalQueueData.gameId = 100;
 			console.log('Updating GameID to 100');
-			await QueueDatabase.updateOne({}, {gameId: 100}).catch(console.error);
+			await QueueConfigDatabase.updateOne({}, {gameId: 100}).catch(console.error);
 		}
-
-		generalData.botStats.upTime = new Date();
-
-		const botConfig = await BotDatabase.findOne({});
-		cConsole.log(`\nSetting the default guild id to: [fg=green]${botConfig._id}[/>]`);
-		generalData.botConfig.defaultGuildId = botConfig._id;
-
-		cConsole.log(`Debug mode is: ${generalData.debugMode}`);
-		console.log('');
 	},
 	async runTestActions(client) {
 		if (generalData.debugOptions.createGameOnStart) {
@@ -100,7 +109,7 @@ module.exports = {
 		// playerData.updatePlayerRanks('811667577985302528');
 		
 		// const data = await PlayerDatabase.find();
-		// const v = await QueueDatabase.findOne({_id: '811667577985302528'});
+		// const v = await QueueConfigDatabase.findOne({_id: '811667577985302528'});
 		// for (let i = 0; i < data.length; i++) {
 		// 	const player = data[i];
 		// 	playerData.updatePlayerData(player, v.mmrSettings);
