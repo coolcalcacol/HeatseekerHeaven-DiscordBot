@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 
-const QueueDataSchema = new mongoose.Schema({
+const QueueConfigSchema = new mongoose.Schema({
     _id: String,
     gameId: {type: Number, default: 100},
     channelSettings: {
@@ -34,4 +34,4 @@ const QueueDataSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 
-module.exports = mongoose.model('QueueDatabase', QueueDataSchema);
+module.exports = mongoose.model('QueueConfigDatabase', QueueConfigSchema);

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const GuildSettingsSchema = new mongoose.Schema({
+const GuildConfigSchema = new mongoose.Schema({
     _id: String,
     adminRole: String
 });
 
-module.exports = mongoose.model('GuildSettings', GuildSettingsSchema);
+module.exports = mongoose.model('GuildConfigDatabase', GuildConfigSchema);
