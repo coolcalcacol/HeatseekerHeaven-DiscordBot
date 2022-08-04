@@ -131,6 +131,13 @@ function isObject(target) {
 	return false;
 }
 
+function getTimestamp(date) {
+	const rawTime = date.getTime().toString();
+	const timeSplit = rawTime.split('');
+	const time = timeSplit.splice(0, 10).join('');
+	return time;
+}
+
 module.exports.info = {
     getUserById,
 	getMemberById,
@@ -141,7 +148,8 @@ module.exports.generate = {
     getRandomInt,
     getArrayElementByChance,
     roundToFloat,
-    getAllCobinations
+    getAllCobinations,
+	getTimestamp
 }
 module.exports.actions = {
     sleep

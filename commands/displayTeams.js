@@ -13,6 +13,7 @@ module.exports = {
         if (typeof playerStatus == 'object') {
             await interaction.reply({
                 ephemeral: true,
+                content: `Teams for Game \`${playerStatus.gameId}\``,
                 embeds: embedUtilities.presets.queueGameStartPreset(playerStatus, true)
             }).catch(console.error);
         }

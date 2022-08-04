@@ -5,7 +5,7 @@ const queueData = require('../data/queueData.js');
 const generalUtilities = require('../utils/generalUtilities')
 const playerData = require('../data/playerData');
 const playerDataStorage = require('../data/database/playerDataStorage');
-const QueueDatabase = require('../data/database/queueDataStorage.js');
+const QueueDatabase = require('../data/database/queueConfigStorage.js');
 
 function queueStatusEmbed(lobby, context, interaction = null) {
     const embed = new MessageEmbed();
@@ -48,7 +48,7 @@ function queueGameStartPreset(gameData, teamsOnly = false) {
     const header = new MessageEmbed()
         .setColor('#000000')
         .setTitle('Teams have been selected!')
-        .setDescription('__**Match ID**__:\n```        hs' + gameData.gameId + '```')
+        .setDescription('__**Match ID**__:\n```js\n        hs' + gameData.gameId + '\n```')
     const teamBlue = new MessageEmbed()
         .setColor('#0000FF')
         .addFields(
@@ -105,20 +105,20 @@ function gameResultPreset(gameData, gameResults, reporter, winningTeamName) {
     embed.setTitle('Game Results');
     embed.setColor('#00ff00');
     embed.addFields(
-        { name: 'Game ID', value: '```' + gameData.gameId.toString() + '```', inline: true },
+        { name: 'Game ID', value: '```' + getFieldSpacing(gameData.gameId, 12) + '```', inline: true },
         { 
             name: 'Reported By', 
-            value: '```' + reporter.username + '```',
+            value: '```' + getFieldSpacing(reporter.username, 12) + '```',
             inline: true
         },
-        { name: 'Winners', value: '```Team ' + winningTeamName + '```', inline: true },
+        { name: 'Winners', value: '```' + getFieldSpacing('Team ' + winningTeamName, 12) + '```', inline: true },
         // { name: 'MMR Distrebution', value: '``` Total Gained: 45 | Total Loss: 45 | Ratio: +/-0.00 ```', inline: false }
     );
 
     var mmrFields = [];
     for (let i = 0; i < gameResults.length; i++) {
         const result = gameResults[i];
-        mmrFields.push({ name: gameResults[i][0], value: gameResults[i][1], inline: true })
+        mmrFields.push({ name: gameResults[i][0], value: `\`\`\`js\n${getFieldSpacing(gameResults[i][1], 12)}\n\`\`\``, inline: true })
     }
     embed.addFields(mmrFields);
     embed.setFooter({text: reporter.username, iconURL: reporter.displayAvatarURL()});
@@ -287,6 +287,8 @@ async function leaderboardPreset(page, interaction, returnMaxPage = false) {
 function getFieldSpacing(value, spaces) {
     var output = '';
 
+    // value = value.toString().replace(' ', '◘')
+    
     var chars = value.toString().split('').length;
     var space = spaces - chars;
     var leftSpace = Math.ceil(space / 2);
@@ -295,8 +297,6 @@ function getFieldSpacing(value, spaces) {
     for (let i = 0; i < leftSpace; i++) { output += ' '; }
     output += value
     for (let i = 0; i < rightSpace; i++) { output += ' '; }
-
-    // console.log(`${spaces} - ${chars}\n${leftSpace} | ${rightSpace}\n`);
 
     return output;
 }

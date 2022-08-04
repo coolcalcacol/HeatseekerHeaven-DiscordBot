@@ -1,6 +1,6 @@
 const cConsole = require('./customConsoleLog.js');
 const generalData = require('../data/generalData.js');
-const QueueDatabase = require('../data/database/queueDataStorage');
+const QueueDatabase = require('../data/database/queueConfigStorage');
 
 
 async function getRankedLobbyById(id) {

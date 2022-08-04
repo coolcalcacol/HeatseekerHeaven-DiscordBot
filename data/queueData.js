@@ -1,6 +1,6 @@
 const config = require('../config/config.json');
 const GeneralData = require('./generalData');
-const QueueDatabase = require('./database/queueDataStorage');
+const QueueDatabase = require('./database/queueConfigStorage');
 // const { client } = require('./generalData');
 const clientSendMessage = require('../utils/clientSendMessage');
 const embedUtilities = require('../utils/embedUtilities');

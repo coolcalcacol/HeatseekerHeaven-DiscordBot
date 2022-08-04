@@ -1,4 +1,4 @@
-const QueueDatabase = require('./database/queueDataStorage');
+const QueueDatabase = require('./database/queueConfigStorage');
 const generalData = require('./generalData.js');
 const generalUtilities = require('../utils/generalUtilities');
 const cConsole = require('../utils/customConsoleLog.js');

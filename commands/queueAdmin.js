@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, MessageEmbed } = require('discord.js');
 const config = require('../config/config.json');
-const GuildSettings = require('../data/database/guildDataStorage')
+const GuildSettings = require('../data/database/guildConfigStorage')
 const generalData = require('../data/generalData');
 const playerData = require('../data/playerData');
 const cConsole = require('../utils/customConsoleLog');

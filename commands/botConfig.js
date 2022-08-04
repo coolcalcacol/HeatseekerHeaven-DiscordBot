@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const BotDatabase = require('../data/database/botDataStorage');
+const BotDatabase = require('../data/database/botConfigStorage');
 const generalData = require('../data/generalData');
 const cConsole = require('../utils/customConsoleLog')
 
@@ -38,11 +38,14 @@ module.exports = {
                 const updatedConfig = await BotDatabase.findOne({});
                 cConsole.log(`Updating the default guild id to: [fg=green]${updatedConfig._id}[/>]`);
                 generalData.botConfig.defaultGuildId = updatedConfig._id;
+                
+                const configClone = JSON.parse(JSON.stringify(updatedConfig));
+                delete configClone.bypassUsers;
                 await interaction.reply({
                     ephemeral: true,
                     content: 
                         'Bot Config has been updated!\n```js\n' + 
-                        cConsole.decolorize(cConsole.unfoldNestedObject(JSON.parse(JSON.stringify(updatedConfig)), 2, ' ')) + 
+                        cConsole.decolorize(cConsole.unfoldNestedObject(configClone, 2, ' ')) + 
                         '\n```'
                 }).catch(console.error);
             } break;

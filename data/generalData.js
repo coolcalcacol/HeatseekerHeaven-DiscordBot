@@ -22,6 +22,9 @@ module.exports = {
         queueSettings: false,
         queueConfigCommands: false,
     },
+    botStats: {
+        upTime: null,
+    },
     userWhitelist: [
         // '267442458638417921', // NoLimitGoten [lEFT THE SERVER]
         // '479936093047750659', // 888% [Bypass]

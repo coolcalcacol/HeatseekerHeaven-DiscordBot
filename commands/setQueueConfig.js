@@ -1,6 +1,6 @@
 const { SlashCommandBuilder,ChannelT} = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
-const QueueDatabase = require('../data/database/queueDataStorage');
+const QueueDatabase = require('../data/database/queueConfigStorage');
 const queueSettings = require('../data/queueSettings');
 const playerData = require('../data/playerData');
 const generalData = require('../data/generalData');
@@ -216,9 +216,14 @@ module.exports = {
             );
         }
         if (queueSettingsData.channelSettings.logChannel) {
+            const date = new Date();
+            const rawTime = date.getTime();
+            const time = rawTime.split('').splice(8, this.length - 1);
+            console.log(time)
             clientSendMessage.sendMessageTo(
                 queueSettingsData.channelSettings.logChannel,
-                '__**New/Updated Config Document**__:\n```js\n' + queueSettingsData + '```',
+                '__**New/Updated Config Document**__:\n```js\n' + queueSettingsData + '```' + 
+                '<t:' + timestamp + ':R>'
             );
         }
         // await interaction.followUp({
