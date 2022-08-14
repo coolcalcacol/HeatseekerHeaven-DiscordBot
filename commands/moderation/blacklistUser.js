@@ -3,7 +3,15 @@ const { Permissions } = require('discord.js');
 
 const QueueDatabase = require('../../data/database/queueDataStorage');
 const playerData = require('../../data/playerData');
+
+const botUpdate = require('../../events/botUpdate');
+
 const generalUtilities = require('../../utils/generalUtilities');
+const cConsole = require('../../utils/customConsoleLog');
+
+
+
+const getGuildQueueData = async function (guildId) {return await QueueDatabase.findOne({_id: guildId}).catch(console.error);};
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -63,13 +71,13 @@ module.exports = {
         );
         
 
-        const getGuildQueueData = async function () {return await QueueDatabase.findOne({_id: interaction.guild.id}).catch(console.error);};
-        if (!await getGuildQueueData()) {
+        // const getGuildQueueData = async function () {return await QueueDatabase.findOne({_id: interaction.guild.id}).catch(console.error);};
+        if (!await getGuildQueueData(interaction.guild.id)) {
             await QueueDatabase.insertMany({_id: interaction.guild.id});
             // guildQueueData = await QueueDatabase.findOne({_id: interaction.guild.id}).catch(console.error);
         }
 
-        const guildQueueData = await getGuildQueueData();
+        const guildQueueData = await getGuildQueueData(interaction.guild.id);
 
         const guildBlacklist = await guildQueueData.userBlacklist;
         guildBlacklist[targetPlayerData._id] = {playerData: targetPlayerData, duration: durationTime};
@@ -77,9 +85,21 @@ module.exports = {
         guildQueueData.__v = guildQueueData.__v + 1;
         await QueueDatabase.updateOne({_id: interaction.guild.id}, guildQueueData);
 
+        new botUpdate.UpdateTimer(targetPlayerData._id, durationTime.getTime(), this.removeUserFromBlacklist.bind(this, targetPlayerData._id, interaction.guild.id));
+
         await interaction.reply({
             ephemeral: true,
             content: `${targetPlayerData.userData.mention} has been added to the blacklist.\nBlacklist experation: <t:${generalUtilities.generate.getTimestamp(durationTime)}:R>`
         }).catch(console.error);
     },
+    async removeUserFromBlacklist(id, guildId) {
+        const guildQueueData = await getGuildQueueData(guildId);
+        if (Object.keys(guildQueueData.userBlacklist).length <= 1) {
+            guildQueueData.userBlacklist['placeholder'] = 'placeholder';
+        }
+        delete guildQueueData.userBlacklist[id];
+        console.log(guildQueueData.userBlacklist);
+        await QueueDatabase.updateOne({_id: guildId}, guildQueueData).catch(console.error);
+        cConsole.log('removed user from blacklist\n' + id + '\n');
+    }
 };

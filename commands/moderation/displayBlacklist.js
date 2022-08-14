@@ -32,9 +32,14 @@ module.exports = {
         var nameFields = '';
         var durationFields = '';
         for (const user in guildBlacklist) {
+            if (user == 'placeholder') continue;
             const target = guildBlacklist[user];
             nameFields += target.playerData.userData.mention + '\n' + lineBreak + '\n';
             durationFields += `<t:${generalUtilities.generate.getTimestamp(target.duration)}:R>\n${lineBreak}\n` 
+        }
+        if (nameFields == '') {
+            nameFields = ' - ';
+            durationFields = ' - '
         }
 
         const embed = new MessageEmbed({

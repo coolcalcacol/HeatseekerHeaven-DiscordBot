@@ -28,6 +28,12 @@ module.exports = {
                     embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)
                 });
             } break;
+            case 'userIsBlacklisted': {
+                await interaction.reply({
+                    content: 'You do not have permission to queue at this time sinse you have been blacklisted.', 
+                    ephemeral: true
+                });
+            } break;
             case 'inQueue': {
                 await interaction.reply({
                     content: 'You are already in the queue', 
@@ -49,7 +55,7 @@ module.exports = {
         
             default: {
                 await interaction.reply({
-                    content: 'Something went wrong.... I dont know what else to tell you here....', 
+                    content: 'Something went wrong.... I dont know what else to tell you here....\nReturn status: `' + response + '`', 
                     ephemeral: true
                 });
             } break;

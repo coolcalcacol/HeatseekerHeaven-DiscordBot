@@ -7,7 +7,7 @@ module.exports = {
         defaultGuildId: '811667577985302528',
     },
     debugOptions: {
-        createGameOnStart: true,
+        createGameOnStart: false,
         gameOnStartLobby: 'threes'
     },
     logOptions : {

@@ -1,20 +1,23 @@
-const fs = require('fs');
+const QueueConfigDatabase = require('../data/database/queueConfigStorage');
+const PlayerDatabase = require('../data/database/playerDataStorage');
+const BotConfigDatabase = require('../data/database/botConfigStorage');
+const queueSettings = require('../data/queueSettings');
+
+const generalData = require('../data/generalData');
+const playerData = require('../data/playerData');
+const queueData = require('../data/queueData');
+
 const cConsole = require('../utils/customConsoleLog');
 const embedUtilities = require('../utils/embedUtilities');
 const generalUtilities = require('../utils/generalUtilities');
 const clientSend = require('../utils/clientSendMessage');
-const generalData = require('../data/generalData');
-const playerData = require('../data/playerData');
-const queueData = require('../data/queueData');
-const QueueConfigDatabase = require('../data/database/queueConfigStorage');
-const PlayerDatabase = require('../data/database/playerDataStorage');
-const queueSettings = require('../data/queueSettings');
-const BotConfigDatabase = require('../data/database/botConfigStorage');
+
+const botUpdate = require('./botUpdate');
+
 const sleep = require('node:timers/promises').setTimeout;
 // const config = require('../config/config.json');
 // const mmrSystem = require('../examples/mmr/mmrSystem');
 // const mmrCalculation = require('../Examples/mmr/mmrCalculation');
-// const { databaseUtilities } = require('../utils/utilityManager');
 
 const userWhitelist = generalData.userWhitelist;
 
@@ -56,6 +59,8 @@ module.exports = {
 			console.log('Updating GameID to 100');
 			await QueueConfigDatabase.updateOne({}, {gameId: 100}).catch(console.error);
 		}
+
+		botUpdate.Start();
 	},
 	async runTestActions(client) {
 		if (generalData.debugOptions.createGameOnStart) {

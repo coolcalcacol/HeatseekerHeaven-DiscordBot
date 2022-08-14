@@ -1,15 +1,17 @@
-const config = require('../config/config.json');
-const GeneralData = require('./generalData');
-const QueueDatabase = require('./database/queueConfigStorage');
+const QueueConfig = require('./database/queueConfigStorage');
+const QueueDatabase = require('./database/queueDataStorage');
 // const { client } = require('./generalData');
+const PlayerData = require('./playerData');
+const generalData = require('./generalData');
+const queueSettings = require('./queueSettings');
+
 const clientSendMessage = require('../utils/clientSendMessage');
 const embedUtilities = require('../utils/embedUtilities');
 const databaseUtilities = require('../utils/databaseUtilities');
 const cConsole = require('../utils/customConsoleLog');
 const generalUtilities = require('../utils/generalUtilities');
-const PlayerData = require('./playerData');
-const generalData = require('./generalData');
-const queueSettings = require('./queueSettings');
+
+const config = require('../config/config.json');
 const { logOptions } = require('./generalData');
 
 var globalQueueData = {
@@ -34,7 +36,7 @@ var globalQueueData = {
     async getGameID(readOnly = false) {
         if (!readOnly) {
             this.gameId++;
-            await QueueDatabase.updateOne({}, {gameId: this.gameId}).catch(console.error);
+            await QueueConfig.updateOne({}, {gameId: this.gameId}).catch(console.error);
         }
         return this.gameId;
     },
@@ -68,7 +70,7 @@ class GameLobbyData {
     async requestGameId() {
         globalQueueData.gameId += 1;
         this.gameId = globalQueueData.gameId;
-        await QueueDatabase.updateOne({}, {gameId: this.gameId}).catch(console.error);
+        await QueueConfig.updateOne({}, {gameId: this.gameId}).catch(console.error);
     }
     getTeams() {
         switch (this.lobby) {
@@ -201,13 +203,13 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null, queueS
     if (!interaction && !userId) {console.log('No interaction param.'); return}
     if (userId == null) { userId = interaction.user.id; }
 
-    const playerReservedStatus = userReservedStatus(userId);
+    const playerReservedStatus = await userReservedStatus(userId);
     if (playerReservedStatus != false) return playerReservedStatus;
 
 
     await PlayerData.getPlayerDataById(userId, true, queueSettingsData)
         .then(async (foundData) => {
-            if (GeneralData.logOptions.getPlayerData) {
+            if (generalData.logOptions.getPlayerData) {
                 console.log('Received PlayerData [addPlayerToQueue]');
                 console.log(foundData);
             }
@@ -218,7 +220,7 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null, queueS
 
     if (Object.keys(globalQueueData.lobby[lobby].players).length == globalQueueData.lobby[lobby].queueSize) {
         // Start the queue
-        if (GeneralData.logOptions.gameData) { console.log('Starting the queue for lobby: ' + lobby); }
+        if (generalData.logOptions.gameData) { console.log('Starting the queue for lobby: ' + lobby); }
         await startQueue(lobby, interaction ? interaction.guild.id : config.botSetupGuildId);
         return 'gameStarted';
     }
@@ -249,12 +251,12 @@ async function startQueue(lobby, guildId, gameData = null) {
         .then(globalQueueData.clearLobbyQueue(lobby));
 
     globalQueueData.gamesInProgress.push(game);
-    if (GeneralData.logOptions.gameData) console.log(globalQueueData.gamesInProgress);
+    if (generalData.logOptions.gameData) console.log(globalQueueData.gamesInProgress);
 
     var msgContent = '';
     for (const player in game.players) {
         const user = game.players[player];
-        if (GeneralData.debugMode) {
+        if (generalData.debugMode) {
             msgContent += '`' + user.userData.mention + '` ';
         }
         else {
@@ -276,7 +278,16 @@ function getCurrentQueue(lobby = 0) {
     }
 }
 
-function userReservedStatus(userId, returnGameData = false) {
+async function userReservedStatus(userId, returnGameData = false) {
+    const guildQueueData = await QueueDatabase.findOne({_id: generalData.botConfig.defaultGuildId});
+    const blacklist = guildQueueData.userBlacklist;
+
+    for (const user in blacklist) {
+        if (userId == user) {
+            if (user == 'placeholder') continue;
+            return 'userIsBlacklisted';
+        }
+    }
     for (const room in globalQueueData.lobby) {
         for (const player in globalQueueData.lobby[room].players) {
             if (userId == player)  return 'inQueue';
