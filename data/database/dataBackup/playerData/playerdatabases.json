@@ -68,7 +68,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325723"
+      "$numberLong": "1659651897165"
     }
   }
 },{
@@ -168,7 +168,10 @@
       "gamesWon": 3,
       "gamesLost": 3,
       "winRate": 50,
-      "rank": null
+      "rank": {
+        "name": "Rising Star",
+        "id": "1002551031500115988"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -203,7 +206,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577326111"
+      "$numberLong": "1659651897179"
     }
   }
 },{
@@ -549,7 +552,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325756"
+      "$numberLong": "1659651897218"
     }
   }
 },{
@@ -625,10 +628,10 @@
   "_id": "646927153614553122",
   "userData": {
     "roles": [
-      "1002550833755455648",
       "945702330312044594",
       "811667577985302531",
-      "949293757805764668"
+      "949293757805764668",
+      "1002551031500115988"
     ],
     "name": "Vll Vlone",
     "mention": "<@646927153614553122>",
@@ -648,11 +651,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 940,
-      "gamesPlayed": 11,
-      "gamesWon": 4,
-      "gamesLost": 7,
-      "winRate": 41.66,
+      "mmr": 976,
+      "gamesPlayed": 26,
+      "gamesWon": 12,
+      "gamesLost": 14,
+      "winRate": 46.15,
       "rank": null
     },
     "ones": {
@@ -672,15 +675,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 879,
-      "gamesPlayed": 11,
-      "gamesWon": 4,
-      "gamesLost": 7,
-      "winRate": 41.66,
+      "mmr": 952,
+      "gamesPlayed": 26,
+      "gamesWon": 12,
+      "gamesLost": 14,
+      "winRate": 46.15,
       "rank": null
     }
   },
-  "__v": 14,
+  "__v": 26,
   "createdAt": {
     "$date": {
       "$numberLong": "1659299620854"
@@ -688,7 +691,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659600231640"
+      "$numberLong": "1659651897582"
     }
   }
 },{
@@ -719,12 +722,15 @@
   },
   "stats": {
     "global": {
-      "mmr": 1257,
-      "gamesPlayed": 12,
-      "gamesWon": 12,
-      "gamesLost": 0,
-      "winRate": 100,
-      "rank": null
+      "mmr": 1349,
+      "gamesPlayed": 21,
+      "gamesWon": 20,
+      "gamesLost": 1,
+      "winRate": 95.23,
+      "rank": {
+        "name": "Champion",
+        "id": "1002551222479360000"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -743,15 +749,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 1457,
-      "gamesPlayed": 10,
-      "gamesWon": 10,
-      "gamesLost": 0,
-      "winRate": 100,
+      "mmr": 1640,
+      "gamesPlayed": 19,
+      "gamesWon": 18,
+      "gamesLost": 1,
+      "winRate": 94.73,
       "rank": null
     }
   },
-  "__v": 19,
+  "__v": 27,
   "createdAt": {
     "$date": {
       "$numberLong": "1659302100812"
@@ -759,16 +765,16 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659600231794"
+      "$numberLong": "1659651897157"
     }
   }
 },{
   "_id": "201039454930993152",
   "userData": {
     "roles": [
-      "1002550833755455648",
       "945702330312044594",
-      "949293757805764668"
+      "949293757805764668",
+      "1002551031500115988"
     ],
     "name": "MarshmallowDerp",
     "mention": "<@201039454930993152>",
@@ -788,11 +794,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 954,
-      "gamesPlayed": 4,
-      "gamesWon": 1,
-      "gamesLost": 3,
-      "winRate": 25,
+      "mmr": 955,
+      "gamesPlayed": 6,
+      "gamesWon": 2,
+      "gamesLost": 4,
+      "winRate": 33.33,
       "rank": {
         "name": "Challenger",
         "id": "1002550833755455648"
@@ -815,15 +821,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 907,
-      "gamesPlayed": 4,
-      "gamesWon": 1,
-      "gamesLost": 3,
-      "winRate": 25,
+      "mmr": 910,
+      "gamesPlayed": 6,
+      "gamesWon": 2,
+      "gamesLost": 4,
+      "winRate": 33.33,
       "rank": null
     }
   },
-  "__v": 7,
+  "__v": 9,
   "createdAt": {
     "$date": {
       "$numberLong": "1659302101278"
@@ -831,22 +837,23 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325747"
+      "$numberLong": "1659651897205"
     }
   }
 },{
   "_id": "399024946631802891",
   "userData": {
     "roles": [
+      "1002551222479360000",
       "945702330312044594",
-      "949293757805764668",
       "811667577985302533",
-      "946028315934851162"
+      "946028315934851162",
+      "949293757805764668"
     ],
     "name": "Wesh",
     "mention": "<@399024946631802891>",
     "discriminator": "4386",
-    "displayColor": "#ff5354",
+    "displayColor": "#a222b4",
     "avatar": "https://cdn.discordapp.com/avatars/399024946631802891/aebcb80089834b78b482fe0306f80970.png?size=1024",
     "createdAt": {
       "$date": {
@@ -861,11 +868,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
+      "mmr": 1068,
+      "gamesPlayed": 7,
+      "gamesWon": 5,
+      "gamesLost": 2,
+      "winRate": 71.42,
       "rank": null
     },
     "ones": {
@@ -885,15 +892,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
+      "mmr": 1136,
+      "gamesPlayed": 7,
+      "gamesWon": 5,
+      "gamesLost": 2,
+      "winRate": 71.42,
       "rank": null
     }
   },
-  "__v": 6,
+  "__v": 11,
   "createdAt": {
     "$date": {
       "$numberLong": "1659302101792"
@@ -901,7 +908,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659343815551"
+      "$numberLong": "1659651897295"
     }
   }
 },{
@@ -1110,7 +1117,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325734"
+      "$numberLong": "1659651897189"
     }
   }
 },{
@@ -1182,7 +1189,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325733"
+      "$numberLong": "1659651897184"
     }
   }
 },{
@@ -1213,11 +1220,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 1141,
-      "gamesPlayed": 17,
-      "gamesWon": 12,
-      "gamesLost": 5,
-      "winRate": 70.58,
+      "mmr": 1200,
+      "gamesPlayed": 22,
+      "gamesWon": 16,
+      "gamesLost": 6,
+      "winRate": 72.72,
       "rank": {
         "name": "Champion",
         "id": "1002551222479360000"
@@ -1240,15 +1247,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 1246,
-      "gamesPlayed": 14,
-      "gamesWon": 10,
-      "gamesLost": 4,
-      "winRate": 71.42,
+      "mmr": 1363,
+      "gamesPlayed": 19,
+      "gamesWon": 14,
+      "gamesLost": 5,
+      "winRate": 73.68,
       "rank": null
     }
   },
-  "__v": 24,
+  "__v": 28,
   "createdAt": {
     "$date": {
       "$numberLong": "1659302826342"
@@ -1256,7 +1263,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325718"
+      "$numberLong": "1659651897159"
     }
   }
 },{
@@ -1397,7 +1404,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325753"
+      "$numberLong": "1659651897214"
     }
   }
 },{
@@ -1495,12 +1502,15 @@
   },
   "stats": {
     "global": {
-      "mmr": 976,
-      "gamesPlayed": 24,
-      "gamesWon": 10,
-      "gamesLost": 14,
-      "winRate": 41.66,
-      "rank": null
+      "mmr": 868,
+      "gamesPlayed": 33,
+      "gamesWon": 12,
+      "gamesLost": 21,
+      "winRate": 36.36,
+      "rank": {
+        "name": "Challenger",
+        "id": "1002550833755455648"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -1519,15 +1529,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 1053,
-      "gamesPlayed": 16,
-      "gamesWon": 8,
-      "gamesLost": 8,
-      "winRate": 50,
+      "mmr": 837,
+      "gamesPlayed": 25,
+      "gamesWon": 10,
+      "gamesLost": 15,
+      "winRate": 40,
       "rank": null
     }
   },
-  "__v": 26,
+  "__v": 34,
   "createdAt": {
     "$date": {
       "$numberLong": "1659306616905"
@@ -1535,7 +1545,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577326271"
+      "$numberLong": "1659651897211"
     }
   }
 },{
@@ -1746,16 +1756,16 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325726"
+      "$numberLong": "1659651897169"
     }
   }
 },{
   "_id": "306395424690929674",
   "userData": {
     "roles": [
-      "811667577985302533",
       "811667577998671923",
       "811667577998671924",
+      "811667577985302533",
       "1002551031500115988",
       "946028315934851162"
     ],
@@ -1777,12 +1787,15 @@
   },
   "stats": {
     "global": {
-      "mmr": 968,
-      "gamesPlayed": 22,
-      "gamesWon": 11,
-      "gamesLost": 11,
-      "winRate": 52.17,
-      "rank": null
+      "mmr": 1013,
+      "gamesPlayed": 39,
+      "gamesWon": 20,
+      "gamesLost": 19,
+      "winRate": 51.28,
+      "rank": {
+        "name": "Champion",
+        "id": "1002551222479360000"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -1801,15 +1814,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 896,
-      "gamesPlayed": 11,
-      "gamesWon": 4,
-      "gamesLost": 7,
-      "winRate": 41.66,
+      "mmr": 986,
+      "gamesPlayed": 28,
+      "gamesWon": 13,
+      "gamesLost": 15,
+      "winRate": 46.42,
       "rank": null
     }
   },
-  "__v": 44,
+  "__v": 57,
   "createdAt": {
     "$date": {
       "$numberLong": "1659306826268"
@@ -1817,7 +1830,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659600231472"
+      "$numberLong": "1659651897173"
     }
   }
 },{
@@ -1891,7 +1904,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325738"
+      "$numberLong": "1659651897196"
     }
   }
 },{
@@ -1989,11 +2002,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 927,
-      "gamesPlayed": 10,
-      "gamesWon": 3,
-      "gamesLost": 7,
-      "winRate": 30,
+      "mmr": 896,
+      "gamesPlayed": 24,
+      "gamesWon": 9,
+      "gamesLost": 15,
+      "winRate": 37.5,
       "rank": {
         "name": "Challenger",
         "id": "1002550833755455648"
@@ -2016,15 +2029,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 908,
-      "gamesPlayed": 4,
-      "gamesWon": 1,
-      "gamesLost": 3,
-      "winRate": 25,
+      "mmr": 845,
+      "gamesPlayed": 18,
+      "gamesWon": 7,
+      "gamesLost": 11,
+      "winRate": 38.88,
       "rank": null
     }
   },
-  "__v": 12,
+  "__v": 23,
   "createdAt": {
     "$date": {
       "$numberLong": "1659313491457"
@@ -2032,7 +2045,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325751"
+      "$numberLong": "1659651897209"
     }
   }
 },{
@@ -2105,7 +2118,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325724"
+      "$numberLong": "1659651897167"
     }
   }
 },{
@@ -2203,11 +2216,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 1091,
-      "gamesPlayed": 7,
-      "gamesWon": 6,
+      "mmr": 1160,
+      "gamesPlayed": 10,
+      "gamesWon": 9,
       "gamesLost": 1,
-      "winRate": 85.71,
+      "winRate": 90,
       "rank": {
         "name": "Champion",
         "id": "1002551222479360000"
@@ -2230,15 +2243,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 1094,
-      "gamesPlayed": 4,
-      "gamesWon": 3,
+      "mmr": 1233,
+      "gamesPlayed": 7,
+      "gamesWon": 6,
       "gamesLost": 1,
-      "winRate": 75,
+      "winRate": 85.71,
       "rank": null
     }
   },
-  "__v": 7,
+  "__v": 10,
   "createdAt": {
     "$date": {
       "$numberLong": "1659369216363"
@@ -2246,17 +2259,17 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325720"
+      "$numberLong": "1659651897162"
     }
   }
 },{
   "_id": "509407463565557761",
   "userData": {
     "roles": [
+      "1002551222479360000",
       "945702330312044594",
       "811667577985302531",
-      "949293757805764668",
-      "1002551031500115988"
+      "949293757805764668"
     ],
     "name": "Qui1ln 🗿",
     "mention": "<@509407463565557761>",
@@ -2276,15 +2289,12 @@
   },
   "stats": {
     "global": {
-      "mmr": 963,
-      "gamesPlayed": 4,
-      "gamesWon": 1,
-      "gamesLost": 3,
-      "winRate": 40,
-      "rank": {
-        "name": "Rising Star",
-        "id": "1002551031500115988"
-      }
+      "mmr": 965,
+      "gamesPlayed": 16,
+      "gamesWon": 7,
+      "gamesLost": 9,
+      "winRate": 43.75,
+      "rank": null
     },
     "ones": {
       "mmr": 1000,
@@ -2303,15 +2313,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 950,
-      "gamesPlayed": 1,
-      "gamesWon": 0,
-      "gamesLost": 1,
-      "winRate": 50,
+      "mmr": 953,
+      "gamesPlayed": 13,
+      "gamesWon": 6,
+      "gamesLost": 7,
+      "winRate": 46.15,
       "rank": null
     }
   },
-  "__v": 5,
+  "__v": 14,
   "createdAt": {
     "$date": {
       "$numberLong": "1659369232380"
@@ -2319,7 +2329,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325742"
+      "$numberLong": "1659651897433"
     }
   }
 },{
@@ -2355,8 +2365,8 @@
       "gamesLost": 5,
       "winRate": 37.5,
       "rank": {
-        "name": "Rising Star",
-        "id": "1002551031500115988"
+        "name": "Challenger",
+        "id": "1002550833755455648"
       }
     },
     "ones": {
@@ -2392,7 +2402,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325744"
+      "$numberLong": "1659651897201"
     }
   }
 },{
@@ -2464,7 +2474,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325727"
+      "$numberLong": "1659651897172"
     }
   }
 },{
@@ -2493,12 +2503,15 @@
   },
   "stats": {
     "global": {
-      "mmr": 1022,
-      "gamesPlayed": 14,
+      "mmr": 976,
+      "gamesPlayed": 16,
       "gamesWon": 8,
-      "gamesLost": 6,
-      "winRate": 57.14,
-      "rank": null
+      "gamesLost": 8,
+      "winRate": 50,
+      "rank": {
+        "name": "Challenger",
+        "id": "1002550833755455648"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -2517,15 +2530,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 1043,
-      "gamesPlayed": 14,
+      "mmr": 951,
+      "gamesPlayed": 16,
       "gamesWon": 8,
-      "gamesLost": 6,
-      "winRate": 57.14,
+      "gamesLost": 8,
+      "winRate": 50,
       "rank": null
     }
   },
-  "__v": 12,
+  "__v": 13,
   "createdAt": {
     "$date": {
       "$numberLong": "1659479588623"
@@ -2533,7 +2546,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577326697"
+      "$numberLong": "1659651897199"
     }
   }
 },{
@@ -2606,7 +2619,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325736"
+      "$numberLong": "1659651897193"
     }
   }
 },{
@@ -2641,8 +2654,8 @@
       "gamesLost": 3,
       "winRate": 50,
       "rank": {
-        "name": "Champion",
-        "id": "1002551222479360000"
+        "name": "Rising Star",
+        "id": "1002551031500115988"
       }
     },
     "ones": {
@@ -2678,16 +2691,18 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325730"
+      "$numberLong": "1659651897181"
     }
   }
 },{
   "_id": "457324267659329566",
   "userData": {
     "roles": [
-      "945702330312044594",
+      "1002550833755455648",
       "811667577985302531",
-      "1002551031500115988"
+      "945702330312044594",
+      "1002551031500115988",
+      "949293757805764668"
     ],
     "name": "Mr.Black",
     "mention": "<@457324267659329566>",
@@ -2707,12 +2722,15 @@
   },
   "stats": {
     "global": {
-      "mmr": 957,
-      "gamesPlayed": 6,
-      "gamesWon": 2,
-      "gamesLost": 4,
-      "winRate": 33.33,
-      "rank": null
+      "mmr": 1009,
+      "gamesPlayed": 10,
+      "gamesWon": 5,
+      "gamesLost": 5,
+      "winRate": 50,
+      "rank": {
+        "name": "Champion",
+        "id": "1002551222479360000"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -2731,15 +2749,15 @@
       "rank": null
     },
     "threes": {
-      "mmr": 913,
-      "gamesPlayed": 6,
-      "gamesWon": 2,
-      "gamesLost": 4,
-      "winRate": 33.33,
+      "mmr": 1018,
+      "gamesPlayed": 10,
+      "gamesWon": 5,
+      "gamesLost": 5,
+      "winRate": 50,
       "rank": null
     }
   },
-  "__v": 5,
+  "__v": 9,
   "createdAt": {
     "$date": {
       "$numberLong": "1659568785159"
@@ -2747,7 +2765,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577326406"
+      "$numberLong": "1659651897175"
     }
   }
 },{
@@ -2818,7 +2836,223 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659577325754"
+      "$numberLong": "1659651897216"
+    }
+  }
+},{
+  "_id": "393061621393784833",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "1002551031500115988"
+    ],
+    "name": "Egol",
+    "mention": "<@393061621393784833>",
+    "discriminator": "3743",
+    "displayColor": "#000000",
+    "avatar": "https://cdn.discordapp.com/avatars/393061621393784833/dad24a315244a977f6b429c7d03a4999.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1513783593272"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1659641711265"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 919,
+      "gamesPlayed": 6,
+      "gamesWon": 1,
+      "gamesLost": 5,
+      "winRate": 16.66,
+      "rank": {
+        "name": "Challenger",
+        "id": "1002550833755455648"
+      }
+    },
+    "ones": {
+      "mmr": 1000,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0,
+      "rank": null
+    },
+    "twos": {
+      "mmr": 1000,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0,
+      "rank": null
+    },
+    "threes": {
+      "mmr": 838,
+      "gamesPlayed": 6,
+      "gamesWon": 1,
+      "gamesLost": 5,
+      "winRate": 16.66,
+      "rank": null
+    }
+  },
+  "__v": 5,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1659641958121"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1659651897207"
+    }
+  }
+},{
+  "_id": "434732958360797204",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "949293757805764668"
+    ],
+    "name": "TOGYK",
+    "mention": "<@434732958360797204>",
+    "discriminator": "4396",
+    "displayColor": "#e67e22",
+    "avatar": "https://cdn.discordapp.com/avatars/434732958360797204/7b6f6e31f0f6f80203d47ac3d9990fb2.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1523718814221"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1659646170065"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 956,
+      "gamesPlayed": 2,
+      "gamesWon": 0,
+      "gamesLost": 2,
+      "winRate": 0,
+      "rank": {
+        "name": "Challenger",
+        "id": "1002550833755455648"
+      }
+    },
+    "ones": {
+      "mmr": 1000,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0,
+      "rank": null
+    },
+    "twos": {
+      "mmr": 1000,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0,
+      "rank": null
+    },
+    "threes": {
+      "mmr": 912,
+      "gamesPlayed": 2,
+      "gamesWon": 0,
+      "gamesLost": 2,
+      "winRate": 0,
+      "rank": null
+    }
+  },
+  "__v": 2,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1659646319723"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1659651897203"
+    }
+  }
+},{
+  "_id": "1004842441318346853",
+  "userData": {
+    "roles": [
+      "945702330312044594",
+      "811667577985302531",
+      "1002551031500115988"
+    ],
+    "name": "kwpo",
+    "mention": "<@1004842441318346853>",
+    "discriminator": "5761",
+    "displayColor": "#2d499e",
+    "avatar": "https://cdn.discordapp.com/avatars/1004842441318346853/3fc8957c8b6db4101e269d2bb2b54faf.png?size=1024",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1659643507080"
+      }
+    },
+    "joinedAt": {
+      "$date": {
+        "$numberLong": "1659647034978"
+      }
+    }
+  },
+  "stats": {
+    "global": {
+      "mmr": 999,
+      "gamesPlayed": 4,
+      "gamesWon": 2,
+      "gamesLost": 2,
+      "winRate": 50,
+      "rank": {
+        "name": "Rising Star",
+        "id": "1002551031500115988"
+      }
+    },
+    "ones": {
+      "mmr": 1000,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0,
+      "rank": null
+    },
+    "twos": {
+      "mmr": 1000,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "winRate": 0,
+      "rank": null
+    },
+    "threes": {
+      "mmr": 998,
+      "gamesPlayed": 4,
+      "gamesWon": 2,
+      "gamesLost": 2,
+      "winRate": 50,
+      "rank": null
+    }
+  },
+  "__v": 3,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1659647427007"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1659651897187"
     }
   }
 }]

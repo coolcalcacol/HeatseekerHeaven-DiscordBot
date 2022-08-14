@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const reportCommand = require('../../reportGame');
 const mmrCalculator = require('../../../data/mmrCalculator');
 const playerData = require('../../../data/playerData');
-const QueueDatabase = require('../../../data/database/queueConfigStorage');
+const QueueConfig = require('../../../data/database/queueConfigStorage');
 const queueSettings = require('../../../data/queueSettings');
 const queueData = require('../../../data/queueData');
 const embedUtilities = require('../../../utils/embedUtilities');
@@ -17,7 +17,7 @@ module.exports = {
     async execute(interaction) {
         const report = reportCommand.reportData[interaction.customId.split('_')[2]];
         const gameData = report.gameData;
-        const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id, true);
+        
 
         var targetTeam; // The team that the reporter is a part of
         var oponentTeam; // The oposite team;
@@ -54,6 +54,10 @@ module.exports = {
             // currentReply = await interaction.fetchReply();
             return;
         }
+
+        gameData.reportStatus = true;
+        const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id, true);
+
         try {
             const gameResults = await interaction.values[0] == 'game_won' ? 
                 mmrCalculator.getGameResults(targetTeam, oponentTeam, queueSettingsData.mmrSettings) : 
@@ -61,7 +65,7 @@ module.exports = {
             const winningTeamName = interaction.values[0] == 'game_won' ? targetTeamName : oponentTeamName;
             
 
-            const storedQueueData = await QueueDatabase.findOne({});
+            const storedQueueData = await QueueConfig.findOne({});
             await clientSendMessage.sendMessageTo(storedQueueData.channelSettings.matchReportChannel, {
                 embeds: [embedUtilities.presets.gameResultPreset(gameData, gameResults, interaction.user, winningTeamName)],
                 components: []
@@ -72,7 +76,7 @@ module.exports = {
                 components: []
             }).catch(console.error);
 
-            gameData.reportStatus = true;
+            
             gameData.gameResults = gameResults;
             queueData.info.globalQueueData.gameHistory.push(gameData);
 

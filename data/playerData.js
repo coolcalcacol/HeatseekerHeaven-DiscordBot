@@ -216,6 +216,9 @@ async function getPlayerDataById(id, createIfNull = false, queueSettingsData) {
 
 async function getPlayerDataObject(userData, queueSettingsData) { // The user data that discord generates for a user
     const memberData = await generalUtilities.info.getMemberById(userData.id).catch(console.error);
+    if (!memberData) {
+        cConsole.log(`ERROR: Could not get member data for ${userData.username}.\nPlease make sure that this user is still in the server`);
+    }
     const forcedUserData = await userData.fetch(true);
 
     const startingMmr = queueSettingsData ? queueSettingsData.mmrSettings.startingMmr : null;
@@ -232,14 +235,17 @@ async function getPlayerDataObject(userData, queueSettingsData) { // The user da
         _id: userData.id,
         userData: {
             name: userData.username,
-            nickName: memberData.nickName,
+            nickName: memberData ? memberData.nickName : '',
             mention: `<@${userData.id}>`,
             discriminator: userData.discriminator,
-            roles: memberData._roles,
-            displayColor: forcedUserData.hexAccentColor ? forcedUserData.hexAccentColor : memberData.displayHexColor,
+            roles: memberData ? memberData._roles : [],
+            displayColor: 
+                forcedUserData.hexAccentColor ? 
+                forcedUserData.hexAccentColor : memberData ? 
+                memberData.displayHexColor : '#000000',
             avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=1024`,
             createdAt: new Date(userData.createdAt),
-            joinedAt: new Date(memberData.joinedAt)
+            joinedAt: memberData ? new Date(memberData.joinedAt) : new Date()
         },
     });
     if (startingMmr) {
@@ -313,7 +319,7 @@ async function clearPlayerData(interaction, password, reason) {
 
         if (queueConfig.channelSettings.logChannel) {
             clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
-                `||<@&${guildData.adminRole}>||`,
+                // `||<@&${guildData.adminRole}>||`,
                 `**PlayerData has been __Cleared__** by <@${interaction.user.id}>`,
                 `user ID: \`${interaction.user.id}\``,
                 `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
