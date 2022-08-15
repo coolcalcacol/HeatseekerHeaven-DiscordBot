@@ -2,9 +2,9 @@
 
 module.exports = {
     client: null,
-    debugMode: true,
+    debugMode: false,
     botConfig: {
-        defaultGuildId: '811667577985302528',
+        defaultGuildId: '349360638088314881',
     },
     debugOptions: {
         createGameOnStart: false,
@@ -14,7 +14,7 @@ module.exports = {
         interactions: true,
         database: false,
         queueAdmin: true,
-        playerData: true,
+        playerData: false,
         getPlayerData: false,
         gameData: false,
         teamGeneration: false,
