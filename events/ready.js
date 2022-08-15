@@ -1,3 +1,5 @@
+const { Presence } = require('discord.js');
+
 const QueueConfigDatabase = require('../data/database/queueConfigStorage');
 const PlayerDatabase = require('../data/database/playerDataStorage');
 const BotConfigDatabase = require('../data/database/botConfigStorage');
@@ -33,6 +35,17 @@ module.exports = {
 	},
 	async Awake(client) {
 		generalData.botStats.upTime = new Date();
+		
+		client.user.setPresence({
+			status: 'online',
+			activities: [{
+				name: 'HELLO WORLD',
+				type: 'PLAYING',
+				state: "In-Game",
+				details: "Playing Ranked Heatseeker",
+				timestamp: new Date().getTime(),
+			}],
+		});
 
 		var botConfig = await BotConfigDatabase.findOne({});
 		if (!botConfig) {
@@ -59,8 +72,11 @@ module.exports = {
 			console.log('Updating GameID to 100');
 			await QueueConfigDatabase.updateOne({}, {gameId: 100}).catch(console.error);
 		}
-
+		
 		botUpdate.Start();
+	},
+	setRichPresence() {
+
 	},
 	async runTestActions(client) {
 		if (generalData.debugOptions.createGameOnStart) {
@@ -110,6 +126,24 @@ module.exports = {
 				default: break;
 			}
 		}
+
+		// const time = new Date()
+		// const startTime = new Date(2022, 7, 13, 14, 8, 44);
+		// console.log(generalUtilities.generate.getTimeAgo(startTime, time, true, true))
+
+		// const diffInMs = new Date(time) - new Date(startTime);
+		// const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+		// const hours = Math.floor(diffInMs / (1000 * 60 * 60) - (24 * days));
+		// const minutes = Math.floor(diffInMs / (1000 * 60) - (days * 24 * 60) - (hours * 60));
+		// const seconds = Math.floor(diffInMs / (1000) - (days*24*60*60)-(hours*60*60)-(minutes*60));
+		// console.log(time);
+		// console.log(startTime);
+		// console.log('')
+		// console.log(diffInMs);
+		// console.log('days: ' + days);
+		// console.log('hours: ' + hours);
+		// console.log('minutes: ' + minutes);
+		// console.log('seconds: ' + seconds);
 
 		// playerData.updatePlayerRanks('811667577985302528');
 		

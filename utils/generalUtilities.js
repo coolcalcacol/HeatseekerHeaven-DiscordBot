@@ -139,6 +139,41 @@ function getTimestamp(date) {
 	return time;
 }
 
+function getTimeAgo(start = new Date(), end = new Date(), prettyNumbers = false, timerOutput = false) {
+	const diffInMs = new Date(end) - new Date(start);
+	const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+	const hours = Math.floor(diffInMs / (1000 * 60 * 60) - (24 * days));
+	const minutes = Math.floor(diffInMs / (1000 * 60) - (days * 24 * 60) - (hours * 60));
+	const seconds = Math.floor(diffInMs / (1000) - (days*24*60*60)-(hours*60*60)-(minutes*60));
+	
+	var outputDays = days;
+	var outputHours = hours;
+	var outputMinutes = minutes;
+	var outputSeconds = seconds;
+
+	if (prettyNumbers) {
+		if (outputDays.toString().split('').length != 2) {
+			outputDays = '0' + outputDays;
+		}
+		if (outputHours.toString().split('').length != 2) {
+			outputHours = '0' + outputHours;
+		}
+		if (outputMinutes.toString().split('').length != 2) {
+			outputMinutes = '0' + outputMinutes;
+		}
+		if (outputSeconds.toString().split('').length != 2) {
+			outputSeconds = '0' + outputSeconds;
+		}
+	}
+	if (timerOutput) {
+		var output = `${outputMinutes}:${outputSeconds}`;
+		if (hours != 0) output = `${outputHours}:${output}`;
+		if (days != 0) output = `${outputDays}:${output}`;
+		return output;
+	}
+	return [outputDays, outputHours, outputMinutes, outputSeconds]
+}
+
 module.exports.info = {
     getUserById,
 	getMemberById,
@@ -150,7 +185,8 @@ module.exports.generate = {
     getArrayElementByChance,
     roundToFloat,
     getAllCobinations,
-	getTimestamp
+	getTimestamp,
+	getTimeAgo
 }
 module.exports.actions = {
     sleep
