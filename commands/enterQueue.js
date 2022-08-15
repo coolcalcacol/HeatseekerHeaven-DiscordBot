@@ -25,7 +25,7 @@ module.exports = {
             case 'enteredQueue': {
                 await interaction.client.emit('queueEvent', interaction, 'add');
                 await interaction.reply({
-                    embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)
+                    embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
                 });
             } break;
             case 'userIsBlacklisted': {
@@ -47,9 +47,12 @@ module.exports = {
                 });
             } break;
             case 'gameStarted': {
+                // await interaction.reply({
+                //     content: 'You started the queue', 
+                //     ephemeral: true
+                // });
                 await interaction.reply({
-                    content: 'You started the queue', 
-                    ephemeral: true
+                    embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
                 });
             } break;
         

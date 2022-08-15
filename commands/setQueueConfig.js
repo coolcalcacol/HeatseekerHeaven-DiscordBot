@@ -1,11 +1,13 @@
 const { SlashCommandBuilder,ChannelT} = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
-const QueueDatabase = require('../data/database/queueConfigStorage');
-const queueSettings = require('../data/queueSettings');
+const QueueConfig = require('../data/database/queueConfigStorage');
 const playerData = require('../data/playerData');
 const generalData = require('../data/generalData');
+const queueSettings = require('../data/queueSettings');
+
 const cConsole = require('../utils/customConsoleLog');
 const clientSendMessage = require('../utils/clientSendMessage');
+const generalUtilities = require('../utils/generalUtilities');
 
 
 module.exports = {
@@ -114,6 +116,20 @@ module.exports = {
                 .setDescription('Must meet requirement: >= x% Win Rate [-1 to disable]')
                 .setRequired(false)
             )
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('set-ping-role')
+            .setDescription('Set the role to be pinged when ever someone uses the /ranked-ping command')
+            .addRoleOption(option => option // ping-role
+                .setName('ping-role')
+                .setDescription('The role to be pinged')
+                .setRequired(true)
+            )
+            .addIntegerOption(option => option // hours
+                .setName('hours')
+                .setDescription('Time in hours for the command cooldown')
+                .setRequired(false)
+            )
         ),
     async execute(interaction) {
         if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
@@ -203,7 +219,17 @@ module.exports = {
                         cConsole.decolorize(cConsole.unfoldNestedObject(JSON.parse(JSON.stringify(rankRole)), 2, ' ')) + 
                         '\n```'
                 }).catch(console.error);
-            }
+            } break;
+            case 'set-ping-role': {
+                const role = interaction.options.getRole('ping-role').id;
+                const cooldown = interaction.options.getInteger('hours');
+                queueSettingsData.rankedPing.role = role;
+                queueSettingsData.rankedPing.cooldown = cooldown ? cooldown : queueSettingsData.rankedPing.cooldown;
+                await interaction.reply({
+                    ephemeral: true,
+                    content: 'Ping role has been updated\n```js\n' + queueSettingsData.rankedPing + '\n```'
+                }).catch(console.error);
+            } break;
             default: break;
         }
 
@@ -216,14 +242,10 @@ module.exports = {
             );
         }
         if (queueSettingsData.channelSettings.logChannel) {
-            const date = new Date();
-            const rawTime = date.getTime();
-            const time = rawTime.split('').splice(8, this.length - 1);
-            console.log(time)
             clientSendMessage.sendMessageTo(
                 queueSettingsData.channelSettings.logChannel,
                 '__**New/Updated Config Document**__:\n```js\n' + queueSettingsData + '```' + 
-                '<t:' + timestamp + ':R>'
+                '<t:' + generalUtilities.generate.getTimestamp(new Date()) + ':R>'
             );
         }
         // await interaction.followUp({

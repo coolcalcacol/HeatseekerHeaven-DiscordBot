@@ -263,6 +263,7 @@ async function startQueue(lobby, guildId, gameData = null) {
             msgContent += user.userData.mention + ' ';
         }
     }
+    
     clientSendMessage.sendMessageTo(channelId, {
         content: msgContent,
         embeds: embedUtilities.presets.queueGameStartPreset(game),

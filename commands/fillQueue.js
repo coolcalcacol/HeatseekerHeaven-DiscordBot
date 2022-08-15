@@ -43,7 +43,7 @@ module.exports = {
         
         await interaction.client.emit('queueEvent', interaction, 'add');
         await interaction.reply({
-            embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)
+            embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
         });
     },
 };

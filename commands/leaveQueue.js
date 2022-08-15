@@ -23,7 +23,7 @@ module.exports = {
         if (response == 'removedFromQueue') {
             await interaction.client.emit('queueEvent', interaction, 'removed');
             await interaction.reply({
-                embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'removed', interaction)
+                embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'removed', interaction)]
             });
         }
         else if (response == 'wasNotInQueue') {

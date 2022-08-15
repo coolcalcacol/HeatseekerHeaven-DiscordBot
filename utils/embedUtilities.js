@@ -41,7 +41,7 @@ function queueStatusEmbed(lobby, context, interaction = null) {
         embed.setFooter({text: 'Queue is Empty...'});
     }
 
-    return [embed];
+    return embed;
 }
 
 function queueGameStartPreset(gameData, teamsOnly = false) {

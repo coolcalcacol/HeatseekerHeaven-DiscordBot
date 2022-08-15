@@ -30,6 +30,11 @@ const QueueConfigSchema = new mongoose.Schema({
         ones: {type: Array, default: []},
         twos: {type: Array, default: []},
         threes: {type: Array, default: []},
+    },
+    rankedPing: {
+        role: {type: String, default: ''},
+        cooldown: {type: Number, default: 1},
+        currentCooldown: {type: Number, default: null}
     }
 }, {timestamps: true});
 

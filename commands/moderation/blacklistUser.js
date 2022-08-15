@@ -9,8 +9,6 @@ const botUpdate = require('../../events/botUpdate');
 const generalUtilities = require('../../utils/generalUtilities');
 const cConsole = require('../../utils/customConsoleLog');
 
-
-
 const getGuildQueueData = async function (guildId) {return await QueueDatabase.findOne({_id: guildId}).catch(console.error);};
 
 module.exports = {
@@ -94,11 +92,8 @@ module.exports = {
     },
     async removeUserFromBlacklist(id, guildId) {
         const guildQueueData = await getGuildQueueData(guildId);
-        if (Object.keys(guildQueueData.userBlacklist).length <= 1) {
-            guildQueueData.userBlacklist['placeholder'] = 'placeholder';
-        }
         delete guildQueueData.userBlacklist[id];
-        console.log(guildQueueData.userBlacklist);
+        
         await QueueDatabase.updateOne({_id: guildId}, guildQueueData).catch(console.error);
         cConsole.log('removed user from blacklist\n' + id + '\n');
     }

@@ -132,7 +132,8 @@ function isObject(target) {
 }
 
 function getTimestamp(date) {
-	const rawTime = date.getTime().toString();
+	const inRawTime = typeof date == 'object' ? false : true; // If date is an object, it is most likely a Date()
+	const rawTime = inRawTime ? date.toString() : date.getTime().toString();
 	const timeSplit = rawTime.split('');
 	const time = timeSplit.splice(0, 10).join('');
 	return time;
