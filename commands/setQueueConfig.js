@@ -244,8 +244,12 @@ module.exports = {
         if (queueSettingsData.channelSettings.logChannel) {
             clientSendMessage.sendMessageTo(
                 queueSettingsData.channelSettings.logChannel,
-                '__**New/Updated Config Document**__:\n```js\n' + queueSettingsData + '```' + 
-                '<t:' + generalUtilities.generate.getTimestamp(new Date()) + ':R>'
+                [
+                    `__**New/Updated Config Document**__:`,
+                    `User: <@${interaction.user.id}> used command \`/${this.data.name}\` \`${interaction.options.getSubcommand()}\``,
+                    `\`\`\`js\n${queueSettingsData}\n\`\`\``,
+                    `<t:${generalUtilities.generate.getTimestamp(new Date())}:R>`
+                ].join('\n')
             );
         }
         // await interaction.followUp({
