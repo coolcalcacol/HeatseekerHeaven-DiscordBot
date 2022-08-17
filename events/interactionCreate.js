@@ -11,7 +11,7 @@ module.exports = {
 			;
 
 			var logMessage = '[fg=cyan]' + interaction.user.tag + 
-				'[/>] in [style=inverse][fg=black]#' + interaction.channel.name + 
+				'[/>] in [bg=white][fg=black]#' + interaction.channel.name + 
 				'[/>] triggered an interaction.\n' +
 				'[fg=yellow]/[fg=green]' + commandName + '[/>]'
 			;

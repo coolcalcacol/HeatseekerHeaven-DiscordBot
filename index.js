@@ -5,7 +5,7 @@ const cConsole = require('./utils/customConsoleLog');
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
 // const { prefix } = require('./config/config.json');
-const mmrCalculator = require('./data/mmrCalculator');
+// const mmrCalculator = require('./data/mmrCalculator');
 
 const db = new Database();
 db.connect();
