@@ -2,7 +2,7 @@ const fs = require('fs');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { clientId, guildId, token } = require('./config/private.json');
+const { clientId, guildIds, token } = require('./config/private.json');
 const cConsole = require('./utils/customConsoleLog');
 
 const commands = [];
@@ -32,6 +32,9 @@ function registerCommand(dir, file) {
 getCommandFiles('commands');
 
 const rest = new REST({ version: '9' }).setToken(token);
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
-	.then(() => cConsole.log('Successfully registered application commands.'))
-	.catch(() => console.log(error));
+for (let i = 0; i < guildIds.length; i++) {
+	const guildId = guildIds[i];
+	rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+		.then(() => cConsole.log('Successfully registered application commands for guild:\n.' + guildId + '\n'))
+		.catch(() => console.log(error));
+}
