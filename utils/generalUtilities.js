@@ -6,7 +6,15 @@ async function getUserById(id) {
 }
 async function getMemberById(id) {
 	const guild = await generalData.client.guilds.cache.get(config.botSetupGuildId);
-    return await guild.members.fetch(id).catch(console.error);
+	var output;
+    try { 
+		output = await guild.members.fetch(id);
+	} catch(err) {
+		const username = await getUserById(id).username;
+		cConsole.log(`ERROR: Could not get member data for ${username}.\nPlease make sure that this user is still in the server\n`);
+		return null;
+	}
+	return output;
 }
 
 function randomizeArray(array) {
