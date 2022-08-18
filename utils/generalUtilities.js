@@ -6,7 +6,7 @@ async function getUserById(id) {
     return await generalData.client.users.fetch(id).catch(console.error);
 }
 async function getMemberById(id) {
-	const guild = await generalData.client.guilds.cache.get(config.botSetupGuildId);
+	const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
 	var output;
     try { 
 		output = await guild.members.fetch(id);
