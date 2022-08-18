@@ -119,6 +119,7 @@ async function updatePlayerRanks(guildId) {
             thisLog(player.userData.name);
             if (!debug && player.stats.global.rank != rank.role) {
                 const memberData = await generalUtilities.info.getMemberById(player['_id']);
+                if (!memberData) continue;
                 for (let r = 0; r < rankData.length; r++) {
                     const rRank = rankData[r];
                     if (rRank.role == rank.role) continue;
@@ -139,6 +140,7 @@ async function updatePlayerRanks(guildId) {
         thisLog(player.userData.name);
         if (!debug) {
             const memberData = await generalUtilities.info.getMemberById(player['_id']);
+            if (!memberData) continue;
             for (let r = 0; r < rankData.length; r++) {
                 const rRank = rankData[r];
                 if (memberData._roles.includes(rRank.role.id)) {
