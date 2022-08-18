@@ -1,5 +1,6 @@
 const generalData = require("../data/generalData");
 const config = require('../config/config.json');
+const cConsole = require('./customConsoleLog');
 
 async function getUserById(id) {
     return await generalData.client.users.fetch(id).catch(console.error);
