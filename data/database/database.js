@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const generalData = require('../generalData');
 
-const { mongooseClusterURI, mogooseUsername, mogoosePassword } = require('../../config/private.json');
+const { mongooseClusterURI, mogooseUsername, mogoosePassword, mongooseLocalURI } = require('../../config/private.json');
 
 const cConsole = require('../../utils/customConsoleLog');
 
 const mongoUser = encodeURIComponent(mogooseUsername);
 const mongoPass = encodeURIComponent(mogoosePassword);
-const dbURI = mongooseClusterURI.replace('<username>', mongoUser).replace('<password>', mongoPass);
+const dbURI = generalData.releasedVersion ? 
+    mongooseClusterURI.replace('<username>', mongoUser).replace('<password>', mongoPass) : 
+    mongooseLocalURI
+;
 
 class Database {
     constructor() {

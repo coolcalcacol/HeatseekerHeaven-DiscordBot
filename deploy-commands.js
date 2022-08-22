@@ -34,7 +34,7 @@ getCommandFiles('commands');
 const rest = new REST({ version: '9' }).setToken(token);
 rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
 .then(() => cConsole.log('Successfully registered application commands for guild:\n.' + guildId + '\n'))
-.catch(() => console.log(error));
+.catch((error) => console.log(error));
 
 // const guildId = guildIds[i];
 // for (let i = 0; i < guildIds.length; i++) {

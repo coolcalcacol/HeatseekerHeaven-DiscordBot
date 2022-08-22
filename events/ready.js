@@ -49,7 +49,11 @@ module.exports = {
 
 		var botConfig = await BotConfigDatabase.findOne({});
 		if (!botConfig) {
-			await BotConfigDatabase.insertMany({_id: generalData.botConfig.defaultGuildId});
+			await BotConfigDatabase.insertMany({
+				_id: generalData.releasedVersion ? 
+					generalData.botConfig.defaultGuildId : 
+					generalData.botConfig.botSetupGuildId
+			});
 			botConfig = await BotConfigDatabase.findOne({});
 		}
 
