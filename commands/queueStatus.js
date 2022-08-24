@@ -20,7 +20,7 @@ module.exports = {
             return;
         }
         await interaction.reply({
-            embeds: embedUtilities.presets.queueStatusEmbed(lobby, 'status')
+            embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'status')]
         });
     },
 };
