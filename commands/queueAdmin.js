@@ -13,23 +13,7 @@ const generalUtilities = require('../utils/generalUtilities');
 const embedUtilities = require('../utils/embedUtilities');
 
 
-const overwriteOptions = {
-    command: '',
-    cancel: {
-        gameId: null,
-    },
-    undo: {
-        gameId: null,
-    },
-    substitute: {
-        gameId: null,
-        targetUser: null,
-        replaceUser: null,
-    },
-    removeUser: {
-        user: null,
-    },
-}
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -128,6 +112,29 @@ module.exports = {
                 .setRequired(true)
             )
         ),
+    overwriteOptions: {
+        command: '',
+        cancel: {
+            gameId: null,
+        },
+        undo: {
+            gameId: null,
+        },
+        substitute: {
+            gameId: null,
+            targetUser: null,
+            replaceUser: null,
+        },
+        removeUser: {
+            initiator: {
+                user: {
+                    username: null,
+                    displayAvatarURL: null
+                },
+            },
+            user: null,
+        },
+    },
     async execute(interaction, overwrite = false) {
 
         // const guildSettings = await GuildSettings.findOne({_id: interaction.guild.id});
@@ -140,7 +147,7 @@ module.exports = {
         //     return;
         // }
 
-        if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+        if (interaction != null && !interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
             await interaction.reply({
                 ephemeral: true,
                 content: 'You do not have permission to use this command.',
@@ -151,21 +158,27 @@ module.exports = {
         const guildId = interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId;
         const queueSettingsData = await queueSettings.getQueueDatabaseById({_id: guildId});
 
-        const subCommand = overwrite ? overwriteOptions.command : interaction.options.getSubcommand();
+        const subCommand = overwrite ? this.overwriteOptions.command : interaction.options.getSubcommand();
         const options = {
             cancel: {
-                gameId: overwrite ? overwriteOptions.cancel.gameId : interaction.options.getInteger('gameid'),
+                gameId: overwrite ? this.overwriteOptions.cancel.gameId : interaction.options.getInteger('gameid'),
             },
             undo: {
-                gameId: overwrite ? overwriteOptions.undo.gameId : interaction.options.getInteger('gameid'),
+                gameId: overwrite ? this.overwriteOptions.undo.gameId : interaction.options.getInteger('gameid'),
             },
             substitute: {
-                gameId: overwrite ? overwriteOptions.substitute.gameId : interaction.options.getInteger('gameid'),
-                targetUser: overwrite ? overwriteOptions.substitute.targetUser : interaction.options.getUser('replacing'),
-                replaceUser: overwrite ? overwriteOptions.substitute.replaceUser : interaction.options.getUser('replaced-by'),
+                gameId: overwrite ? this.overwriteOptions.substitute.gameId : interaction.options.getInteger('gameid'),
+                targetUser: overwrite ? this.overwriteOptions.substitute.targetUser : interaction.options.getUser('replacing'),
+                replaceUser: overwrite ? this.overwriteOptions.substitute.replaceUser : interaction.options.getUser('replaced-by'),
             },
             removeUser: {
-                user: overwrite ? overwriteOptions.substitute.user : interaction.options.getUser('user'),
+                initiator: overwrite ? this.overwriteOptions.removeUser.initiator : {
+                    user: {
+                        username: interaction.user.username,
+                        displayAvatarURL: interaction.user.displayAvatarURL(),
+                    }
+                },
+                user: overwrite ? this.overwriteOptions.removeUser.user : interaction.options.getUser('user').id,
             },
         }
         thisLog(`Admin Command: [fg=green]${subCommand}[/>]`);
@@ -359,6 +372,7 @@ module.exports = {
             } break;
             case 'remove-user': {
                 const targetUser = options.removeUser.user;
+                const initiator = options.removeUser.initiator;
                 const qData = queueData.info.globalQueueData;
                 
                 var targetLobby;
@@ -367,7 +381,7 @@ module.exports = {
                     const lobby = qData.lobby[l];
                     for (const player in lobby.players) {
                         const user = lobby.players[player];
-                        if (targetUser.id == user.id) {
+                        if (targetUser == user.id) {
                             delete lobby.players[player];
                             targetLobby = lobby;
                             targetLobbyName = l;
@@ -376,7 +390,7 @@ module.exports = {
                     }
                     if (targetLobby) break;
                 }
-                if (!targetLobby) {
+                if (!targetLobby && interaction != null) {
                     await interaction.reply({
                         ephemeral: true,
                         content: `${targetUser} is not in any queue`
@@ -386,8 +400,8 @@ module.exports = {
 
                 const channelId = await queueSettings.getRankedLobbyByName(targetLobbyName, guildId);
                 const message = new MessageEmbed({
-                    title: `Player was forced to leave the queue`,
-                    description: `Leaving user: <@${targetUser.id}>`,
+                    title: interaction == null ? `Player was removed for inactivity` : `Player was forced to leave the queue`,
+                    description: `Leaving user: <@${targetUser}>`,
                     fields: [
                         { 
                             name: 'Remaining Players', 
@@ -396,16 +410,23 @@ module.exports = {
                                 'Queue is empty...'
                         },
                     ],
-                    footer: {text: interaction.user.username, iconURL: interaction.user.displayAvatarURL()},
+                    footer: {text: initiator.user.username, iconURL: initiator.user.displayAvatarURL},
                     timestamp: new Date().getTime()
                 });
 
-                await clientSendMessage.sendMessageTo(channelId, {embeds: [message]});
+                const messageContent = {embeds: [message]}
+                if (interaction == null) { messageContent['content'] = `<@${targetUser}>`; }
+                await clientSendMessage.sendMessageTo(channelId, messageContent);
 
-                await interaction.reply({
-                    ephemeral: true,
-                    content: `Succesfully Removed <@${targetUser.id}> from the queue`
-                }).catch(console.error);
+                if (interaction != null) {
+                    await interaction.reply({
+                        ephemeral: true,
+                        content: `Succesfully Removed <@${targetUser}> from the queue`
+                    }).catch(console.error);
+                }
+                else {
+                    cConsole.log(`Removed ${targetUser} from the queue for inactivity`)
+                }
             } break;
             case 'reset-player-stats': {
                 console.log([

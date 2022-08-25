@@ -5,11 +5,15 @@ const PlayerData = require('./playerData');
 const generalData = require('./generalData');
 const queueSettings = require('./queueSettings');
 
+const queueAdmin = require('../commands/queueAdmin');
+
 const clientSendMessage = require('../utils/clientSendMessage');
 const embedUtilities = require('../utils/embedUtilities');
 const databaseUtilities = require('../utils/databaseUtilities');
 const cConsole = require('../utils/customConsoleLog');
 const generalUtilities = require('../utils/generalUtilities');
+
+const botUpdate = require('../events/botUpdate');
 
 const config = require('../config/config.json');
 const { logOptions } = require('./generalData');
@@ -225,13 +229,9 @@ async function addPlayerToQueue(interaction = null, lobby, userId = null, queueS
         return 'gameStarted';
     }
     else {
+        const time = new Date();
+        new botUpdate.UpdateTimer('queueTimeout-' + userId, time.setMinutes(time.getMinutes() + 30), queueInactivityTimeout.bind(this, userId))
         return 'enteredQueue';
-    }
-}
-async function fillQueueWithPlayers(players, lobby, amount, queueSettingsData) {
-    const p = generalUtilities.generate.randomizeArray(players);
-    for (let i = 0; i < amount; i++) {
-        await addPlayerToQueue(null, lobby, p[i].toString(), queueSettingsData);
     }
 }
 function removePlayerFromQueue(interaction, lobby) {
@@ -244,7 +244,6 @@ function removePlayerFromQueue(interaction, lobby) {
     }
     return 'wasNotInQueue'
 }
-
 async function startQueue(lobby, guildId, gameData = null) {
     const game = gameData ? gameData : new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
     const channelId = await queueSettings.getRankedLobbyByName(lobby, guildId)
@@ -268,6 +267,23 @@ async function startQueue(lobby, guildId, gameData = null) {
         content: msgContent,
         embeds: embedUtilities.presets.queueGameStartPreset(game),
     });
+}
+
+async function queueInactivityTimeout(userId) {
+    if (await userReservedStatus(userId) != 'inQueue') return;
+    console.log('Time out id: ' + userId + ' | ' + await userReservedStatus(userId));
+    queueAdmin.overwriteOptions.command = 'remove-user';
+    queueAdmin.overwriteOptions.removeUser.user = userId;
+    queueAdmin.overwriteOptions.removeUser.initiator.user.username = 'HHBot';
+    queueAdmin.overwriteOptions.removeUser.initiator.user.displayAvatarURL = generalData.client.user.displayAvatarURL();
+    queueAdmin.execute(null, true)
+}
+
+async function fillQueueWithPlayers(players, lobby, amount, queueSettingsData) {
+    const p = generalUtilities.generate.randomizeArray(players);
+    for (let i = 0; i < amount; i++) {
+        await addPlayerToQueue(null, lobby, p[i].toString(), queueSettingsData);
+    }
 }
 
 function getCurrentQueue(lobby = 0) {

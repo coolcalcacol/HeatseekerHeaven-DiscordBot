@@ -2,7 +2,7 @@
 
 module.exports = {
     client: null,
-    debugMode: false,
+    debugMode: true,
     releasedVersion: false,
     botConfig: {
         defaultGuildId: '349360638088314881',
