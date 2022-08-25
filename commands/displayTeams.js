@@ -8,7 +8,7 @@ module.exports = {
         .setName('teams')
         .setDescription('Displays the current teams'),
     async execute(interaction) {
-        const playerStatus = queueData.info.userReservedStatus(interaction.user.id, true);
+        const playerStatus = await queueData.info.userReservedStatus(interaction.user.id, true);
 
         if (typeof playerStatus == 'object') {
             await interaction.reply({
