@@ -23,7 +23,7 @@ module.exports = {
         console.log('response: ' + response)
         switch (response) {
             case 'enteredQueue': {
-                await interaction.client.emit('queueEvent', interaction, 'add');
+                await interaction.client.emit('queueEvent', interaction, 'add', queueData.info.getLobbyString(lobby));
                 await interaction.reply({
                     embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
                 });

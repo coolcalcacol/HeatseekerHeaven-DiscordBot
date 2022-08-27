@@ -66,9 +66,7 @@ function comparedDataObject(target, data, keys) {
 
 //#region Getters
     async function getQueueDatabaseById(guildId, createIfNull = true) {
-        const target = await QueueDatabase.findOne({_id: guildId})
-            .catch(console.error)
-        ;
+        const target = await QueueDatabase.findOne({_id: guildId}).catch(console.error);
         
         if (target) { 
             thisLog(`Found QueueSettings by guild id: ${guildId}`);

@@ -9,8 +9,8 @@ module.exports = {
         botSetupGuildId: '811667577985302528',
     },
     debugOptions: {
-        createGameOnStart: false,
-        gameOnStartLobby: 'threes'
+        createGameOnStart: true,
+        gameOnStartLobby: 'ones'
     },
     logOptions : {
         interactions: true,

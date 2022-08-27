@@ -4,6 +4,7 @@ const cConsole = require('./utils/customConsoleLog');
 // Require the necessary discord.js classes
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
+const generalData = require('./data/generalData.js');
 // const { prefix } = require('./config/config.json');
 // const mmrCalculator = require('./data/mmrCalculator');
 
@@ -14,12 +15,14 @@ db.connect();
 const client = new Client({ 
 	intents: [
 		Intents.FLAGS.GUILDS,
-		Intents.FLAGS.GUILD_MESSAGES
+		Intents.FLAGS.GUILD_MESSAGES,
+		Intents.FLAGS.GUILD_VOICE_STATES,
 	]
 });
 
 client.commands = new Collection();
 client.messageActions = new Collection();
+client.userContextActions = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
@@ -42,6 +45,10 @@ function getCommandFiles(dir, type = 'commands') {
 				getCommandFiles(dir + '/' + file, 'messageActions');
 				continue;
 			}
+			else if (file == 'ContextMenues') {
+				getCommandFiles(dir + '/' + file, 'userContextActions');
+				continue;
+			}
 			getCommandFiles(dir + '/' + file, type);
 		}
 	}
@@ -51,12 +58,7 @@ function registerCommand(dir, file, type) {
 	cConsole.log(`Registering [fg=blue]${type}[/>]: [fg=green]${command.data.name}[/>]`);
 	// Set a new item in the Collection
 	// With the key as the command name and the value as the exported module
-	if (type == 'commands') {
-		client.commands.set(command.data.name, command);
-	}
-	else if (type == 'messageActions') {
-		client.messageActions.set(command.data.name, command);
-	}
+	client[type].set(command.data.name, command);
 }
 getCommandFiles('commands');
 
@@ -74,6 +76,7 @@ for (const file of eventFiles) {
 // When a command is trigger this creates a new interaction event
 client.on('interactionCreate', async interaction => {
 	if (interaction.isCommand()) executeCommand(interaction);
+	else if (interaction.isUserContextMenu()) executeUserContext(interaction);
 	else if (interaction.isButton()) executeButton(interaction);
 	else if (interaction.isSelectMenu()) executeSelectMenue(interaction);
 });
@@ -82,43 +85,64 @@ async function executeCommand(interaction) {
 	const command = client.commands.get(interaction.commandName);
 	
 	if (!command) return;
-	try {
-		await command.execute(interaction);
-		// cConsole.log(command);
-	} catch (error) {
-		// await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+	try { await command.execute(interaction); } catch (error) {
+		if (generalData.debugMode) {
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+		}
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
 }
+async function executeUserContext(interaction) {
+	const command = client.userContextActions.get(interaction.commandName);
+	
+	if (!command) return;
+	try { await command.execute(interaction); } catch (error) {
+		if (generalData.debugMode) {
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+		}
+		cConsole.log('Error: ' + error.message);
+		console.log(error.stack);
+	}
+}
+
 async function executeButton(interaction) {
 	const buttonTarget = interaction.customId.split('_')[0] + '_buttons';
 	const button = client.messageActions.get(buttonTarget);
 
 	if (!button) return;
-	try {
-		await button.execute(interaction);
-		// cConsole.log(command);
-	} catch (error) {
-		// await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+	try { await button.execute(interaction); } catch (error) {
+		if (generalData.debugMode) {
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+		}
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
 }
 async function executeSelectMenue(interaction) {
 	const selectTarget = interaction.customId.split('_')[0] + '_select';
-	const selectMenue = client.messageActions.get(selectTarget);
+	const selectMenue = client.user.get(selectTarget);
 
 	if (!selectMenue) return;
-	try {
-		await selectMenue.execute(interaction);
-		// cConsole.log(command);
-	} catch (error) {
-		// await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+	try { await selectMenue.execute(interaction); } catch (error) {
+		if (generalData.debugMode) {
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+		}
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
 }
+
+// client.on('voiceStateUpdate', (oldState, newState) => {
+// 	console.log(oldState)
+// 	console.log(newState)
+//     if(newState.channelId === null) //left
+//         console.log('user left channel', oldState.channelID);
+//     else if(oldState.channelId === null) // joined
+//         console.log('user joined channel', newState.channelID);
+//     else // moved
+//         console.log('user moved channels', oldState.channelID, newState.channelID);
+// });
 
 // client.on('interactionCreate', async interaction => {
 // 	if (!interaction.isSelectMenu()) return;

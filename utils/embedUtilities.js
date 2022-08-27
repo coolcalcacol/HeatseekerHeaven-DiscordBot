@@ -10,6 +10,7 @@ const QueueDatabase = require('../data/database/queueConfigStorage.js');
 function queueStatusEmbed(lobby, context, interaction = null) {
     const embed = new MessageEmbed();
     const data = queueData.info.getCurrentQueue(lobby);
+    const userId = interaction ? (interaction.user ? interaction.user.id : interaction.id) : null;
 
     var currentQueue = '';
     for (const player in data.players) {
@@ -20,12 +21,12 @@ function queueStatusEmbed(lobby, context, interaction = null) {
     switch (context) {
         case 'add': {
             embed.setTitle('User Joined the Queue');
-            embed.setDescription('Joining User: <@' + interaction.user.id + '>');
+            embed.setDescription('Joining User: <@' + userId + '>');
             embed.setColor('#000000');
         } break;
         case 'removed': {
             embed.setTitle('User Left the Queue');
-            embed.setDescription('Leaving User: <@' + interaction.user.id + '>');
+            embed.setDescription('Leaving User: <@' + userId + '>');
             embed.setColor('#eb6e34');
         } break;
         case 'status': {

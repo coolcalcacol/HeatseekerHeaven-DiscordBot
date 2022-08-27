@@ -21,7 +21,7 @@ module.exports = {
         const response = queueData.actions.removePlayerFromQueue(interaction, lobby);
         
         if (response == 'removedFromQueue') {
-            await interaction.client.emit('queueEvent', interaction, 'removed');
+            await interaction.client.emit('queueEvent', interaction, 'removed', queueData.info.getLobbyString(lobby));
             await interaction.reply({
                 embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'removed', interaction)]
             });

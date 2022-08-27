@@ -1,32 +1,21 @@
 const cConsole = require('../utils/customConsoleLog');
 const queueData = require('../data/queueData.js');
-
-
+const generalUtilities = require('../utils/generalUtilities');
 
 module.exports = {
 	name: 'queueEvent',
-	execute(interaction, action) {
+	async execute(interaction, action, lobby = '0v0') {
+        const userData = interaction.user ? interaction.user : await generalUtilities.info.getUserById(interaction.id);
+        var context;
         switch (action) {
-            case 'add': {
-                cConsole.log(
-                    '[fg=green]Queue Event[/>]: User [style=bold][fg=cyan] ' + 
-                    interaction.user.tag + 
-                    '[/>] has been [fg=green]added[/>] to the queue',
-                    {autoColorize: false}
-                );
-            }
-            break;
-            case 'removed': {
-                cConsole.log(
-                    '[fg=green]Queue Event[/>]: User [style=bold][fg=cyan]' + 
-                    interaction.user.tag + 
-                    '[/>] has been [fg=red]removed[/>] from the queue', 
-                    {autoColorize: false}
-                );
-            }
-            break;
-            default:
-                break;
+            case 'add': { context = `has been [fg=green]added[/>] to the [fg=magenta]${lobby}[/>] queue`; } break;
+            case 'removed': { context = `has been [fg=red]removed[/>] from the [fg=magenta]${lobby}[/>] queue`; } break;
+            default: break;
         }
+        cConsole.log(
+            '-------- [fg=green]Queue Event[/>]--------\n' + 
+            '[style=bold][fg=cyan]' + userData.tag + '[/>] ' + context + '\n', 
+            {autoColorize: false}
+        );
 	},
 };

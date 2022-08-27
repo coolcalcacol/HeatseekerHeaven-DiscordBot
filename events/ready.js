@@ -79,24 +79,23 @@ module.exports = {
 		
 		botUpdate.Start();
 	},
-	setRichPresence() {
-
-	},
 	async runTestActions(client) {
 		if (generalData.debugOptions.createGameOnStart) {
 			const queueSettingsData = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).catch(console.error);
 			switch (generalData.debugOptions.gameOnStartLobby) {
 				case 'ones': {
-					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1, queueSettingsData);
-					await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'ones', 1, queueSettingsData);
-					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData); // 888%
+					await queueData.actions.fillQueueWithPlayers(['988513771452526623'], 'ones', 1, queueSettingsData); // CTN-Originals
+					// await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1, queueSettingsData); // CTN
+					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'ones', 1, queueSettingsData);
 					// await queueData.actions.fillQueueWithPlayers(['653453312271581205'], 'ones', 1, queueSettingsData);
-					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData);
 				} break;
 				case 'twos': {
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 2, queueSettingsData);
+					// await queueData.actions.fillQueueWithPlayers(userWhitelist, 'twos', 2, queueSettingsData);
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'twos', 1, queueSettingsData);
 					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'twos', 1, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['138115007983517697'], 'twos', 1, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['988513771452526623'], 'twos', 1, queueSettingsData);
 					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'twos', 1, queueSettingsData);
 				} break;
 				case 'threes': {
@@ -124,12 +123,22 @@ module.exports = {
 					}
 
 					const game = new queueData.info.GameLobbyData(players, 'threes', true);
-					game.bypassTeamGeneration = true;
+					game.bypassTeamGenerati
+					on = true;
 					queueData.actions.startQueue('threes', game);
 				} break;
 				default: break;
 			}
 		}
+		
+		// const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
+		// const vc = await guild.channels.cache.filter(c => c.id === '999776641163202701'); // 999776641163202701
+		// var target = vc.get();
+		// console.log(vc.get('999776641163202701'))
+		// vc.forEach(v => {
+		// 	target = v;
+		// });
+		// console.log(target.members)
 
 		// const time = new Date()
 		// const startTime = new Date(2022, 7, 13, 14, 8, 44);

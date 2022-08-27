@@ -25,7 +25,9 @@ module.exports = {
                         .addChoice('2v2', 'twosChannel')
                         .addChoice('3v3', 'threesChannel')
                         .addChoice('Report Channel', 'matchReportChannel')
-                        .addChoice('VC Waiting Room', 'vcWaitingRoom')
+                        .addChoice('Auto Queue VC 1v1', 'autoQueue1VC')
+                        .addChoice('Auto Queue VC 2v2', 'autoQueue2VC')
+                        .addChoice('Auto Queue VC 3v3', 'autoQueue3VC')
                         .addChoice('Team Channel Category', 'teamChannelCategory')
                         .addChoice('Log Channel', 'logChannel')
                 )
@@ -132,12 +134,13 @@ module.exports = {
             )
         ),
     async execute(interaction) {
-        if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
-            interaction.reply({
+        if (interaction != null && !interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+            await interaction.reply({
+                ephemeral: true,
                 content: 'You do not have permission to use this command.',
-                ephemeral: true
-            });
-            return
+            }).catch(console.error);
+            cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
+            return;
         }
         
         const guildId = interaction.guild.id;
