@@ -144,8 +144,8 @@ async function deleteGameChannels(gameData = new queueData.info.GameLobbyData())
     new botUpdate.UpdateTimer(channel.id, new Date().setMinutes(new Date().getMinutes() + 1), deleteGameChat.bind(this, channel))
 }
 async function deleteGameChat(channel) {
-    if (!channel) return;
-    await channel.delete();
+    if (!channel.id) return;
+    try {await channel.delete();} catch(error) {}
 }
 
 async function manageChannelPermissions(reset, gameData = new queueData.info.GameLobbyData()) {
