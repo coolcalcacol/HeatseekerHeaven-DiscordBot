@@ -34,14 +34,14 @@ module.exports = {
             pingData.currentCooldown = newCooldown;
             await queueSettings.updateQueueDatabase(queueConfigData);
             const message = interaction.options.getString('message') ? `\n**${interaction.options.getString('message')}**` : '';
-            await clientSendMessage.sendMessageTo(
-                interaction.channel.id,
-                `<@&${queueConfigData.rankedPing.role}>`
-            )
             await interaction.reply({
                 ephemeral: false,
                 content: `> Cooldown reset: <t:${generalUtilities.generate.getTimestamp(newCooldown)}:R>${message}`
             }).catch(console.error);
+            await clientSendMessage.sendMessageTo(
+                interaction.channel.id,
+                `<@&${queueConfigData.rankedPing.role}>`
+            )
         }
         else {
             await interaction.reply({

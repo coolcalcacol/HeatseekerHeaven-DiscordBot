@@ -1,4 +1,4 @@
-const { Presence } = require('discord.js');
+const { Presence, PermissionOverwrites } = require('discord.js');
 
 const QueueConfigDatabase = require('../data/database/queueConfigStorage');
 const PlayerDatabase = require('../data/database/playerDataStorage');
@@ -132,13 +132,22 @@ module.exports = {
 		}
 		
 		// const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
-		// const vc = await guild.channels.cache.filter(c => c.id === '999776641163202701'); // 999776641163202701
+		// const vc = await guild.channels.cache.get('1013063161982758972'); // 999776641163202701
+		// vc.permissionOverwrites.edit(await generalUtilities.info.getUserById('306395424690929674'), {VIEW_CHANNEL: true});
+		// const perms = await vc.permissionOverwrites.cache.get('306395424690929674');
+		// perms.delete('Testing sus');
+		
+		// vc.permissionOverwrites.set([{
+		// 	id: '306395424690929674',
+		// 	allow: ['VIEW_CHANNEL']
+		// }])
+		// vc.permissionOverwrites.cache = perms;
+		// console.log(perms)
 		// var target = vc.get();
-		// console.log(vc.get('999776641163202701'))
+		// console.log(vc.get('1013063161982758972'))
 		// vc.forEach(v => {
 		// 	target = v;
 		// });
-		// console.log(target.members)
 
 		// const time = new Date()
 		// const startTime = new Date(2022, 7, 13, 14, 8, 44);

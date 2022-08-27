@@ -9,6 +9,7 @@ const queueData = require('../../../data/queueData');
 const embedUtilities = require('../../../utils/embedUtilities');
 const clientSendMessage = require('../../../utils/clientSendMessage');
 const generalData = require('../../../data/generalData');
+const queueGameChannels = require('../../../data/queueGameChannels');
 
 
 module.exports = {
@@ -88,6 +89,7 @@ module.exports = {
             delete reportCommand.reportData[gameData.gameId];
 
             playerData.updatePlayerRanks(interaction.guild.id);
+            queueGameChannels.deleteGameChannels(gameData);
         } catch(err) {
             console.error(err);
         }

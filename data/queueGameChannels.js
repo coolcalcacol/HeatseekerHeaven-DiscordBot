@@ -27,25 +27,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         orange: [defaultChannelPermissions],
     };
 
-    for (const team in gameData.teams) {
-        for (const player in gameData.teams[team].members) {
-            // const user = await generalUtilities.info.getUserById(player);
-            const otherTeam = team == 'blue' ? 'orange' : 'blue';
-            channelPermissions.gameChat.push({
-                id: player,
-                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY'],
-            });
-            channelPermissions[team].push({
-                id: player,
-                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'READ_MESSAGE_HISTORY']
-            });
-            channelPermissions[otherTeam].push({
-                id: player,
-                allow: ['VIEW_CHANNEL'],
-                deny: ['CONNECT']
-            });
-        }
-    }
+    
     // create team VC's
     gameData.channels.blue = await guild.channels.create(`hs${gameData.gameId} | Blue`, {
         type: 'GUILD_VOICE',
@@ -66,6 +48,42 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         permissionOverwrites: channelPermissions.gameChat,
     }).catch(console.error);
 
+    for (const team in gameData.teams) {
+        for (const player in gameData.teams[team].members) {
+            const user = await generalUtilities.info.getUserById(player);
+            const otherTeam = team == 'blue' ? 'orange' : 'blue';
+
+            gameData.channels.gameChat.permissionOverwrites.edit(user, {
+                VIEW_CHANNEL: true,
+                SEND_MESSAGES: true,
+                READ_MESSAGE_HISTORY: true
+            });
+            gameData.channels[team].permissionOverwrites.edit(user, {
+                CONNECT: true,
+                VIEW_CHANNEL: true,
+                SEND_MESSAGES: true,
+                READ_MESSAGE_HISTORY: true,
+            });
+            gameData.channels[otherTeam].permissionOverwrites.edit(user, {
+                CONNECT: false,
+                VIEW_CHANNEL: true,
+            });
+            // channelPermissions.gameChat.push({
+            //     id: user,
+            //     allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY'],
+            // });
+            // channelPermissions[team].push({
+            //     id: user,
+            //     allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'READ_MESSAGE_HISTORY']
+            // });
+            // channelPermissions[otherTeam].push({
+            //     id: user,
+            //     allow: ['VIEW_CHANNEL'],
+            //     deny: ['CONNECT']
+            // });
+        }
+    }
+
     var autoQueueVC;
     switch(gameData.lobby) {
         case 'ones': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue1VC); } break;
@@ -80,13 +98,10 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
             }
         });
     }
-    // for (const player in gameData.players) {
+    manageChannelPermissions(false, gameData);
 
-    // }
-    // console.log(autoQueueVC.permissionOverwrites.cache)
-
-    new botUpdate.UpdateTimer(gameData.channels.gameChat.id, new Date().setSeconds(new Date().getSeconds() + 5), deleteGameChannels.bind(this, gameData))
-    // new botUpdate.UpdateTimer(gameData.channels.gameChat.id, new Date().setMinutes(new Date().getMinutes() + 30), deleteGameChannels.bind(this, gameData.channels.gameChat))
+    // new botUpdate.UpdateTimer(gameData.channels.gameChat.topic, new Date().setSeconds(new Date().getSeconds() + 10), deleteGameChannels.bind(this, gameData))
+    new botUpdate.UpdateTimer(gameData.channels.gameChat.id, new Date().setMinutes(new Date().getMinutes() + 30), deleteGameChannels.bind(this, gameData.channels.gameChat))
 }
 
 async function deleteGameChannels(gameData = new queueData.info.GameLobbyData()) {
@@ -106,6 +121,8 @@ async function deleteGameChannels(gameData = new queueData.info.GameLobbyData())
         const value = arg.split(':')[1];
         details[key] = value.split(',').length > 1 ? value.split(',') : value;
     }
+    manageChannelPermissions(true, gameData);
+
     var autoQueueVC;
     switch(details.lobby) {
         case 'ones': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue1VC); } break;
@@ -113,20 +130,50 @@ async function deleteGameChannels(gameData = new queueData.info.GameLobbyData())
         case 'threes': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue3VC); } break;
         default: break;
     }
-    // for (const v in details.voiceChannels) {details.voiceChannels[v] = await guild.channels.cache.get(details.voiceChannels[v]); }
+
     for (const v in details.voiceChannels) {
-        // const vc = details.voiceChannels[v];
         const vc = await guild.channels.cache.get(details.voiceChannels[v]);
         if (!vc) continue;
         await Promise.all(vc.members.map(async (member) => {
-            // cConsole.log(`Moving Member ${member.user.username} to ${vc.name}`)
             if (member.voice.channel.id == vc.id) {
                 await member.voice.setChannel(autoQueueVC).catch(console.error);
             }
         })).catch(console.error);
         await vc.delete().catch(console.error);
     }
+    new botUpdate.UpdateTimer(channel.id, new Date().setMinutes(new Date().getMinutes() + 1), deleteGameChat.bind(this, channel))
+}
+async function deleteGameChat(channel) {
+    if (!channel) return;
     await channel.delete();
+}
+
+async function manageChannelPermissions(reset, gameData = new queueData.info.GameLobbyData()) {
+    const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
+    const queueConfig = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId);
+    const targetChannels = [
+        'onesChannel',
+        'twosChannel',
+        'threesChannel',
+        'autoQueue1VC',
+        'autoQueue2VC',
+        'autoQueue3VC'
+    ]
+    for (const target in targetChannels) {
+        const channel = await guild.channels.cache.get(queueConfig.channelSettings[targetChannels[target]])
+        if (!reset) {
+            for (const player in gameData.players) {
+                const user = await generalUtilities.info.getUserById(player);
+                channel.permissionOverwrites.edit(user, {VIEW_CHANNEL: false});
+            }
+        }
+        else {
+            for (const player in gameData.players) {
+                const perms = await channel.permissionOverwrites.cache.get(player);
+                await perms.delete();
+            }
+        }
+    }
 }
 
 

@@ -121,7 +121,7 @@ async function executeButton(interaction) {
 }
 async function executeSelectMenue(interaction) {
 	const selectTarget = interaction.customId.split('_')[0] + '_select';
-	const selectMenue = client.user.get(selectTarget);
+	const selectMenue = client.messageActions.get(selectTarget);
 
 	if (!selectMenue) return;
 	try { await selectMenue.execute(interaction); } catch (error) {
