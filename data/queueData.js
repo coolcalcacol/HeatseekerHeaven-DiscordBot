@@ -233,7 +233,7 @@ var globalQueueData = {
         if (Object.keys(globalQueueData.lobby[lobby].players).length == globalQueueData.lobby[lobby].queueSize) {
             // Start the queue
             if (generalData.logOptions.gameData) { console.log('Starting the queue for lobby: ' + lobby); }
-            await startQueue(lobby, interaction ? interaction.guild.id : config.botSetupGuildId);
+            await startQueue(lobby, interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId);
             return 'gameStarted';
         }
         else {

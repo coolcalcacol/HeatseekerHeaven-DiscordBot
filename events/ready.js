@@ -29,7 +29,7 @@ module.exports = {
 	async execute(client) {
 		generalData.client = client;
 		
-		cConsole.log(`[fg=green]Ready![/>] Logged in as [style=bold][fg=cyan]${client.user.tag}[/>]`, {autoColorize: false});
+		cConsole.log(`\n[fg=green]Ready![/>] Logged in as [style=bold][fg=cyan]${client.user.tag}[/>]`, {autoColorize: false});
 		await this.Awake(client);
 		await this.runTestActions(client);
 	},
@@ -57,8 +57,8 @@ module.exports = {
 			botConfig = await BotConfigDatabase.findOne({});
 		}
 
-		cConsole.log(`Client ID: ${client.id}`);
-		cConsole.log(`\nSetting the default guild id to: [fg=green]${botConfig._id}[/>]`);
+		cConsole.log(`Client ID: ${client.user.id}`);
+		cConsole.log(`Setting the default guild id to: [fg=green]${botConfig._id}[/>]`);
 		generalData.botConfig.defaultGuildId = botConfig._id;
 
 		cConsole.log(`Debug mode is: ${generalData.debugMode}`);
