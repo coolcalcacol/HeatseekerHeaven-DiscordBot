@@ -57,10 +57,12 @@ module.exports = {
 			botConfig = await BotConfigDatabase.findOne({});
 		}
 
+		cConsole.log(`Client ID: ${client.id}`);
 		cConsole.log(`\nSetting the default guild id to: [fg=green]${botConfig._id}[/>]`);
 		generalData.botConfig.defaultGuildId = botConfig._id;
 
 		cConsole.log(`Debug mode is: ${generalData.debugMode}`);
+		cConsole.log(`Released Version is: ${generalData.releasedVersion}`);
 		console.log('');
 
 		var storedQueueData = await QueueConfigDatabase.findOne({});
