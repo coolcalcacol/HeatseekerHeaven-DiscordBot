@@ -51,9 +51,9 @@ module.exports = {
                 //     content: 'You started the queue', 
                 //     ephemeral: true
                 // });
-                await interaction.reply({
-                    embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
-                });
+                // await interaction.reply({
+                //     embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
+                // });
             } break;
         
             default: {
