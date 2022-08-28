@@ -56,12 +56,14 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
             gameData.channels.gameChat.permissionOverwrites.edit(user, {
                 VIEW_CHANNEL: true,
                 SEND_MESSAGES: true,
+                USE_APPLICATION_COMMANDS: true,
                 READ_MESSAGE_HISTORY: true
             });
             gameData.channels[team].permissionOverwrites.edit(user, {
                 CONNECT: true,
                 VIEW_CHANNEL: true,
                 SEND_MESSAGES: true,
+                USE_APPLICATION_COMMANDS: true,
                 READ_MESSAGE_HISTORY: true,
             });
             gameData.channels[otherTeam].permissionOverwrites.edit(user, {
