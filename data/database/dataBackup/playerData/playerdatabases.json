@@ -68,7 +68,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897165"
+      "$numberLong": "1660663419773"
     }
   }
 },{
@@ -206,7 +206,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897179"
+      "$numberLong": "1660663419955"
     }
   }
 },{
@@ -552,7 +552,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897218"
+      "$numberLong": "1660663420157"
     }
   }
 },{
@@ -656,7 +656,10 @@
       "gamesWon": 12,
       "gamesLost": 14,
       "winRate": 46.15,
-      "rank": null
+      "rank": {
+        "name": "Challenger",
+        "id": "1002550833755455648"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -691,7 +694,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897582"
+      "$numberLong": "1660663420136"
     }
   }
 },{
@@ -765,7 +768,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897157"
+      "$numberLong": "1660663419761"
     }
   }
 },{
@@ -837,7 +840,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897205"
+      "$numberLong": "1660663420145"
     }
   }
 },{
@@ -873,7 +876,10 @@
       "gamesWon": 5,
       "gamesLost": 2,
       "winRate": 71.42,
-      "rank": null
+      "rank": {
+        "name": "Champion",
+        "id": "1002551222479360000"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -908,7 +914,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897295"
+      "$numberLong": "1660663419771"
     }
   }
 },{
@@ -1117,7 +1123,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897189"
+      "$numberLong": "1660663420125"
     }
   }
 },{
@@ -1189,7 +1195,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897184"
+      "$numberLong": "1660663419959"
     }
   }
 },{
@@ -1263,7 +1269,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897159"
+      "$numberLong": "1660663419764"
     }
   }
 },{
@@ -1404,7 +1410,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897214"
+      "$numberLong": "1660663420154"
     }
   }
 },{
@@ -1502,11 +1508,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 868,
-      "gamesPlayed": 33,
-      "gamesWon": 12,
-      "gamesLost": 21,
-      "winRate": 36.36,
+      "mmr": 905,
+      "gamesPlayed": 37,
+      "gamesWon": 15,
+      "gamesLost": 22,
+      "winRate": 40.54,
       "rank": {
         "name": "Challenger",
         "id": "1002550833755455648"
@@ -1521,11 +1527,11 @@
       "rank": null
     },
     "twos": {
-      "mmr": 833,
-      "gamesPlayed": 8,
-      "gamesWon": 2,
-      "gamesLost": 6,
-      "winRate": 25,
+      "mmr": 956,
+      "gamesPlayed": 12,
+      "gamesWon": 5,
+      "gamesLost": 7,
+      "winRate": 41.66,
       "rank": null
     },
     "threes": {
@@ -1537,7 +1543,7 @@
       "rank": null
     }
   },
-  "__v": 34,
+  "__v": 38,
   "createdAt": {
     "$date": {
       "$numberLong": "1659306616905"
@@ -1545,7 +1551,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897211"
+      "$numberLong": "1660663420149"
     }
   }
 },{
@@ -1621,10 +1627,11 @@
   "_id": "457617584033103892",
   "userData": {
     "roles": [
+      "1002550833755455648",
       "945702330312044594",
-      "949293757805764668",
       "811667577985302533",
-      "946028315934851162"
+      "946028315934851162",
+      "949293757805764668"
     ],
     "name": "Orcas",
     "mention": "<@457617584033103892>",
@@ -1644,12 +1651,15 @@
   },
   "stats": {
     "global": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
-      "rank": null
+      "mmr": 988,
+      "gamesPlayed": 5,
+      "gamesWon": 2,
+      "gamesLost": 3,
+      "winRate": 40,
+      "rank": {
+        "name": "Rising Star",
+        "id": "1002551031500115988"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -1660,11 +1670,11 @@
       "rank": null
     },
     "twos": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
+      "mmr": 959,
+      "gamesPlayed": 5,
+      "gamesWon": 2,
+      "gamesLost": 3,
+      "winRate": 40,
       "rank": null
     },
     "threes": {
@@ -1676,7 +1686,7 @@
       "rank": null
     }
   },
-  "__v": 4,
+  "__v": 9,
   "createdAt": {
     "$date": {
       "$numberLong": "1659306642379"
@@ -1684,7 +1694,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659343817268"
+      "$numberLong": "1660663420128"
     }
   }
 },{
@@ -1756,17 +1766,18 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897169"
+      "$numberLong": "1660663419777"
     }
   }
 },{
   "_id": "306395424690929674",
   "userData": {
     "roles": [
+      "1002551222479360000",
+      "811667577985302533",
+      "811667577985302534",
       "811667577998671923",
       "811667577998671924",
-      "811667577985302533",
-      "1002551031500115988",
       "946028315934851162"
     ],
     "name": "CTN",
@@ -1787,11 +1798,11 @@
   },
   "stats": {
     "global": {
-      "mmr": 1013,
-      "gamesPlayed": 39,
-      "gamesWon": 20,
-      "gamesLost": 19,
-      "winRate": 51.28,
+      "mmr": 1109,
+      "gamesPlayed": 50,
+      "gamesWon": 30,
+      "gamesLost": 20,
+      "winRate": 60,
       "rank": {
         "name": "Champion",
         "id": "1002551222479360000"
@@ -1806,11 +1817,11 @@
       "rank": null
     },
     "twos": {
-      "mmr": 1065,
-      "gamesPlayed": 11,
-      "gamesWon": 7,
-      "gamesLost": 4,
-      "winRate": 63.63,
+      "mmr": 1387,
+      "gamesPlayed": 22,
+      "gamesWon": 17,
+      "gamesLost": 5,
+      "winRate": 77.27,
       "rank": null
     },
     "threes": {
@@ -1822,7 +1833,7 @@
       "rank": null
     }
   },
-  "__v": 57,
+  "__v": 68,
   "createdAt": {
     "$date": {
       "$numberLong": "1659306826268"
@@ -1830,7 +1841,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897173"
+      "$numberLong": "1660663419769"
     }
   }
 },{
@@ -1904,7 +1915,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897196"
+      "$numberLong": "1660663420131"
     }
   }
 },{
@@ -2045,7 +2056,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897209"
+      "$numberLong": "1660663420151"
     }
   }
 },{
@@ -2118,75 +2129,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897167"
-    }
-  }
-},{
-  "_id": "479936093047750659",
-  "userData": {
-    "roles": [
-      "945702330312044594",
-      "811667577985302531"
-    ],
-    "name": "888%",
-    "mention": "<@479936093047750659>",
-    "discriminator": "6003",
-    "displayColor": "#e67e22",
-    "avatar": "https://cdn.discordapp.com/avatars/479936093047750659/5f3af82e2a6418763638c3d8eea59b4c.png?size=1024",
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1534496081364"
-      }
-    },
-    "joinedAt": {
-      "$date": {
-        "$numberLong": "1658099089994"
-      }
-    }
-  },
-  "stats": {
-    "global": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
-      "rank": null
-    },
-    "ones": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
-      "rank": null
-    },
-    "twos": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
-      "rank": null
-    },
-    "threes": {
-      "mmr": 1000,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "winRate": 0,
-      "rank": null
-    }
-  },
-  "__v": 0,
-  "createdAt": {
-    "$date": {
-      "$numberLong": "1659347454841"
-    }
-  },
-  "updatedAt": {
-    "$date": {
-      "$numberLong": "1659347454841"
+      "$numberLong": "1660663419775"
     }
   }
 },{
@@ -2259,17 +2202,17 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897162"
+      "$numberLong": "1660663419767"
     }
   }
 },{
   "_id": "509407463565557761",
   "userData": {
     "roles": [
-      "1002551222479360000",
       "945702330312044594",
       "811667577985302531",
-      "949293757805764668"
+      "949293757805764668",
+      "1002551031500115988"
     ],
     "name": "Qui1ln 🗿",
     "mention": "<@509407463565557761>",
@@ -2289,12 +2232,15 @@
   },
   "stats": {
     "global": {
-      "mmr": 965,
-      "gamesPlayed": 16,
-      "gamesWon": 7,
-      "gamesLost": 9,
-      "winRate": 43.75,
-      "rank": null
+      "mmr": 969,
+      "gamesPlayed": 20,
+      "gamesWon": 9,
+      "gamesLost": 11,
+      "winRate": 45,
+      "rank": {
+        "name": "Challenger",
+        "id": "1002550833755455648"
+      }
     },
     "ones": {
       "mmr": 1000,
@@ -2305,11 +2251,11 @@
       "rank": null
     },
     "twos": {
-      "mmr": 960,
-      "gamesPlayed": 3,
-      "gamesWon": 1,
-      "gamesLost": 2,
-      "winRate": 33.33,
+      "mmr": 974,
+      "gamesPlayed": 7,
+      "gamesWon": 3,
+      "gamesLost": 4,
+      "winRate": 42.85,
       "rank": null
     },
     "threes": {
@@ -2321,7 +2267,7 @@
       "rank": null
     }
   },
-  "__v": 14,
+  "__v": 18,
   "createdAt": {
     "$date": {
       "$numberLong": "1659369232380"
@@ -2329,7 +2275,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897433"
+      "$numberLong": "1660663420138"
     }
   }
 },{
@@ -2402,7 +2348,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897201"
+      "$numberLong": "1660663420139"
     }
   }
 },{
@@ -2474,7 +2420,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897172"
+      "$numberLong": "1660663419779"
     }
   }
 },{
@@ -2509,8 +2455,8 @@
       "gamesLost": 8,
       "winRate": 50,
       "rank": {
-        "name": "Challenger",
-        "id": "1002550833755455648"
+        "name": "Rising Star",
+        "id": "1002551031500115988"
       }
     },
     "ones": {
@@ -2546,7 +2492,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897199"
+      "$numberLong": "1660663420133"
     }
   }
 },{
@@ -2619,7 +2565,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897193"
+      "$numberLong": "1660663420130"
     }
   }
 },{
@@ -2691,7 +2637,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897181"
+      "$numberLong": "1660663419957"
     }
   }
 },{
@@ -2836,7 +2782,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897216"
+      "$numberLong": "1660663420156"
     }
   }
 },{
@@ -2908,7 +2854,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897207"
+      "$numberLong": "1660663420147"
     }
   }
 },{
@@ -2980,7 +2926,7 @@
   },
   "updatedAt": {
     "$date": {
-      "$numberLong": "1659651897203"
+      "$numberLong": "1660663420142"
     }
   }
 },{

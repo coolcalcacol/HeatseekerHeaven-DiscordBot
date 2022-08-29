@@ -49,7 +49,7 @@ function UpdateSecond() {
     for (let i = 0; i < registeredTimers.length; i++) {
         const timer = registeredTimers[i];
         if (timer.time <= new Date().getTime()) {
-            timer.callback();
+            try { timer.callback(); } catch (error) { console.error(error); }
             registeredTimers.splice(i, 1);
         }
     }

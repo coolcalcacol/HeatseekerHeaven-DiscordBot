@@ -11,8 +11,7 @@ const clientSendMessage = require('../utils/clientSendMessage');
 const mmrCalculator = require('../data/mmrCalculator');
 const generalUtilities = require('../utils/generalUtilities');
 const embedUtilities = require('../utils/embedUtilities');
-
-
+const queueGameChannels = require('../data/queueGameChannels');
 
 
 module.exports = {
@@ -178,7 +177,7 @@ module.exports = {
                         displayAvatarURL: interaction.user.displayAvatarURL(),
                     }
                 },
-                user: overwrite ? this.overwriteOptions.removeUser.user : interaction.options.getUser('user').id,
+                user: overwrite ? this.overwriteOptions.removeUser.user : interaction.options.getUser('user') ? interaction.options.getUser('user').id : null,
             },
         }
         thisLog(`Admin Command: [fg=green]${subCommand}[/>]`);
@@ -212,7 +211,8 @@ module.exports = {
                 const index = queueData.info.globalQueueData.gamesInProgress.indexOf(targetGame);
                 queueData.info.globalQueueData.gamesInProgress.splice(index, 1);
 
-                clientSendMessage.sendMessageTo(channelId, {embeds: [message]})
+                clientSendMessage.sendMessageTo(channelId, {embeds: [message]});
+                queueGameChannels.deleteGameChannels(targetGame);
 
                 await interaction.reply({
                     ephemeral: true,
@@ -302,8 +302,8 @@ module.exports = {
                     }).catch(console.error);
                     return;
                 }
-                const targetUserStatus = queueData.info.userReservedStatus(targetUser.id);
-                const replaceUserStatus = queueData.info.userReservedStatus(replaceUser.id);
+                const targetUserStatus = await queueData.info.userReservedStatus(targetUser.id);
+                const replaceUserStatus = await queueData.info.userReservedStatus(replaceUser.id);
                 
 
                 if (targetUserStatus != 'inOngoingGame') {
@@ -333,14 +333,16 @@ module.exports = {
                 targetGame.players[replaceUser.id] = replacePlayerData; // Add the replacer data to the players
                 delete targetGame.players[targetUser.id]; // Remove the target user from the players
 
+                var targetTeam;
+                var targetTeamName;
                 for (const teamName in targetGame.teams) {
                     const team = targetGame.teams[teamName];
-                    var targetTeam;
                     for (const player in team.members) {
                         if (player == targetUser.id) {
                             team.members[replaceUser.id] = replacePlayerData;
                             delete team.members[targetUser.id];
                             targetTeam = team;
+                            targetTeamName = teamName;
                             break;
                         }
                     }
@@ -363,6 +365,7 @@ module.exports = {
                     timestamp: new Date().getTime()
                 });
 
+                queueGameChannels.manageChannelPermissions('substitute', targetGame, {targetUser: targetUser, replaceUser: replaceUser, targetTeam: targetTeamName});
                 clientSendMessage.sendMessageTo(channelId, {embeds: [message]});
 
                 await interaction.reply({
