@@ -38,7 +38,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         permissionOverwrites: channelPermissions.orange,
     }).catch(console.error);
 
-    const channelTopic = `id:${gameData.gameId}_voiceChannels:${gameData.channels.blue.id},${gameData.channels.orange.id}_lobby:${gameData.lobby}_created:${new Date().getTime()}`; //replace with team vc id's
+    const channelTopic = `id:${gameData.gameId}_AvoiceChannels:${gameData.channels.blue.id},${gameData.channels.orange.id}_lobby:${gameData.lobby}_created:${new Date().getTime()}`; //replace with team vc id's
     gameData.channels.gameChat = await guild.channels.create(`hs${gameData.gameId}-gamechat`, {
         type: 'GUILD_TEXT',
         parent: parent,
@@ -72,6 +72,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
     }
 
     var autoQueueVC;
+    const autoQueuePlayers = [];
     switch(gameData.lobby) {
         case 'ones': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue1VC); } break;
         case 'twos': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue2VC); } break;
@@ -81,10 +82,12 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
     for (const team in gameData.teams) {
         autoQueueVC.members.map(async (member) => {
             if (Object.keys(gameData.teams[team].members).includes(member.id)) {
+                autoQueuePlayers.push(member.id);
                 await member.voice.setChannel(gameData.channels[team]);
             }
         });
     }
+    gameData.channels.gameChat.setTopic(gameData.channels.gameChat.topic + `_AautoQueuePlayers:${autoQueuePlayers.join(',')}`)
     
     //Send an info message explaining why the main queue channels are not visable anymore and how to gain access back
     clientSendMessage.sendMessageTo(
@@ -94,30 +97,34 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
             `Team Blue: ${gameData.channels.blue}`,
             `Team Orange: ${gameData.channels.orange}`,
             `The main ranked channels will be hidden for everyone in this game lobby until you report the game.`,
-            `If you experiance any problems with during this game, ask help from the \'@Moderators\' or \`@Admins\` in this chat.`
+            `If you experiance any problems with during this game, ask help from the \`@Moderators\` or \`@Admins\` in this chat.`
         ].join('\n')
     );
-    // Send the queue starting message again in the created game chat
-    new botUpdate.UpdateTimer(
-        'queueStartMessage' + gameData.channels.gameChat.id, 
-        new Date().setSeconds(new Date().getSeconds() + 2), 
-        clientSendMessage.sendMessageTo.bind(this, gameData.channels.gameChat.id, gameData.queueStartMessage)
-    )
-    
-    // Take away the view perms from all normal queue channels
-    new botUpdate.UpdateTimer(
-        'managePerms' + gameData.channels.gameChat.id, 
-        new Date().setSeconds(new Date().getSeconds() + 10), 
-        manageChannelPermissions.bind(this, false, gameData)
-    )
 
-    // new botUpdate.UpdateTimer(gameData.channels.gameChat.topic, new Date().setSeconds(new Date().getSeconds() + 10), deleteGameChannels.bind(this, gameData))
-    // After 30 minutes, force the channels to be deleted if the game is still active and give back the perms to the players
-    new botUpdate.UpdateTimer(
-        gameData.channels.gameChat.id, 
-        new Date().setMinutes(new Date().getMinutes() + 30), 
-        deleteGameChannels.bind(this, gameData.channels.gameChat)
-    )
+    //#region Timers
+        // Send the queue starting message again in the created game chat
+        new botUpdate.UpdateTimer(
+            'queueStartMessage' + gameData.channels.gameChat.id, 
+            new Date().setSeconds(new Date().getSeconds() + 2), 
+            clientSendMessage.sendMessageTo.bind(this, gameData.channels.gameChat.id, gameData.queueStartMessage)
+        );
+        
+        // Take away the view perms from all normal queue channels
+        new botUpdate.UpdateTimer(
+            'managePerms' + gameData.channels.gameChat.id, 
+            new Date().setSeconds(new Date().getSeconds() + 10), 
+            manageChannelPermissions.bind(this, false, gameData)
+        );
+    
+        // After 30 minutes, force the channels to be deleted if the game is still active and give back the perms to the players
+        new botUpdate.UpdateTimer(
+            gameData.channels.gameChat.id, 
+            new Date().setMinutes(new Date().getMinutes() + 30), 
+            deleteGameChannels.bind(this, gameData.channels.gameChat)
+        );
+        
+        // new botUpdate.UpdateTimer(gameData.channels.gameChat.topic, new Date().setSeconds(new Date().getSeconds() + 10), deleteGameChannels.bind(this, gameData))
+    //#endregion
 }
 async function deleteGameChannels(gameData = new queueData.info.GameLobbyData()) {
     const channel = gameData.channels.gameChat;
@@ -132,9 +139,18 @@ async function deleteGameChannels(gameData = new queueData.info.GameLobbyData())
     const details = {};
     for (let i = 0; i < topicSplit.length; i++) {
         const arg = topicSplit[i];
-        const key = arg.split(':')[0];
+        var key = arg.split(':')[0];
         const value = arg.split(':')[1];
-        details[key] = value.split(',').length > 1 ? value.split(',') : value;
+        if (key.split('')[0] == 'A') {
+            const keySplit = key.split('');
+            key = '';
+            for (let k = 1; k < keySplit.length; k++) {
+                const char = keySplit[k];
+                key += char;
+            }
+            details[key] = value.split(',');
+        }
+        else { details[key] = value; }
     }
     manageChannelPermissions(true, gameData);
 
@@ -151,7 +167,9 @@ async function deleteGameChannels(gameData = new queueData.info.GameLobbyData())
         if (!vc) continue;
         await Promise.all(vc.members.map(async (member) => {
             if (member.voice.channel.id == vc.id) {
-                await member.voice.setChannel(autoQueueVC).catch(console.error);
+                if (details.autoQueuePlayers.includes(member.id)) {
+                    await member.voice.setChannel(autoQueueVC).catch(console.error);
+                }
             }
         })).catch(console.error);
         await vc.delete().catch(console.error);

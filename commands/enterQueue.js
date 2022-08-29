@@ -47,10 +47,10 @@ module.exports = {
                 });
             } break;
             case 'gameStarted': {
-                // await interaction.reply({
-                //     content: 'You started the queue', 
-                //     ephemeral: true
-                // });
+                await interaction.reply({
+                    content: 'You started the queue', 
+                    ephemeral: true
+                });
                 // await interaction.reply({
                 //     embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
                 // });
