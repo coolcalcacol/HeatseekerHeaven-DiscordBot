@@ -86,6 +86,17 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         });
     }
     
+    //Send an info message explaining why the main queue channels are not visable anymore and how to gain access back
+    clientSendMessage.sendMessageTo(
+        gameData.channels.gameChat.id, 
+        [
+            `This channel is created for game \`${gameData.gameId}\` and 2 voice channels for each team;`,
+            `Team Blue: ${gameData.channels.blue}`,
+            `Team Orange: ${gameData.channels.orange}`,
+            `The main ranked channels will be hidden for everyone in this game lobby until you report the game.`,
+            `If you experiance any problems with during this game, ask help from the \'@Moderators\' or \`@Admins\` in this chat.`
+        ].join('\n')
+    );
     // Send the queue starting message again in the created game chat
     new botUpdate.UpdateTimer(
         'queueStartMessage' + gameData.channels.gameChat.id, 

@@ -281,11 +281,9 @@ var globalQueueData = {
 
         if (await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).then((data) => {
             return data.channelSettings.teamChannelCategory;
-        })) {
-            queueGameChannels.createGameChannels(game);
-        }
+        })) { queueGameChannels.createGameChannels(game); }
+        else { clientSendMessage.sendMessageTo(channelId, queueStartMessage); }
 
-        clientSendMessage.sendMessageTo(channelId, queueStartMessage);
     }
 //#endregion
 
