@@ -72,6 +72,7 @@ var globalQueueData = {
                 blue: '',
                 orange: '',
             }
+            this.queueStartMessage = {content: 'no message content for ' + this.gameId};
             this.reportStatus;
             this.gameResults;
             this.bypassTeamGeneration = bypass;
@@ -272,16 +273,19 @@ var globalQueueData = {
             }
         }
         
+        const queueStartMessage = {
+            content: msgContent,
+            embeds: embedUtilities.presets.queueGameStartPreset(game)
+        }
+        game.queueStartMessage = queueStartMessage;
+
         if (await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).then((data) => {
             return data.channelSettings.teamChannelCategory;
         })) {
             queueGameChannels.createGameChannels(game);
         }
 
-        clientSendMessage.sendMessageTo(channelId, {
-            content: msgContent,
-            embeds: embedUtilities.presets.queueGameStartPreset(game),
-        });
+        clientSendMessage.sendMessageTo(channelId, queueStartMessage);
     }
 //#endregion
 

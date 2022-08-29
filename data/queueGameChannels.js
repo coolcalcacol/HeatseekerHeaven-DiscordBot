@@ -12,7 +12,6 @@ const clientSendMessage = require('../utils/clientSendMessage');
 const embedUtilities = require('../utils/embedUtilities');
 const cConsole = require('../utils/customConsoleLog');
 const generalUtilities = require('../utils/generalUtilities');
-const sleep = require('node:timers/promises').setTimeout;
 //#endregion
 const botUpdate = require('../events/botUpdate');
 
@@ -87,6 +86,14 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         });
     }
     
+    // Send the queue starting message again in the created game chat
+    new botUpdate.UpdateTimer(
+        'queueStartMessage' + gameData.channels.gameChat.id, 
+        new Date().setSeconds(new Date().getSeconds() + 2), 
+        clientSendMessage.sendMessageTo.bind(this, gameData.channels.gameChat.id, gameData.queueStartMessage)
+    )
+    
+    // Take away the view perms from all normal queue channels
     new botUpdate.UpdateTimer(
         'managePerms' + gameData.channels.gameChat.id, 
         new Date().setSeconds(new Date().getSeconds() + 10), 
@@ -94,6 +101,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
     )
 
     // new botUpdate.UpdateTimer(gameData.channels.gameChat.topic, new Date().setSeconds(new Date().getSeconds() + 10), deleteGameChannels.bind(this, gameData))
+    // After 30 minutes, force the channels to be deleted if the game is still active and give back the perms to the players
     new botUpdate.UpdateTimer(
         gameData.channels.gameChat.id, 
         new Date().setMinutes(new Date().getMinutes() + 30), 
