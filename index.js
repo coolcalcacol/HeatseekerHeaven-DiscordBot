@@ -90,7 +90,7 @@ async function executeCommand(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
-		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
+		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
@@ -103,7 +103,7 @@ async function executeUserContext(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
-		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
+		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
@@ -118,7 +118,7 @@ async function executeButton(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
-		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
+		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
@@ -132,7 +132,7 @@ async function executeSelectMenue(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
-		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
+		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}

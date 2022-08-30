@@ -212,9 +212,6 @@ module.exports.generate = {
 	getTimeAgo
 }
 module.exports.actions = {
-    sleep
-}
-
-module.exports = {
 	handleError,
+    sleep
 }
