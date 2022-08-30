@@ -30,6 +30,7 @@
     "@discordjs/builders": "^0.12.0",
     "@discordjs/rest": "^0.3.0",
     "discord-api-types": "^0.27.2",
+    "discord-error-handler": "^1.3.3",
     "discord.js": "^13.8.0",
     "jsdom": "^19.0.0",
     "mongoose": "^5.11.15",

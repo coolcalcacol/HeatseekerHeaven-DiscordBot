@@ -132,6 +132,7 @@ module.exports = {
 				default: break;
 			}
 		}
+
 		
 		// const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
 		// const vc = await guild.channels.cache.get('1013063161982758972'); // 999776641163202701

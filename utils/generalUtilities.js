@@ -2,6 +2,9 @@ const generalData = require("../data/generalData");
 const config = require('../config/config.json');
 const cConsole = require('./customConsoleLog');
 
+const { errorLogWebhook } = require('../config/private.json');
+const Errorhandler = require('discord-error-handler');
+
 async function getUserById(id) {
     return await generalData.client.users.fetch(id).catch(console.error);
 }
@@ -16,6 +19,15 @@ async function getMemberById(id) {
 		return null;
 	}
 	return output;
+}
+
+function handleError() {
+	return new Errorhandler(generalData.client, {
+		webhook: {
+			id: errorLogWebhook.id, 
+			token: errorLogWebhook.token,
+		}
+	});
 }
 
 function randomizeArray(array) {
@@ -201,4 +213,8 @@ module.exports.generate = {
 }
 module.exports.actions = {
     sleep
+}
+
+module.exports = {
+	handleError,
 }

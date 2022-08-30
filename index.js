@@ -5,6 +5,7 @@ const cConsole = require('./utils/customConsoleLog');
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config/private.json');
 const generalData = require('./data/generalData.js');
+const generalUtilities = require('./utils/generalUtilities');
 // const { prefix } = require('./config/config.json');
 // const mmrCalculator = require('./data/mmrCalculator');
 
@@ -89,6 +90,7 @@ async function executeCommand(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
+		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
@@ -101,6 +103,7 @@ async function executeUserContext(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
+		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
@@ -115,6 +118,7 @@ async function executeButton(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
+		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
@@ -128,44 +132,14 @@ async function executeSelectMenue(interaction) {
 		if (generalData.debugMode) {
 			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
 		}
+		generalUtilities.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
 		cConsole.log('Error: ' + error.message);
 		console.log(error.stack);
 	}
 }
 
-// client.on('voiceStateUpdate', (oldState, newState) => {
-// 	console.log(oldState)
-// 	console.log(newState)
-//     if(newState.channelId === null) //left
-//         console.log('user left channel', oldState.channelID);
-//     else if(oldState.channelId === null) // joined
-//         console.log('user joined channel', newState.channelID);
-//     else // moved
-//         console.log('user moved channels', oldState.channelID, newState.channelID);
-// });
-
-// client.on('interactionCreate', async interaction => {
-// 	if (!interaction.isSelectMenu()) return;
-
-// 	if (interaction.customId === 'select') {
-// 		console.log(interaction)
-// 		await interaction.update({ content: 'Something was selected!', components: [] });
-// 	}
-// });
-// client.on('interactionCreate', async interaction => {
-// 	if (!interaction.isModalSubmit()) return;
-// 	// Get the data entered by the user
-// 	const favoriteColor = interaction.fields.getTextInputValue('favoriteColorInput');
-// 	const hobbies = interaction.fields.getTextInputValue('hobbiesInput');
-// 	console.log({ favoriteColor, hobbies });
-// 	await interaction.reply({
-// 		content: 'You submited ' + favoriteColor + ' succesfully!'
-// 	})
-// });
-
 // Login to Discord with your client's token
 client.login(token);
-// console.log(client.messageActions);
 
 module.exports.info = {
 	database: db
