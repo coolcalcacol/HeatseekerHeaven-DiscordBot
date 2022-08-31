@@ -126,7 +126,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         // new botUpdate.UpdateTimer(gameData.channels.gameChat.topic, new Date().setSeconds(new Date().getSeconds() + 10), deleteGameChannels.bind(this, gameData))
     //#endregion
 }
-async function deleteGameChannels(gameData = new queueData.info.GameLobbyData()) {
+async function deleteGameChannels(gameData) {
     const channel = gameData.channels.gameChat;
     const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
     if (!await guild.channels.cache.get(channel.id)) {
