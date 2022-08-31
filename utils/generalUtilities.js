@@ -14,8 +14,9 @@ async function getMemberById(id) {
     try { 
 		output = await guild.members.fetch(id);
 	} catch(err) {
-		const username = await getUserById(id).username;
-		cConsole.log(`ERROR: Could not get member data for ${username}.\nPlease make sure that this user is still in the server\n`);
+		// const username = await getUserById(id).username;
+		handleError().createrr(generalData.client, generalData.botConfig.defaultGuildId, 'Could not get member data for```\n<@' + id + '> ```' + id, err)
+		cConsole.log(`ERROR: Could not get member data for ${id}.\nPlease make sure that this user is still in the server\n`);
 		return null;
 	}
 	return output;
