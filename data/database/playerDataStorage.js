@@ -4,7 +4,7 @@ const PlayerDataSchema = new mongoose.Schema({
     _id: String,
     userData: {
         name: String,
-        nickName: String,
+        nickname: String,
         mention: String,
         discriminator: String,
         roles: Array,

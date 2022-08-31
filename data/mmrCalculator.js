@@ -22,7 +22,7 @@ function getGameResults(winningTeam, losingTeam, equationValues) {
         const data = winningTeam.members[player];
         
         const equation = calculatePlayerMmr(equationValues, combinedMmr, data.stats[mode], winningTeam.mmr, 'won', lobbySize);
-        resultOutput.push([data.userData.name, `+${equation.output}`])
+        resultOutput.push([data.userData.nickname ? data.userData.nickname : data.userData.name, `+${equation.output}`])
         equationDebug('winners', equation, data, mode)
 
         data.stats[mode].mmr += Math.round(equation.output);
@@ -38,7 +38,7 @@ function getGameResults(winningTeam, losingTeam, equationValues) {
         const data = losingTeam.members[player];
 
         const equation = calculatePlayerMmr(equationValues, combinedMmr, data.stats[mode], losingTeam.mmr, 'lost', lobbySize);
-        resultOutput.push([data.userData.name, `-${equation.output}`])
+        resultOutput.push([data.userData.nickname ? data.userData.nickname : data.userData.name, `-${equation.output}`])
         equationDebug('losers', equation, data, mode)
 
         data.stats[mode].mmr -= Math.round(equation.output);
