@@ -362,7 +362,7 @@ module.exports = {
                 const lobbyChannelId = await queueSettings.getRankedLobbyByName(targetGame.lobby, guildId);
                 const message = new MessageEmbed({
                     title: `Game ${targetGame.gameId} | Subtitute`,
-                    description: `Player <@${targetUser.id}> has ben replaced by <@${replaceUser.id}>`,
+                    description: `Player <@${targetUser.id}> has been replaced by <@${replaceUser.id}>`,
                     fields: [
                         { name: 'Team Blue', value: '<@' + Object.keys(targetGame.teams.blue.members).join('> <@') + '>' },
                         { name: 'Team Orange', value: '<@' + Object.keys(targetGame.teams.orange.members).join('> <@') + '>' }
