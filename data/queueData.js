@@ -19,7 +19,7 @@ const botUpdate = require('../events/botUpdate');
 
 const config = require('../config/config.json');
 
-var globalQueueData = {
+const globalQueueData = {
     lobby: {
         ones: {
             players: {},
@@ -37,7 +37,15 @@ var globalQueueData = {
     gameId: 100,
     gamesInProgress: [],
     gameHistory: [],
-
+    
+    getActiveGame(gameId) {
+        for (let i = 0; i < this.gamesInProgress.length; i++) {
+            const game = this.gamesInProgress[i];
+            if (gameId == game.gameId) {
+                return game;
+            }
+        }
+    },
     async getGameID(readOnly = false) {
         if (!readOnly) {
             this.gameId++;
@@ -50,7 +58,7 @@ var globalQueueData = {
         for (var i = 0; i < props.length; i++) {
             delete this.lobby[lobby].players[props[i]];
         }
-    }
+    },
 }
 //#region Classes
     class GameLobbyData {
@@ -234,8 +242,8 @@ var globalQueueData = {
         if (Object.keys(globalQueueData.lobby[lobby].players).length == globalQueueData.lobby[lobby].queueSize) {
             // Start the queue
             if (generalData.logOptions.gameData) { console.log('Starting the queue for lobby: ' + lobby); }
-            await startQueue(lobby, interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId);
-            return 'gameStarted';
+            const newGame = await startQueue(lobby, interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId);
+            return 'gameStarted:' + newGame.gameId;
         }
         else {
             const time = new Date();
@@ -256,7 +264,7 @@ var globalQueueData = {
     }
     async function startQueue(lobby, guildId, gameData = null) {
         const game = gameData ? gameData : new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
-        const channelId = await queueSettings.getRankedLobbyByName(lobby, guildId)
+        const lobbyChannelId = await queueSettings.getRankedLobbyByName(lobby, guildId)
             .then(globalQueueData.clearLobbyQueue(lobby));
 
         globalQueueData.gamesInProgress.push(game);
@@ -281,9 +289,11 @@ var globalQueueData = {
 
         if (await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).then((data) => {
             return data.channelSettings.teamChannelCategory;
-        })) { queueGameChannels.createGameChannels(game); }
-        else { clientSendMessage.sendMessageTo(channelId, queueStartMessage); }
-
+        })) { 
+            queueGameChannels.createGameChannels(game); 
+        }
+        else { clientSendMessage.sendMessageTo(lobbyChannelId, queueStartMessage); }
+        return game;
     }
 //#endregion
 

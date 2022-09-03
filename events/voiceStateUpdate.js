@@ -1,6 +1,8 @@
 const queueSettings = require('../data/queueSettings');
 const queueData = require('../data/queueData');
 
+const enterQueueCommand = require('../commands/enterQueue');
+
 const cConsole = require('../utils/customConsoleLog');
 const clientSendMessage = require('../utils/clientSendMessage');
 const embedUtilities = require('../utils/embedUtilities');
@@ -18,11 +20,33 @@ module.exports = {
             if (await queueData.info.userReservedStatus(interaction.id) != false) return;
             const targetLobby = Object.keys(autoQueueChannels)[Object.values(autoQueueChannels).indexOf(oldState.channelId)]
 
-            queueData.actions.addPlayerToQueue(null, targetLobby, interaction.id, queueConfig);
-            clientSendMessage.sendMessageTo(
-                await queueSettings.getRankedLobbyByName(targetLobby, interaction.guild.id), 
-                {embeds: [embedUtilities.presets.queueStatusEmbed(targetLobby, 'add', interaction)]}
-            )
+            if (enterQueueCommand.currentQueueMessage[targetLobby]) {
+                await enterQueueCommand.currentQueueMessage[targetLobby].delete();
+            }
+
+            var response = await queueData.actions.addPlayerToQueue(null, targetLobby, interaction.id, queueConfig);
+            var responseArgs = '';
+            if (response.includes(':')) {
+                const split = response.split(':');
+                response = split[0]
+                responseArgs = split[1];
+            }
+            
+            if (response != 'gameStarted') {
+                const enterQueueMessage = await clientSendMessage.sendMessageTo(
+                    await queueSettings.getRankedLobbyByName(targetLobby, interaction.guild.id), 
+                    {embeds: [embedUtilities.presets.queueStatusEmbed(targetLobby, 'add', interaction)]}
+                );
+                enterQueueCommand.currentQueueMessage[targetLobby] = enterQueueMessage;
+            }
+            else {
+                await clientSendMessage.sendMessageTo(
+                    await queueSettings.getRankedLobbyByName(targetLobby, interaction.guild.id), 
+                    {embeds: embedUtilities.presets.queueGameStartLobbyPreset(queueData.info.globalQueueData.getActiveGame(responseArgs))}
+                );
+                enterQueueCommand.currentQueueMessage[targetLobby] = null;
+            }
+            
             await interaction.client.emit('queueEvent', interaction, 'add', queueData.info.getLobbyString(targetLobby));
         }
         else if (Object.values(autoQueueChannels).includes(interaction.channelId)) {

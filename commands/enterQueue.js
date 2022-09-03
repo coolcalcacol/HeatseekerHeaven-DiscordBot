@@ -1,4 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { MessageEmbed } = require('discord.js');
+
 const cConsole = require('../utils/customConsoleLog');
 const databaseUtilities = require('../utils/databaseUtilities');
 const embedUtilities = require('../utils/embedUtilities');
@@ -9,6 +11,11 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('queue')
         .setDescription('Adds your to the queue'),
+    currentQueueMessage: {
+        ones: null,
+        twos: null,
+        threes: null,
+    },
     async execute(interaction) {
         const lobby = await queueSettings.getRankedLobbyById(interaction.channel, interaction.guild.id);
         if (!['ones', 'twos', 'threes'].includes(lobby)) {
@@ -19,14 +26,24 @@ module.exports = {
             return;
         }
         const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id).catch(console.error);
-        const response = await queueData.actions.addPlayerToQueue(interaction, lobby, null, queueSettingsData);
+        var response = await queueData.actions.addPlayerToQueue(interaction, lobby, null, queueSettingsData);
+        var responseArgs = '';
+        if (response.includes(':')) {
+            const split = response.split(':');
+            response = split[0]
+            responseArgs = split[1];
+        }
         console.log('response: ' + response)
         switch (response) {
             case 'enteredQueue': {
-                await interaction.client.emit('queueEvent', interaction, 'add', queueData.info.getLobbyString(lobby));
                 await interaction.reply({
                     embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
                 });
+                
+                if (this.currentQueueMessage[lobby]) { this.currentQueueMessage[lobby].delete(); }
+                this.currentQueueMessage[lobby] = await interaction.fetchReply();
+
+                interaction.client.emit('queueEvent', interaction, 'add', queueData.info.getLobbyString(lobby));
             } break;
             case 'userIsBlacklisted': {
                 await interaction.reply({
@@ -47,10 +64,13 @@ module.exports = {
                 });
             } break;
             case 'gameStarted': {
+                const game = queueData.info.globalQueueData.getActiveGame(responseArgs);
                 await interaction.reply({
-                    content: 'You started the queue', 
-                    ephemeral: true
+                    embeds: embedUtilities.presets.queueGameStartLobbyPreset(game),
+                    ephemeral: false
                 });
+                if (this.currentQueueMessage[lobby]) { this.currentQueueMessage[lobby].delete(); }
+                this.currentQueueMessage[lobby] = null;
                 // await interaction.reply({
                 //     embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]
                 // });

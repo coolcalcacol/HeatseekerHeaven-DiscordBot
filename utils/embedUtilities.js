@@ -62,6 +62,20 @@ function queueGameStartPreset(gameData, teamsOnly = false) {
     const output = !teamsOnly ? [header, teamBlue, teamOrange] : [teamBlue, teamOrange];
     return output;
 }
+function queueGameStartLobbyPreset(gameData = new queueData.info.GameLobbyData()) {
+    const teamBlue = getTeamMembers(gameData.teams.blue);
+    const teamOrange = getTeamMembers(gameData.teams.orange);
+    const embed = new MessageEmbed({
+        title: 'Game ' + gameData.gameId + ' has started!',
+        fields: [
+            {name: 'Team Blue', value: teamBlue},
+            {name: 'Team Orange', value: teamOrange},
+        ],
+        color: '#00ff00',
+        timestamp: new Date().getTime()
+    });
+    return [embed];
+}
 
 function reportGamePreset(gameData) {
     const date = new Date();
@@ -390,9 +404,13 @@ function getFieldSpacing(value, spaces) {
 module.exports.presets = {
     queueStatusEmbed,
     queueGameStartPreset,
+    queueGameStartLobbyPreset,
     reportGamePreset,
     gameResultPreset,
     playerStatsPreset,
     leaderboardPreset,
     mmrStats,
+}
+module.exports.methods = {
+    getTeamMembers
 }
