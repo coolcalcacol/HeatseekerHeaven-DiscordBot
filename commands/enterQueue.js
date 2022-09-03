@@ -16,6 +16,10 @@ module.exports = {
         twos: null,
         threes: null,
     },
+    queueState: {
+        locked: false,
+        lockReason: 'No reason was found',
+    },
     async execute(interaction) {
         const lobby = await queueSettings.getRankedLobbyById(interaction.channel, interaction.guild.id);
         if (!['ones', 'twos', 'threes'].includes(lobby)) {

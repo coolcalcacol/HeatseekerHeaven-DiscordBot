@@ -1,17 +1,22 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, MessageEmbed } = require('discord.js');
+
 const config = require('../config/config.json');
 const GuildSettings = require('../data/database/guildConfigStorage')
 const generalData = require('../data/generalData');
 const playerData = require('../data/playerData');
-const cConsole = require('../utils/customConsoleLog');
 const queueData = require('../data/queueData');
 const queueSettings = require('../data/queueSettings');
+const queueGameChannels = require('../data/queueGameChannels');
+
+const cConsole = require('../utils/customConsoleLog');
 const clientSendMessage = require('../utils/clientSendMessage');
-const mmrCalculator = require('../data/mmrCalculator');
 const generalUtilities = require('../utils/generalUtilities');
 const embedUtilities = require('../utils/embedUtilities');
-const queueGameChannels = require('../data/queueGameChannels');
+
+const enterQueueCommand = require('../commands/enterQueue');
+
+// const mmrCalculator = require('../data/mmrCalculator');
 
 
 module.exports = {
@@ -65,6 +70,20 @@ module.exports = {
             .addUserOption(option => option
                 .setName('user')
                 .setDescription('The user that you want to remove from the queue')
+                .setRequired(true)
+            )
+        )
+        .addSubcommand(subCommand => subCommand // lock-queue
+            .setName('lock-queue')
+            .setDescription('Lock the queue for everyone. Ongoing games will not be effected')
+            .addBooleanOption(option => option
+                .setName('state')
+                .setDescription('True = locked | False = Unlocked')
+                .setRequired(true)
+            )
+            .addStringOption(option => option
+                .setName('reason')
+                .setDescription('The reason to lock the queue, this will be visable to users that try to queue')
                 .setRequired(true)
             )
         )
@@ -439,6 +458,13 @@ module.exports = {
                 else {
                     cConsole.log(`Removed ${targetUser} from the queue for inactivity`)
                 }
+            } break;
+            case 'lock-queue': {
+                // Command action
+                await interaction.reply({
+                    ephemeral: true,
+                    content: 'This command is not configured yet...'
+                });
             } break;
             case 'reset-player-stats': {
                 console.log([
