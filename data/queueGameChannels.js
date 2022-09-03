@@ -112,7 +112,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         // Take away the view perms from all normal queue channels
         new botUpdate.UpdateTimer(
             'managePerms' + gameData.channels.gameChat.id, 
-            new Date().setSeconds(new Date().getSeconds() + 10), 
+            new Date().setSeconds(new Date().getSeconds() + 20), 
             manageChannelPermissions.bind(this, false, gameData)
         );
     
