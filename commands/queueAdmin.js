@@ -235,7 +235,10 @@ module.exports = {
                     var player;
                     for (const p in targetGame.players) {
                         const data = targetGame.players[p]
-                        if (data.userData.name == results[0]) player = data;
+                        if (data.userData.name == results[0] || data.userData.nickname == results[0]) {
+                            player = data;
+                            continue;
+                        }
                     }
                     const mmr =  player.stats[targetGame.lobby].mmr;
                     // player.stats[targetGame.lobby].mmr = Math.round(results[1].replace('+', '').replace('-', ''));
@@ -261,7 +264,7 @@ module.exports = {
                 }
 
                 const index = queueData.info.globalQueueData.gameHistory.indexOf(targetGame)
-                const channelId = await queueSettings.getRankedLobbyByName(targetGame.lobby, guildId);
+                const lobbyChannelId = await queueSettings.getRankedLobbyByName(targetGame.lobby, guildId);
                 const message = new MessageEmbed({
                     title: 'The report for ' + targetGame.gameId + ' has been undone',
                     description: 'You can report this game again now',
@@ -276,7 +279,10 @@ module.exports = {
                 queueData.info.globalQueueData.gameHistory.splice(index, 1);
                 queueData.info.globalQueueData.gamesInProgress.push(targetGame);
 
-                clientSendMessage.sendMessageTo(channelId, {embeds: [message]})
+                clientSendMessage.sendMessageTo(lobbyChannelId, {embeds: [message]})
+                if (targetGame.channels.gameChat.id != null) {
+                    clientSendMessage.sendMessageTo(targetGame.channels.gameChat.id, {embeds: [message]})
+                }
 
                 await interaction.reply({
                     ephemeral: true,
@@ -353,7 +359,7 @@ module.exports = {
                     }
                 }
 
-                const channelId = await queueSettings.getRankedLobbyByName(targetGame.lobby, guildId);
+                const lobbyChannelId = await queueSettings.getRankedLobbyByName(targetGame.lobby, guildId);
                 const message = new MessageEmbed({
                     title: `Game ${targetGame.gameId} | Subtitute`,
                     description: `Player <@${targetUser.id}> has ben replaced by <@${replaceUser.id}>`,
@@ -366,7 +372,10 @@ module.exports = {
                 });
 
                 queueGameChannels.manageChannelPermissions('substitute', targetGame, {targetUser: targetUser, replaceUser: replaceUser, targetTeam: targetTeamName});
-                clientSendMessage.sendMessageTo(channelId, {embeds: [message]});
+                clientSendMessage.sendMessageTo(lobbyChannelId, {embeds: [message]});
+                if (targetGame.channels.gameChat.id != null) {
+                    clientSendMessage.sendMessageTo(targetGame.channels.gameChat.id, {embeds: [message]})
+                }
 
                 await interaction.reply({
                     ephemeral: true,

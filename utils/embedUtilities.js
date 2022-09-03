@@ -193,7 +193,7 @@ async function leaderboardPreset(page, interaction, returnMaxPage = false) {
         const target = playerDataList[i];
         if (target['_id'] == interactorId) {
             targetUser['data'] = target;
-            targetUser['index'] = i - (staleEnd - staleStart);
+            targetUser['index'] = i > 9 ? i - (staleEnd - staleStart) : i;
             break;
         }
     }
