@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 
 const QueueDatabase = require('../../data/database/queueDataStorage');
+const guildConfigStorage = require('../../data/database/guildConfigStorage')
 const playerData = require('../../data/playerData');
 
 const botUpdate = require('../../events/botUpdate');
@@ -41,7 +42,15 @@ module.exports = {
             .setRequired(false)
         ),
     async execute(interaction) {
-        if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+        const guildConfig = await guildConfigStorage.findOne({_id: interaction.guild.id}).catch(console.error);
+        var hasAdminRole = false;
+        if (guildConfig) {
+            for (const adminRole in guildConfig.adminRoles) {
+                const roleId = guildConfig.adminRoles[adminRole].id;
+                if (interaction.member._roles.includes(roleId)) { hasAdminRole = true; break;}
+            }
+        }
+        if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !hasAdminRole) {
             await interaction.reply({
                 ephemeral: true,
                 content: 'You do not have permission to use this command.',

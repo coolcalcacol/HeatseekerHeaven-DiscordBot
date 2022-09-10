@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const GuildConfigSchema = new mongoose.Schema({
     _id: String,
-    adminRole: String
+    adminRoles: {type: Object, default: {}}
 });
 
 module.exports = mongoose.model('GuildConfigDatabase', GuildConfigSchema);
