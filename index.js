@@ -88,7 +88,7 @@ async function executeCommand(interaction) {
 	if (!command) return;
 	try { await command.execute(interaction); } catch (error) {
 		if (generalData.debugMode) {
-			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'}).catch(console.error);
 		}
 		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
 		cConsole.log('Error: ' + error.message);
@@ -101,7 +101,7 @@ async function executeUserContext(interaction) {
 	if (!command) return;
 	try { await command.execute(interaction); } catch (error) {
 		if (generalData.debugMode) {
-			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'}).catch(console.error);
 		}
 		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.commandName, error);
 		cConsole.log('Error: ' + error.message);
@@ -116,7 +116,7 @@ async function executeButton(interaction) {
 	if (!button) return;
 	try { await button.execute(interaction); } catch (error) {
 		if (generalData.debugMode) {
-			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'}).catch(console.error);
 		}
 		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
 		cConsole.log('Error: ' + error.message);
@@ -130,7 +130,7 @@ async function executeSelectMenue(interaction) {
 	if (!selectMenue) return;
 	try { await selectMenue.execute(interaction); } catch (error) {
 		if (generalData.debugMode) {
-			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'});
+			await interaction.reply({content: 'There was an error while executing this command!' + '\n\`\`\`' + error + '\`\`\`'}).catch(console.error);
 		}
 		generalUtilities.actions.handleError().createrr(client, interaction.guild.id, interaction.customId, error);
 		cConsole.log('Error: ' + error.message);
