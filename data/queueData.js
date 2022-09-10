@@ -247,6 +247,7 @@ const globalQueueData = {
         }
         else {
             const time = new Date();
+            // new botUpdate.UpdateTimer('queueTimeout-' + userId, time.setSeconds(time.getSeconds() + 10), queueInactivityTimeout.bind(this, userId))
             new botUpdate.UpdateTimer('queueTimeout-' + userId, time.setMinutes(time.getMinutes() + 30), queueInactivityTimeout.bind(this, userId))
             return 'enteredQueue';
         }

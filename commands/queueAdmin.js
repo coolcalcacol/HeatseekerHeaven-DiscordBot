@@ -155,16 +155,6 @@ module.exports = {
     },
     async execute(interaction, overwrite = false) {
 
-        // const guildSettings = await GuildSettings.findOne({_id: interaction.guild.id});
-        // if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !interaction.member._roles.includes(guildSettings.adminRole)) {
-        //     await interaction.reply({
-        //         ephemeral: true,
-        //         content: 'You do not have permission to use this command.',
-        //     }).catch(console.error);
-        //     cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-        //     return;
-        // }
-
         if (interaction != null && !interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
             await interaction.reply({
                 ephemeral: true,
@@ -174,7 +164,8 @@ module.exports = {
             return;
         }
         const guildId = interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId;
-        const queueSettingsData = await queueSettings.getQueueDatabaseById({_id: guildId});
+        const guild = generalData.client.guilds.cache.get(guildId);
+        const queueConfig = await queueSettings.getQueueDatabaseById({_id: guildId});
 
         const subCommand = overwrite ? this.overwriteOptions.command : interaction.options.getSubcommand();
         const options = {
@@ -279,7 +270,7 @@ module.exports = {
                     //     mmr + Math.round(results[1].replace('-', ''))
                     // ;
 
-                    playerData.updatePlayerData(player, queueSettingsData.mmrSettings);
+                    playerData.updatePlayerData(player, queueConfig.mmrSettings);
                 }
 
                 const index = queueData.info.globalQueueData.gameHistory.indexOf(targetGame)
@@ -429,6 +420,19 @@ module.exports = {
                     return;
                 }
 
+                const targetVCId = 
+                    (targetLobbyName == 'ones') ? queueConfig.channelSettings.autoQueue1VC : 
+                    (targetLobbyName == 'twos') ? queueConfig.channelSettings.autoQueue2VC : 
+                    queueConfig.channelSettings.autoQueue3VC
+                ;
+                const targetVC = guild.channels.cache.get(targetVCId);
+                
+                targetVC.members.map(async (member) => {
+                    if (member.id == targetUser) {
+                        await member.voice.setChannel(null);
+                    }
+                });
+
                 const channelId = await queueSettings.getRankedLobbyByName(targetLobbyName, guildId);
                 const message = new MessageEmbed({
                     title: interaction == null ? `Player was removed for inactivity` : `Player was forced to leave the queue`,
@@ -442,6 +446,7 @@ module.exports = {
                         },
                     ],
                     footer: {text: initiator.user.username, iconURL: initiator.user.displayAvatarURL},
+                    color: '#eb6e34',
                     timestamp: new Date().getTime()
                 });
 

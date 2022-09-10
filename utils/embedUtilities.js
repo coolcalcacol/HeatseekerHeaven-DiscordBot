@@ -66,7 +66,7 @@ function queueGameStartLobbyPreset(gameData = new queueData.info.GameLobbyData()
     const teamBlue = getTeamMembers(gameData.teams.blue);
     const teamOrange = getTeamMembers(gameData.teams.orange);
     const embed = new MessageEmbed({
-        title: 'Game ' + gameData.gameId + ' has started!',
+        title: 'Game has started!',
         fields: [
             {name: 'Team Blue', value: teamBlue},
             {name: 'Team Orange', value: teamOrange},
