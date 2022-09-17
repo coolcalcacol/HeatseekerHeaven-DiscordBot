@@ -283,7 +283,7 @@ module.exports = {
                     //     mmr + Math.round(results[1].replace('-', ''))
                     // ;
 
-                    playerData.updatePlayerData(player, queueConfig.mmrSettings);
+                    await playerData.updatePlayerData(player, queueConfig.mmrSettings);
                 }
 
                 const index = queueData.info.globalQueueData.gameHistory.indexOf(targetGame)

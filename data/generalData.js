@@ -9,7 +9,7 @@ module.exports = {
         botSetupGuildId: '811667577985302528',
     },
     debugOptions: {
-        createGameOnStart: false,
+        createGameOnStart: true,
         gameOnStartLobby: 'ones'
     },
     logOptions : {
@@ -55,7 +55,7 @@ module.exports = {
         '653453312271581205', // RedRockGaming69
         '862875902621777951', // Zerkoxito
         '467786597878857740', // DarthShadoww
-        '510636937489416196', // Nate
+        // '510636937489416196', // Nate
         '700707631915991051', // Zebby
         '646927153614553122', // Mxnny
         '665951998713004051', // Pew

@@ -87,8 +87,8 @@ module.exports = {
 			switch (generalData.debugOptions.gameOnStartLobby) {
 				case 'ones': {
 					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData); // 888%
-					await queueData.actions.fillQueueWithPlayers(['988513771452526623'], 'ones', 1, queueSettingsData); // CTN-Originals
-					// await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1, queueSettingsData); // CTN
+					// await queueData.actions.fillQueueWithPlayers(['988513771452526623'], 'ones', 1, queueSettingsData); // CTN-Originals
+					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1, queueSettingsData); // CTN
 					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'ones', 1, queueSettingsData);
 					// await queueData.actions.fillQueueWithPlayers(['653453312271581205'], 'ones', 1, queueSettingsData);
 				} break;
@@ -120,7 +120,7 @@ module.exports = {
 					var players = {};
 					for (let i = 0; i < currentGame.length; i++) {
 						const id = currentGame[i];
-						const pData = await playerData.getPlayerDataById(id);
+						const pData = await testPlayerData.getPlayerDataById(id);
 						players[id] = pData;
 					}
 
@@ -133,7 +133,25 @@ module.exports = {
 			}
 		}
 
+		// const testPlayerData = [
+		// 	await playerData.getPlayerDataById('479936093047750659'),
+		// 	await playerData.getPlayerDataById('306395424690929674')
+		// ]
+		// clientSend.sendMessageTo('945859974481985606', '`---- Before ----`')
+		// for (let p = 0; p < testPlayerData.length; p++) {
+		// 	const player = testPlayerData[p];
+		// 	clientSend.sendMessageTo('945859974481985606', [
+		// 		`\`${player.userData.name.split('')[0]}\`  =  Total: ${player.stats['ones'].gamesPlayed} \`|\``,
+		// 		` Won: ${player.stats['ones'].gamesWon} \`|\``,
+		// 		` Lost: ${player.stats['ones'].gamesLost}`
+		// 	].join(''));
+		// }
 		
+		// clientSend.sendMessageTo('988155328027848736', {embeds: [
+		// 	embedUtilities.presets.playerStatsPreset(await playerData.getPlayerDataById('479936093047750659'), 'ones'),
+		// 	embedUtilities.presets.playerStatsPreset(await playerData.getPlayerDataById('306395424690929674'), 'ones')
+		// ]})
+
 		// const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
 		// const vc = await guild.channels.cache.get('1013063161982758972'); // 999776641163202701
 		// vc.permissionOverwrites.edit(await generalUtilities.info.getUserById('306395424690929674'), {VIEW_CHANNEL: true});

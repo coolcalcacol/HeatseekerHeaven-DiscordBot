@@ -1,19 +1,76 @@
 {
     "files.exclude": {
-        "node_modules": true,
-
-        "package.json": true,
-        "package-lock.json": true,
-        ".eslintrc.json": true,
-        "README.md": true,
-        ".gitattributes": true,
-        ".gitignore": true,
-
         "**/.git": true,
         "**/.svn": true,
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/Thumbs.db": true,
-    }
+        "README.md": true,
+        "package-lock.json": true,
+        ".gitattributes": true,
+        "node_modules/": true,
+        "package.json": true,
+        ".gitignore": true,
+        ".eslintrc.json": true,
+        ".vscode/": true,
+        "commands/Archive/": true,
+        "commands/test/": true,
+        "Examples/": true,
+        "images/": true
+    },
+    "hidefiles.configurationType": "local",
+    "hidefiles.globalConfig": {
+        "profiles": [
+            {
+                "hidden": [
+                    "$Non-Essential",
+                    "commands/debug/",
+                    "commands/fun/",
+                    "commands/guildConfig.js",
+                    "config/",
+                    "index.js",
+                    "deploy-commands.js",
+                    "utils/databaseUtilities.js",
+                    "events/"
+                ],
+                "name": "Un-Commen-Use",
+                "description": "",
+                "detail": "",
+                "peek": []
+            },
+            {
+                "hidden": [
+                    "$External",
+                    ".vscode/",
+                    "commands/Archive/",
+                    "commands/test/",
+                    "Examples/",
+                    "images/"
+                ],
+                "name": "Non-Essential",
+                "description": "",
+                "detail": "",
+                "peek": []
+            },
+            {
+                "hidden": [
+                    "README.md",
+                    "package-lock.json",
+                    ".gitattributes",
+                    "node_modules/",
+                    "README.md",
+                    "README.md",
+                    ".gitattributes",
+                    "package.json",
+                    ".gitignore",
+                    ".eslintrc.json"
+                ],
+                "name": "External",
+                "description": "",
+                "detail": "",
+                "peek": []
+            }
+        ]
+    },
+    "hidefiles.selectedProfile": "Non-Essential"
 }
