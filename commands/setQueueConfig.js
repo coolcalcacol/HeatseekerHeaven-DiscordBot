@@ -37,6 +37,21 @@ module.exports = {
                     .setRequired(true)
                 )
         )
+        .addSubcommand(subcommand => subcommand // set-roles
+                .setName('set-roles')
+                .setDescription('Set some relevant roles')
+                .addStringOption(option => option // type
+                    .setName('type')
+                    .setDescription('The type of queue')
+                    .setRequired(true)
+                        .addChoice('In active game', 'inActiveGameRole')
+                )
+                .addRoleOption(option => option // role
+                    .setName('role')
+                    .setDescription('The role to be used')
+                    .setRequired(true)
+                )
+        )
         .addSubcommand(subcommand => subcommand // mmr-settings
             .setName('mmr-settings')
             .setDescription('Set some MMR related values for the MMR equation')
@@ -158,6 +173,18 @@ module.exports = {
                     ephemeral: true,
                     content: '<#' + interaction.options.getChannel('channel') + '>' +
                     ' is now set as the **' + targetChannel + '** channel'
+                });
+            } break;
+            case 'set-roles': {
+                const targetRole = await interaction.options.getString('type');
+                try {
+                    queueSettingsData.roleSettings[targetRole] = interaction.options.getRole('role');
+                } catch (err) {console.error(err);}
+
+                await interaction.reply({
+                    ephemeral: true,
+                    content: '<@&' + interaction.options.getRole('role') + '>' +
+                    ' is now set as **' + targetRole + '**'
                 });
             } break;
             case 'mmr-settings': {

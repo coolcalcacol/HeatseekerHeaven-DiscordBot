@@ -2,14 +2,14 @@
 
 module.exports = {
     client: null,
-    debugMode: false,
+    debugMode: true,
     releasedVersion: false,
     botConfig: {
         defaultGuildId: '349360638088314881',
         botSetupGuildId: '811667577985302528',
     },
     debugOptions: {
-        createGameOnStart: true,
+        createGameOnStart: false,
         gameOnStartLobby: 'ones'
     },
     logOptions : {
