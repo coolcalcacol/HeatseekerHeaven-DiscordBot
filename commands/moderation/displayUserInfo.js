@@ -31,8 +31,22 @@ module.exports = {
         
         const userCreatedAtDate = new Date(user.createdAt);
         const memberCreatedAtDate = new Date(member.joinedAt);
-        const createdAt = `${userCreatedAtDate.getHours()}:${userCreatedAtDate.getMinutes()}:${(userCreatedAtDate.getSeconds().toString().length == 1) ? '0' + userCreatedAtDate.getSeconds().toString() : userCreatedAtDate.getSeconds()} ${userCreatedAtDate.getDate()}-${userCreatedAtDate.getMonth()}-${userCreatedAtDate.getFullYear()}`
-        const joinedAt = `${memberCreatedAtDate.getHours()}:${memberCreatedAtDate.getMinutes()}:${(memberCreatedAtDate.getSeconds().toString().length == 1) ? '0' + memberCreatedAtDate.getSeconds().toString() : memberCreatedAtDate.getSeconds()} ${memberCreatedAtDate.getDate()}-${memberCreatedAtDate.getMonth()}-${memberCreatedAtDate.getFullYear()}`
+        const createdAt = [
+            `${this.getNumberToFixed(userCreatedAtDate.getHours())}:`,
+            `${this.getNumberToFixed(userCreatedAtDate.getMinutes())}:`,
+            `${this.getNumberToFixed(userCreatedAtDate.getSeconds())} `,
+            `${this.getNumberToFixed(userCreatedAtDate.getDate())}-`,
+            `${this.getNumberToFixed(userCreatedAtDate.getMonth())}-`,
+            `${userCreatedAtDate.getFullYear()}`
+        ].join('');
+        const joinedAt = [
+            `${this.getNumberToFixed(memberCreatedAtDate.getHours())}:`,
+            `${this.getNumberToFixed(memberCreatedAtDate.getMinutes())}:`,
+            `${this.getNumberToFixed(memberCreatedAtDate.getSeconds())} `,
+            `${this.getNumberToFixed(memberCreatedAtDate.getDate())}-`,
+            `${this.getNumberToFixed(memberCreatedAtDate.getMonth())}-`,
+            `${memberCreatedAtDate.getFullYear()}`
+        ].join('');
         const embed = new MessageEmbed({
             author: {name: 'User info - ' + user.username, iconURL: user.avatarURL()},
             description: [
@@ -49,4 +63,7 @@ module.exports = {
             embeds: [embed]
         }).catch(console.error);
     },
+    getNumberToFixed(num) {
+        return (num.toString().length == 1) ? '0' + num : num;
+    }
 };
