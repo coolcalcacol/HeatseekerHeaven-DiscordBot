@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 
 const guildConfigStorage = require('../data/database/guildConfigStorage');
+const cConsole = require('../utils/customConsoleLog');
 
 module.exports = {
     data: new SlashCommandBuilder()

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder,ChannelT} = require('@discordjs/builders');
+const { SlashCommandBuilder, ChannelT} = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 const QueueConfig = require('../data/database/queueConfigStorage');
 const playerData = require('../data/playerData');
@@ -178,7 +178,7 @@ module.exports = {
             case 'set-roles': {
                 const targetRole = await interaction.options.getString('type');
                 try {
-                    queueSettingsData.roleSettings[targetRole] = interaction.options.getRole('role');
+                    queueSettingsData.roleSettings[targetRole] = interaction.options.getRole('role').id;
                 } catch (err) {console.error(err);}
 
                 await interaction.reply({

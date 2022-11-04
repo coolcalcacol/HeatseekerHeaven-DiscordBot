@@ -1,3 +1,5 @@
+const { Permissions } = require('discord.js');
+
 //#region Data
 const QueueConfig = require('./database/queueConfigStorage');
 const QueueDatabase = require('./database/queueDataStorage');
@@ -5,6 +7,7 @@ const PlayerData = require('./playerData');
 const generalData = require('./generalData');
 const queueSettings = require('./queueSettings');
 const queueData = require('./queueData');
+const guildConfigStorage = require('../data/database/guildConfigStorage')
 //#endregion
 
 //#region Utillities
@@ -184,6 +187,9 @@ async function deleteGameChat(channel) {
 async function manageChannelPermissions(reset, gameData, substituteData = {targetUser: {}, replaceUser: {}, targetTeam: ''}) {
     const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
     const queueConfig = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId);
+    const guildConfig = await guildConfigStorage.findOne({_id: generalData.botConfig.defaultGuildId}).catch(console.error);
+    
+
     const targetChannels = [
         'onesChannel',
         'twosChannel',
@@ -198,6 +204,18 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
             if (reset == false) {
                 for (const player in gameData.players) {
                     const user = await generalUtilities.info.getUserById(player);
+                    const memberData = await generalUtilities.info.getMemberById(player);
+                    var hasAdminRole = false;
+                    if (guildConfig) {
+                        for (const adminRole in guildConfig.adminRoles) {
+                            const roleId = guildConfig.adminRoles[adminRole].id;
+                            if (memberData._roles.includes(roleId)) { hasAdminRole = true; break;}
+                        }
+                        if (hasAdminRole) continue;
+                    }
+                    if (memberData.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+                        continue;
+                    }
                     channel.permissionOverwrites.edit(user, {VIEW_CHANNEL: false});
                 }
             }
