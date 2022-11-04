@@ -8,7 +8,7 @@ const queueSettings = require('../data/queueSettings');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('leave')
-        .setDescription('Removes your from the queue'),
+        .setDescription('Removes you from the queue'),
     async execute(interaction) {
         const lobby = await queueSettings.getRankedLobbyById(interaction.channel, interaction.guild.id);
         if (!['ones', 'twos', 'threes'].includes(lobby)) {
