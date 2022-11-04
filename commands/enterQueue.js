@@ -10,7 +10,7 @@ const queueSettings = require('../data/queueSettings');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('queue')
-        .setDescription('Adds your to the queue'),
+        .setDescription('Adds you to the queue'),
     currentQueueMessage: {
         ones: null,
         twos: null,
