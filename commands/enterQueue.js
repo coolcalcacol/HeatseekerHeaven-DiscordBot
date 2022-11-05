@@ -6,6 +6,7 @@ const databaseUtilities = require('../utils/databaseUtilities');
 const embedUtilities = require('../utils/embedUtilities');
 const queueData = require('../data/queueData.js');
 const queueSettings = require('../data/queueSettings');
+const generalData = require('../data/generalData');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,7 +31,7 @@ module.exports = {
             return;
         }
         const queueSettingsData = await queueSettings.getQueueDatabaseById(interaction.guild.id).catch(console.error);
-        var response = await queueData.actions.addPlayerToQueue(interaction, lobby, null, queueSettingsData);
+        var response = (generalData.generalQueueSettings.pauseQueue) ? 'queuePaused' : await queueData.actions.addPlayerToQueue(interaction, lobby, null, queueSettingsData);
         var responseArgs = '';
         if (response.includes(':')) {
             const split = response.split(':');
@@ -39,6 +40,12 @@ module.exports = {
         }
         console.log('response: ' + response)
         switch (response) {
+            case 'queuePaused': {
+                await interaction.reply({
+                    content: 'The queue is paused at the moment. This usually means that the bot is being maintained.', 
+                    ephemeral: true
+                });
+            } break;
             case 'enteredQueue': {
                 await interaction.reply({
                     embeds: [embedUtilities.presets.queueStatusEmbed(lobby, 'add', interaction)]

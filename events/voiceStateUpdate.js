@@ -2,6 +2,7 @@ const queueSettings = require('../data/queueSettings');
 const queueData = require('../data/queueData');
 
 const enterQueueCommand = require('../commands/enterQueue');
+const generalData = require('../data/generalData');
 
 const cConsole = require('../utils/customConsoleLog');
 const clientSendMessage = require('../utils/clientSendMessage');
@@ -16,7 +17,7 @@ module.exports = {
             twos: queueConfig.channelSettings.autoQueue2VC,
             threes: queueConfig.channelSettings.autoQueue3VC,
         }
-        if (Object.values(autoQueueChannels).includes(oldState.channelId)) {
+        if (Object.values(autoQueueChannels).includes(oldState.channelId)) { // Joined the VC
             if (await queueData.info.userReservedStatus(interaction.id) != false) return;
             const targetLobby = Object.keys(autoQueueChannels)[Object.values(autoQueueChannels).indexOf(oldState.channelId)]
 
@@ -24,7 +25,7 @@ module.exports = {
                 await enterQueueCommand.currentQueueMessage[targetLobby].delete();
             }
 
-            var response = await queueData.actions.addPlayerToQueue(null, targetLobby, interaction.id, queueConfig);
+            var response = (generalData.generalQueueSettings.pauseQueue) ? 'queuePaused' : await queueData.actions.addPlayerToQueue(null, targetLobby, interaction.id, queueConfig);
             var responseArgs = '';
             if (response.includes(':')) {
                 const split = response.split(':');
@@ -32,7 +33,8 @@ module.exports = {
                 responseArgs = split[1];
             }
             
-            if (response != 'gameStarted') {
+            if (response == 'queuePaused') return;
+            else if (response != 'gameStarted') {
                 const enterQueueMessage = await clientSendMessage.sendMessageTo(
                     await queueSettings.getRankedLobbyByName(targetLobby, interaction.guild.id), 
                     {embeds: [embedUtilities.presets.queueStatusEmbed(targetLobby, 'add', interaction)]}
@@ -49,7 +51,7 @@ module.exports = {
             
             await interaction.client.emit('queueEvent', interaction, 'add', queueData.info.getLobbyString(targetLobby));
         }
-        else if (Object.values(autoQueueChannels).includes(interaction.channelId)) {
+        else if (Object.values(autoQueueChannels).includes(interaction.channelId)) { // Left the VC
             if (await queueData.info.userReservedStatus(interaction.id) != 'inQueue') return;
             const targetLobby = Object.keys(autoQueueChannels)[Object.values(autoQueueChannels).indexOf(interaction.channelId)]
 

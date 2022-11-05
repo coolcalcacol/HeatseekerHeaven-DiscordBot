@@ -8,6 +8,9 @@ module.exports = {
         defaultGuildId: '349360638088314881',
         botSetupGuildId: '811667577985302528',
     },
+    generalQueueSettings: {
+        pauseQueue: false,
+    },
     debugOptions: {
         createGameOnStart: false,
         gameOnStartLobby: 'ones'
