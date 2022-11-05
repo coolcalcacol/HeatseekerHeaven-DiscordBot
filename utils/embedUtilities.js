@@ -45,11 +45,17 @@ function queueStatusEmbed(lobby, context, interaction = null) {
     return embed;
 }
 
+/** 
+ * @param {GameLobbyData} gameData
+*/
 function queueGameStartPreset(gameData, teamsOnly = false) {
     const header = new MessageEmbed()
         .setColor('#000000')
         .setTitle('Teams have been selected!')
-        .setDescription('__**Match ID**__:\n```js\n        hs' + gameData.gameId + '\n```')
+        .setDescription([
+            '__**Game ID**__:\n```js\n' + getFieldSpacing('hs' + gameData.gameId, 23) + '\n```',
+            '__**Game Region**__:\n```js\n' + getFieldSpacing(gameData.region, 23) + '\n```',
+        ].join('\n'))
     const teamBlue = new MessageEmbed()
         .setColor('#0000FF')
         .addFields(

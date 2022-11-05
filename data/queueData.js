@@ -1,5 +1,5 @@
 //#region Data
-    const QueueConfig = require('./database/queueConfigStorage');
+    const QueueConfigStorage = require('./database/queueConfigStorage');
     const QueueDatabase = require('./database/queueDataStorage');
     const PlayerData = require('./playerData');
     const generalData = require('./generalData');
@@ -18,6 +18,9 @@ const queueAdmin = require('../commands/queueAdmin');
 const botUpdate = require('../events/botUpdate');
 
 const config = require('../config/config.json');
+const getQueueConfig = async (guildId = generalData.botConfig.defaultGuildId) => { 
+    return await QueueConfigStorage.findOne({_id: guildId}).catch(console.error);
+}
 
 const globalQueueData = {
     lobby: {
@@ -49,7 +52,7 @@ const globalQueueData = {
     async getGameID(readOnly = false) {
         if (!readOnly) {
             this.gameId++;
-            await QueueConfig.updateOne({}, {gameId: this.gameId}).catch(console.error);
+            await QueueConfigStorage.updateOne({}, {gameId: this.gameId}).catch(console.error);
         }
         return this.gameId;
     },
@@ -66,6 +69,7 @@ const globalQueueData = {
             this.lobby = lobby;
             this.lobbyDisplay = '';
             this.players = {};
+            this.region = 'US-East';
             for (const p in players) {
                 this.players[p] = players[p];
             }
@@ -90,7 +94,7 @@ const globalQueueData = {
         async requestGameId() {
             globalQueueData.gameId += 1;
             this.gameId = globalQueueData.gameId;
-            await QueueConfig.updateOne({}, {gameId: this.gameId}).catch(console.error);
+            await QueueConfigStorage.updateOne({}, {gameId: this.gameId}).catch(console.error);
         }
         getTeams() {
             switch (this.lobby) {
@@ -263,25 +267,42 @@ const globalQueueData = {
         }
         return 'wasNotInQueue';
     }
+
+    /** 
+     * @param {GameLobbyData} gameData
+    */
     async function startQueue(lobby, guildId, gameData = null) {
         const game = gameData ? gameData : new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
         const lobbyChannelId = await queueSettings.getRankedLobbyByName(lobby, guildId)
             .then(globalQueueData.clearLobbyQueue(lobby));
+        const queueConfig = await getQueueConfig();
+        const euRole = (queueConfig.roleSettings.regionEU.id) ? queueConfig.roleSettings.regionEU : null;
+        const usRole = (queueConfig.roleSettings.regionUS.id) ? queueConfig.roleSettings.regionUS : null;
 
         globalQueueData.gamesInProgress.push(game);
         if (generalData.logOptions.gameData) console.log(globalQueueData.gamesInProgress);
 
         var msgContent = '';
+        var euPlayers = 0;
+        var usPlayers = 0;
         for (const player in game.players) {
             const user = game.players[player];
+            const memberData = await generalUtilities.info.getMemberById(player);
             if (generalData.debugMode) {
                 msgContent += '`' + user.userData.mention + '` ';
             }
             else {
                 msgContent += user.userData.mention + ' ';
             }
+            if (!euRole || !usRole) continue;
+            if (memberData._roles.includes(euRole.id)) { euPlayers++; }
+            if (memberData._roles.includes(usRole.id)) { usPlayers++; }
         }
-        
+        console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
+        if (euPlayers > usPlayers) {
+            game.region = 'EU';
+        }
+
         const queueStartMessage = {
             content: msgContent,
             embeds: embedUtilities.presets.queueGameStartPreset(game)

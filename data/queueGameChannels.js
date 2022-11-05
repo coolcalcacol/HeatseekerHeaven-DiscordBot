@@ -190,14 +190,14 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
     const queueConfig = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId);
     const guildConfig = await guildConfigStorage.findOne({_id: generalData.botConfig.defaultGuildId}).catch(console.error);
 
-    const targetChannels = [
-        'onesChannel',
-        'twosChannel',
-        'threesChannel',
-        'autoQueue1VC',
-        'autoQueue2VC',
-        'autoQueue3VC'
-    ]
+    // const targetChannels = [
+    //     'onesChannel',
+    //     'twosChannel',
+    //     'threesChannel',
+    //     'autoQueue1VC',
+    //     'autoQueue2VC',
+    //     'autoQueue3VC'
+    // ]
     if (reset != 'substitute') {
         
         if (queueConfig.roleSettings.inActiveGameRole != null) {

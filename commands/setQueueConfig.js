@@ -45,6 +45,8 @@ module.exports = {
                     .setDescription('The type of queue')
                     .setRequired(true)
                         .addChoice('In active game', 'inActiveGameRole')
+                        .addChoice('Region EU', 'regionEU')
+                        .addChoice('Region US', 'regionUS')
                 )
                 .addRoleOption(option => option // role
                     .setName('role')
