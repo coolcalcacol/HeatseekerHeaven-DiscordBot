@@ -283,12 +283,6 @@ module.exports = {
                     id: roleId,
                     name: roleName
                 }
-                // for (const key in queueSettingsData.roleSettings[role]) {
-                //     if (key != 'id' || key != 'name') {
-                //         console.log(key);
-                //         delete queueSettingsData.roleSettings[role][key];
-                //     }
-                // }
             }
             clientSendMessage.sendMessageTo(
                 queueSettingsData.channelSettings.logChannel,
@@ -300,9 +294,5 @@ module.exports = {
                 ].join('\n')
             );
         }
-        // await interaction.followUp({
-        //     ephemeral: true,
-        //     content: '__**New Config Document**__:\n```js\n' + queueSettingsData + '```',
-        // });
     },
 };
