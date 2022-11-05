@@ -6,7 +6,7 @@ const cConsole = require('../utils/customConsoleLog');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('servercofig')
+        .setName('serverconfig')
         .setDescription('Configure the settings of this server')
         .addSubcommand(subcommand => subcommand
             .setName('add-admin-role')
