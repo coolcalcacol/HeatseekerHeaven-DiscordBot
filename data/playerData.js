@@ -283,7 +283,7 @@ async function resetPlayerStats(interaction, reason) {
 
     if (queueConfig.channelSettings.logChannel) {
         clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
-            `||<@&${guildData.adminRole}>||`,
+            // `||<@&${guildData.adminRole}>||`,
             `**PlayerData has been __Reset__** by <@${interaction.user.id}>`,
             `user ID: \`${interaction.user.id}\``,
             `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
