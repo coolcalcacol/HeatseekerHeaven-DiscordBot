@@ -282,8 +282,12 @@ async function resetPlayerStats(interaction, reason) {
     updatePlayerRanks(interaction.guild.id);
 
     if (queueConfig.channelSettings.logChannel) {
+        var adminRoleMention = '';
+        for (const role in guildData.adminRoles) {
+            adminRoleMention += role + ' ';
+        }
         clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
-            // `||<@&${guildData.adminRole}>||`,
+            `||${adminRoleMention}||`,
             `**PlayerData has been __Reset__** by <@${interaction.user.id}>`,
             `user ID: \`${interaction.user.id}\``,
             `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
