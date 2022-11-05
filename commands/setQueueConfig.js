@@ -276,6 +276,20 @@ module.exports = {
             );
         }
         if (queueSettingsData.channelSettings.logChannel) {
+            for (const role in queueSettingsData.roleSettings.schema.obj.roleSettings) {
+                const roleId = queueSettingsData.roleSettings[role]['id'];
+                const roleName = queueSettingsData.roleSettings[role]['name'];
+                queueSettingsData.roleSettings[role] = {
+                    id: roleId,
+                    name: roleName
+                }
+                // for (const key in queueSettingsData.roleSettings[role]) {
+                //     if (key != 'id' || key != 'name') {
+                //         console.log(key);
+                //         delete queueSettingsData.roleSettings[role][key];
+                //     }
+                // }
+            }
             clientSendMessage.sendMessageTo(
                 queueSettingsData.channelSettings.logChannel,
                 [
