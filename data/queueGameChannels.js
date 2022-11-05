@@ -112,19 +112,20 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
             clientSendMessage.sendMessageTo.bind(this, gameData.channels.gameChat.id, gameData.queueStartMessage)
         );
         
-        // Take away the view perms from all normal queue channels
+        // Add the InGame role to the players
         new botUpdate.UpdateTimer(
             'managePerms' + gameData.channels.gameChat.id, 
-            new Date().setSeconds(new Date().getSeconds() + 20), 
+            new Date().setSeconds(new Date().getSeconds() + 12), 
             manageChannelPermissions.bind(this, false, gameData)
         );
     
         // After 30 minutes, force the channels to be deleted if the game is still active and give back the perms to the players
-        new botUpdate.UpdateTimer(
-            gameData.channels.gameChat.id, 
-            new Date().setMinutes(new Date().getMinutes() + 30), 
-            deleteGameChannels.bind(this, gameData.channels.gameChat)
-        );
+        // !! Doesnt cancel the game and doesnt remove the in game role
+        // new botUpdate.UpdateTimer(
+        //     '30minDeleteChannels' + gameData.channels.gameChat.id, 
+        //     new Date().setMinutes(new Date().getSeconds() + 15), 
+        //     deleteGameChannels.bind(this, gameData)
+        // );
         
         // new botUpdate.UpdateTimer(gameData.channels.gameChat.topic, new Date().setSeconds(new Date().getSeconds() + 10), deleteGameChannels.bind(this, gameData))
     //#endregion
@@ -188,7 +189,6 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
     const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
     const queueConfig = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId);
     const guildConfig = await guildConfigStorage.findOne({_id: generalData.botConfig.defaultGuildId}).catch(console.error);
-    
 
     const targetChannels = [
         'onesChannel',
@@ -199,34 +199,39 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
         'autoQueue3VC'
     ]
     if (reset != 'substitute') {
-        for (const target in targetChannels) {
-            const channel = await guild.channels.cache.get(queueConfig.channelSettings[targetChannels[target]])
-            if (reset == false) {
-                for (const player in gameData.players) {
-                    const user = await generalUtilities.info.getUserById(player);
-                    const memberData = await generalUtilities.info.getMemberById(player);
-                    var hasAdminRole = false;
-                    if (guildConfig) {
-                        for (const adminRole in guildConfig.adminRoles) {
-                            const roleId = guildConfig.adminRoles[adminRole].id;
-                            if (memberData._roles.includes(roleId)) { hasAdminRole = true; break;}
-                        }
-                        if (hasAdminRole) continue;
+        
+        if (queueConfig.roleSettings.inActiveGameRole != null) {
+            const ingameRole = queueConfig.roleSettings.inActiveGameRole;
+            for (const player in gameData.players) {
+                const user = await generalUtilities.info.getUserById(player);
+                const memberData = await generalUtilities.info.getMemberById(player);
+                var hasAdminRole = false;
+                if (guildConfig) {
+                    for (const adminRole in guildConfig.adminRoles) {
+                        const roleId = guildConfig.adminRoles[adminRole].id;
+                        if (memberData._roles.includes(roleId)) { hasAdminRole = true; break;}
                     }
-                    if (memberData.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
-                        continue;
+                    if (hasAdminRole) continue;
+                }
+                if (memberData.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+                    continue;
+                }
+                // channel.permissionOverwrites.edit(user, {VIEW_CHANNEL: false});
+                
+                if (reset == false) {
+                    memberData.roles.add(ingameRole.id).catch(console.error);
+                }
+                else if (reset == true) {
+                    if (memberData._roles.includes(ingameRole.id)) {
+                        memberData.roles.remove(ingameRole.id).catch(console.error);
                     }
-                    channel.permissionOverwrites.edit(user, {VIEW_CHANNEL: false});
                 }
             }
-            else if (reset == true) {
-                for (const player in gameData.players) {
-                    const perms = await channel.permissionOverwrites.cache.get(player);
-                    if (!perms) continue;
-                    await perms.delete();
-                }
-            }
+            
         }
+        // for (const target in targetChannels) {
+        //    const channel = await guild.channels.cache.get(queueConfig.channelSettings[targetChannels[target]])
+        // }
     }
     else if (reset == 'substitute' && Object.keys(substituteData.targetUser).length > 0 && Object.keys(substituteData.replaceUser).length > 0) {
         const targetUser = substituteData.targetUser;

@@ -17,7 +17,7 @@ const QueueConfigSchema = new mongoose.Schema({
         logChannel: {type: String, default: ''},
     },
     roleSettings: {
-        inActiveGameRole: {type: Object, default: {}},
+        inActiveGameRole: {type: Object, default: {}}
     },
     mmrSettings: {
         startingMmr: {type: Number, default: 1000}, // 1000,

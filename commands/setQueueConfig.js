@@ -176,10 +176,12 @@ module.exports = {
                 });
             } break;
             case 'set-roles': {
-                const targetRole = await interaction.options.getString('type');
+                const targetRole = interaction.options.getString('type');
+                const inputRole = interaction.options.getRole('role');
                 try {
-                    queueSettingsData.roleSettings[targetRole] = interaction.options.getRole('role').id;
+                    queueSettingsData.roleSettings[targetRole] = inputRole.toJSON();
                 } catch (err) {console.error(err);}
+                compare = false;
 
                 await interaction.reply({
                     ephemeral: true,
