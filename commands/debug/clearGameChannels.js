@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Permissions } = require('discord.js');
+const { Permissions, Client } = require('discord.js');
 
 const generalData = require('../../data/generalData');
 const queueSettings = require('../../data/queueSettings');
@@ -8,6 +8,10 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('clear-game-channels')
         .setDescription('Clears all the channels out of the game channels category'),
+
+    /** 
+     * @param {Client} client
+    */
     async execute(interaction) {
         if (interaction != null && interaction.user.id != '306395424690929674') {
             await interaction.reply({
@@ -17,7 +21,7 @@ module.exports = {
             cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
             return;
         }
-        const guild = interaction.guild;
+        const guild = (interaction) ? interaction.guild : await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
         const queueConfig = await queueSettings.getQueueDatabaseById(guild.id);
         const channels = await guild.channels.cache;
         var deletedChannels = [];
@@ -31,10 +35,13 @@ module.exports = {
                 }
             }
         });
-        await interaction.reply({
-            ephemeral: true,
-            content: `**Deletion count**: ${deletionCount}\n**Deleted channels**:\n\`\`\`\n${deletedChannels.join('\n')}\n\`\`\``
-        }).catch(console.error);
-        // console.log(await guild.channels.cache.filter((c) => {c.parent.id == queueConfig.channelSettings.teamChannelCategory}));
+
+        if (interaction) {
+            await interaction.reply({
+                ephemeral: true,
+                content: `**Deletion count**: ${deletionCount}\n**Deleted channels**:\n\`\`\`\n${deletedChannels.join('\n')}\n\`\`\``
+            }).catch(console.error);
+            // console.log(await guild.channels.cache.filter((c) => {c.parent.id == queueConfig.channelSettings.teamChannelCategory}));
+        }
     },
 };
