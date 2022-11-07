@@ -1,19 +1,23 @@
 // const { cConsole } = require('../utils/utilityManager.js');
+const { Client } = require('discord.js');
 
+/** 
+ * @param {Client} client
+*/
 module.exports = {
     client: null,
-    debugMode: false,
-    releasedVersion: true,
+    debugMode: true,
+    releasedVersion: false,
     botConfig: {
         defaultGuildId: '349360638088314881',
         botSetupGuildId: '811667577985302528',
     },
     generalQueueSettings: {
-        pauseQueue: true,
+        pauseQueue: false,
     },
     debugOptions: {
-        createGameOnStart: false,
-        gameOnStartLobby: 'ones'
+        createGameOnStart: true,
+        gameOnStartLobby: 'threes'
     },
     logOptions : {
         interactions: true,
@@ -48,7 +52,7 @@ module.exports = {
         '492497679570436117', // CSmith_Games
         '95630080893521920',  // kaelan
         '568449733228756993', // Bramble
-        '178625919559270409', // ncj
+        // '178625919559270409', // ncj
         '198802539783651328', // tavz
         '201039454930993152', // Marshmallow
         '510829824483524638', // coco_ice
@@ -61,8 +65,11 @@ module.exports = {
         // '510636937489416196', // Nate
         '700707631915991051', // Zebby
         '646927153614553122', // Mxnny
-        '665951998713004051', // Pew
+        // '665951998713004051', // Pew
         '793278749138747423', // PogChamp
         '509407463565557761', // Quilln
+        '434732958360797204', // TOG
+        '476834059431968772', // Hunter
+        '393061621393784833', // Egol
     ]
 }
