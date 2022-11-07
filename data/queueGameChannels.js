@@ -200,10 +200,10 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
     // ]
     if (reset != 'substitute') {
         
-        if (queueConfig.roleSettings.inActiveGameRole != null) {
+        if (Object.keys(queueConfig.roleSettings.inActiveGameRole).length > 0) {
             const ingameRole = queueConfig.roleSettings.inActiveGameRole;
             for (const player in gameData.players) {
-                const user = await generalUtilities.info.getUserById(player);
+                // const user = await generalUtilities.info.getUserById(player);
                 const memberData = await generalUtilities.info.getMemberById(player);
                 var hasAdminRole = false;
                 if (guildConfig) {
@@ -222,9 +222,7 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
                     memberData.roles.add(ingameRole.id).catch(console.error);
                 }
                 else if (reset == true) {
-                    if (memberData._roles.includes(ingameRole.id)) {
-                        memberData.roles.remove(ingameRole.id).catch(console.error);
-                    }
+                    memberData.roles.remove(ingameRole.id).catch(console.error);
                 }
             }
             
