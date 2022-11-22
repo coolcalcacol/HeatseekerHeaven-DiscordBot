@@ -7,6 +7,7 @@ const playerData = require('../../data/playerData');
 
 const cConsole = require('../../utils/customConsoleLog');
 const generalUtilities = require('../../utils/generalUtilities');
+const { getCommandPermissions } = require('../../utils/userPermissions');
 
 module.exports = {
     data: new SlashCommandBuilder()

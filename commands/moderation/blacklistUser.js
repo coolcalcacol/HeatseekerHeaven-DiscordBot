@@ -9,6 +9,7 @@ const botUpdate = require('../../events/botUpdate');
 
 const generalUtilities = require('../../utils/generalUtilities');
 const cConsole = require('../../utils/customConsoleLog');
+const { getCommandPermissions } = require('../../utils/userPermissions');
 
 const getGuildQueueData = async function (guildId) {return await QueueDatabase.findOne({_id: guildId}).catch(console.error);};
 
