@@ -3,6 +3,7 @@ const { Permissions } = require('discord.js');
 
 const guildConfigStorage = require('../data/database/guildConfigStorage');
 const cConsole = require('../utils/customConsoleLog');
+const { getCommandPermissions } = require('../utils/userPermissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -45,14 +46,25 @@ module.exports = {
             )
         ),
     async execute(interaction) {
-        if (interaction != null && !interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'You do not have permission to use this command.',
-            }).catch(console.error);
-            cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-            return;
-        }
+        // if (interaction != null && !interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+        //     await interaction.reply({
+        //         ephemeral: true,
+        //         content: 'You do not have permission to use this command.',
+        //     }).catch(console.error);
+        //     cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
+        //     return;
+        // }
+        const permission = await getCommandPermissions(
+            interaction, 
+            {
+                creator: true,
+                owner: true,
+                admin: false,
+                superAdmin: true,
+                adminPermission: false
+            }
+        );
+        if (!permission) { return; }
         
         const getGuildConfig = async (guildId) => {return await guildConfigStorage.findOne({_id: guildId}).catch(console.error)};
         if (await getGuildConfig(interaction.guild.id) == null) {

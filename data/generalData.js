@@ -22,6 +22,7 @@ module.exports = {
     logOptions : {
         interactions: true,
         queueAdmin: true,
+        userPermissions: false,
         database: false,
         playerData: false,
         getPlayerData: false,

@@ -3,6 +3,7 @@ const { Permissions, Client } = require('discord.js');
 
 const generalData = require('../../data/generalData');
 const queueSettings = require('../../data/queueSettings');
+const { getCommandPermissions } = require('../../utils/userPermissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,14 +14,28 @@ module.exports = {
      * @param {Client} client
     */
     async execute(interaction) {
-        if (interaction != null && interaction.user.id != '306395424690929674') {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'You do not have permission to use this command.',
-            }).catch(console.error);
-            cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-            return;
+        // if (interaction != null && interaction.user.id != '306395424690929674') {
+        //     await interaction.reply({
+        //         ephemeral: true,
+        //         content: 'You do not have permission to use this command.',
+        //     }).catch(console.error);
+        //     cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
+        //     return;
+        // }
+        if (interaction != null) {
+            const permission = await getCommandPermissions(
+                interaction, 
+                {
+                    creator: true,
+                    owner: true,
+                    admin: false,
+                    superAdmin: true,
+                    adminPermission: false
+                }
+            );
+            if (!permission) { return; }
         }
+
         const guild = (interaction) ? interaction.guild : await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
         const queueConfig = await queueSettings.getQueueDatabaseById(guild.id);
         const channels = await guild.channels.cache;

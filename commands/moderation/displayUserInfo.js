@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { CommandInteraction, User, MessageEmbed, Permissions } = require('discord.js');
 
 const generalUtilities = require('../../utils/generalUtilities');
+const { getCommandPermissions } = require('../../utils/userPermissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,14 +17,26 @@ module.exports = {
      * @param {CommandInteraction} interaction
     */
     async execute(interaction) {
-        if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'You do not have permission to use this command.',
-            }).catch(console.error);
-            cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-            return;
-        }
+        // if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+        //     await interaction.reply({
+        //         ephemeral: true,
+        //         content: 'You do not have permission to use this command.',
+        //     }).catch(console.error);
+        //     cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
+        //     return;
+        // }
+        const permission = await getCommandPermissions(
+            interaction, 
+            {
+                creator: true,
+                owner: true,
+                admin: true,
+                superAdmin: true,
+                adminPermission: true
+            }
+        );
+        if (!permission) { return; }
+
         const user = await generalUtilities.info.getUserById(interaction.options.getUser('user').id).then(async (userData) => { return await userData.fetch(true)});
         const member = await generalUtilities.info.getMemberById(user.id);
         console.log(user);

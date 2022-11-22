@@ -8,6 +8,7 @@ const queueSettings = require('../data/queueSettings');
 const cConsole = require('../utils/customConsoleLog');
 const clientSendMessage = require('../utils/clientSendMessage');
 const generalUtilities = require('../utils/generalUtilities');
+const { getCommandPermissions } = require('../utils/userPermissions');
 
 
 module.exports = {
@@ -151,15 +152,27 @@ module.exports = {
             )
         ),
     async execute(interaction) {
-        if (interaction != null && !interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'You do not have permission to use this command.',
-            }).catch(console.error);
-            cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-            return;
-        }
+        // if (interaction != null && !interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
+        //     await interaction.reply({
+        //         ephemeral: true,
+        //         content: 'You do not have permission to use this command.',
+        //     }).catch(console.error);
+        //     cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
+        //     return;
+        // }
         
+        const permission = await getCommandPermissions(
+            interaction, 
+            {
+                creator: true,
+                owner: true,
+                admin: false,
+                superAdmin: true,
+                adminPermission: false
+            }
+        );
+        if (!permission) { return; }
+
         const guildId = interaction.guild.id;
         const queueSettingsData = await queueSettings.getQueueDatabaseById(guildId, true)
         var compare = true;

@@ -6,6 +6,7 @@ const embedUtilities = require('../utils/embedUtilities');
 const queueData = require('../data/queueData.js');
 const queueSettings = require('../data/queueSettings');
 const generalData = require('../data/generalData');
+const { getCommandPermissions } = require('../utils/userPermissions');
 
 const userWhitelist = generalData.userWhitelist;
 
@@ -19,13 +20,17 @@ module.exports = {
             .setRequired(false)
         ),
     async execute(interaction) {
-        if (interaction.user.id != '306395424690929674') {
-            interaction.reply({
-                content: 'You do not have permission to use this command.',
-                ephemeral: true
-            });
-            return
-        }
+        const permission = await getCommandPermissions(
+            interaction, 
+            {
+                creator: true,
+                owner: false,
+                admin: false,
+                superAdmin: true,
+                adminPermission: false
+            }
+        );
+        if (!permission) { return; }
 
         const lobby = await queueSettings.getRankedLobbyById(interaction.channel, interaction.guild.id);
         if (!['ones', 'twos', 'threes'].includes(lobby)) {
