@@ -13,16 +13,16 @@ module.exports = {
         botSetupGuildId: '811667577985302528',
     },
     generalQueueSettings: {
-        pauseQueue: false,
+        pauseQueue: (this.releasedVersion) ? true : false,
     },
     debugOptions: {
-        createGameOnStart: true,
-        gameOnStartLobby: 'threes'
+        createGameOnStart: (this.releasedVersion) ? false : true,
+        gameOnStartLobby: 'ones'
     },
     logOptions : {
         interactions: true,
-        database: false,
         queueAdmin: true,
+        database: false,
         playerData: false,
         getPlayerData: false,
         gameData: false,
