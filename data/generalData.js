@@ -6,14 +6,14 @@ const { Client } = require('discord.js');
 */
 module.exports = {
     client: null,
-    debugMode: true,
-    releasedVersion: false,
+    debugMode: false,
+    releasedVersion: true,
     botConfig: {
         defaultGuildId: '349360638088314881',
         botSetupGuildId: '811667577985302528',
     },
     generalQueueSettings: {
-        pauseQueue: false,
+        pauseQueue: true,
     },
     debugOptions: {
         createGameOnStart: false,
