@@ -13,10 +13,10 @@ module.exports = {
         botSetupGuildId: '811667577985302528',
     },
     generalQueueSettings: {
-        pauseQueue: (this.releasedVersion) ? true : false,
+        pauseQueue: false,
     },
     debugOptions: {
-        createGameOnStart: (this.releasedVersion) ? false : true,
+        createGameOnStart: false,
         gameOnStartLobby: 'ones'
     },
     logOptions : {

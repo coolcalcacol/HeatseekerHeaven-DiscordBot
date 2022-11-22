@@ -282,7 +282,7 @@ async function resetPlayerStats(interaction, reason) {
     updatePlayerRanks(interaction.guild.id);
 
     if (queueConfig.channelSettings.logChannel) {
-        var adminRoleMention = '';
+        let adminRoleMention = '';
         for (const role in guildData.adminRoles) {
             adminRoleMention += role + ' ';
         }
@@ -301,8 +301,12 @@ async function clearPlayerData(interaction, password, reason) {
     const guildData = await guildSettings.findOne({_id: interaction.guild.id}).catch(console.error);
     console.log(guildData);
     if (password != clearPlayerDataPass) {
+        let adminRoleMention = '';
+        for (const role in guildData.adminRoles) {
+            adminRoleMention += role + ' ';
+        }
         const message = [
-            `<@&${guildData.adminRole}>`,
+            `<@&${adminRoleMention}>`,
             `A user just tried to clear all of the PlayerData but didnt enter the correct password.`,
             `-------- User Info --------`,
             `${interaction.user.username}#${interaction.user.discriminator}`,
