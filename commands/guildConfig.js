@@ -19,10 +19,28 @@ module.exports = {
         )
         .addSubcommand(subcommand => subcommand
             .setName('remove-admin-role')
-            .setDescription('Remove a role that will be able to use the admin commands')
+            .setDescription('Remove a role that is be able to use the admin commands')
             .addRoleOption(option => option
                 .setName('admin-role')
                 .setDescription('The role to remove')
+                .setRequired(true)
+            )
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('add-super-admin')
+            .setDescription('Add a user that will be able to use the super admin commands')
+            .addUserOption(option => option
+                .setName('super-user')
+                .setDescription('The user to add')
+                .setRequired(true)
+            )
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('remove-super-admin')
+            .setDescription('Remove a user that is be able to use the super admin commands')
+            .addUserOption(option => option
+                .setName('super-user')
+                .setDescription('The user to remove')
                 .setRequired(true)
             )
         ),
@@ -69,6 +87,34 @@ module.exports = {
                 await interaction.reply({
                     ephemeral: true,
                     content: 'Admin role has been __removed__: <@&' + inputRole + '> ```' + inputRole.id + ' | ' + inputRole.name + '```'
+                }).catch(console.error);
+            } break;
+            case 'add-super-admin': { 
+                const inputUser = interaction.options.getUser('super-user');
+                guildConfig.superAdmins[inputUser] = inputUser.toJSON();
+                if (Object.keys(guildConfig.superAdmins).includes('placeholder')) {
+                    delete guildConfig.superAdmins['placeholder']
+                }
+                
+                await guildConfigStorage.updateOne({_id: interaction.guild.id}, guildConfig);
+                await interaction.reply({
+                    ephemeral: true,
+                    content: 'Super Admin has been __added__: <@&' + inputUser + '> ```' + inputUser.id + ' | ' + inputUser.username + '```'
+                }).catch(console.error);
+            } break;
+            case 'remove-super-admin': { 
+                const inputUser = interaction.options.getUser('super-user');
+                if (Object.keys(guildConfig.superAdmins).length == 1) {
+                    guildConfig.superAdmins = {placeholder: 'placeholder'};
+                }
+                else {
+                    delete guildConfig.superAdmins[inputUser];
+                }
+
+                await guildConfigStorage.updateOne({_id: interaction.guild.id}, guildConfig);
+                await interaction.reply({
+                    ephemeral: true,
+                    content: 'Super Admin has been __removed__: <@&' + inputUser + '> ```' + inputUser.id + ' | ' + inputUser.username + '```'
                 }).catch(console.error);
             } break;
             default: break;
