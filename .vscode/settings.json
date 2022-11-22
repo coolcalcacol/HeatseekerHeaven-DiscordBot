@@ -16,7 +16,15 @@
         "commands/Archive/": true,
         "commands/test/": true,
         "Examples/": true,
-        "images/": true
+        "images/": true,
+        "commands/debug/": true,
+        "commands/fun/": true,
+        "commands/guildConfig.js": true,
+        "config/": true,
+        "index.js": true,
+        "deploy-commands.js": true,
+        "utils/databaseUtilities.js": true,
+        "events/": true
     },
     "hidefiles.configurationType": "local",
     "hidefiles.globalConfig": {
@@ -72,5 +80,5 @@
             }
         ]
     },
-    "hidefiles.selectedProfile": "Non-Essential"
+    "hidefiles.selectedProfile": "Un-Commen-Use"
 }
