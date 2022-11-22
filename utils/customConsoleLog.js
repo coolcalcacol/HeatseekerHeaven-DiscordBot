@@ -321,6 +321,8 @@ module.exports = {
 			}
 			lineStart = ',\n' + currentIndent;
 		}
+        output = output.replace(/\[fg=green\]true\[\/>\]/g, ' [fg=blue]true[/>]');
+        output = output.replace(/\[fg=green\]false\[\/>\]/g, ' [fg=red]false[/>]');
 		return parent ? '{\n' + output + '\n}' : output;
     },
     isJson(target) {
