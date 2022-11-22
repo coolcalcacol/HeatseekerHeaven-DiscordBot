@@ -157,6 +157,7 @@ module.exports = {
         },
     },
     async execute(interaction, overwrite = false) {
+        const guildId = interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId;
         const permission = await getCommandPermissions(
             interaction,
             {
@@ -169,9 +170,8 @@ module.exports = {
             guildId
         );
         if (!permission) { return; }
-
-        const guildId = interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId;
         const guild = generalData.client.guilds.cache.get(guildId);
+
         
         
         const queueConfig = await queueSettings.getQueueDatabaseById({_id: guildId});
