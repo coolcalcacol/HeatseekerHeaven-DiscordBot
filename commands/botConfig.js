@@ -14,15 +14,6 @@ module.exports = {
             .setDescription('Set the Default Guild Id to this Guild ID')
         ),
     async execute(interaction) {
-        // if (interaction.user.id != '306395424690929674') {
-        //     await interaction.reply({
-        //         ephemeral: true,
-        //         content: 'You do not have permission to use this command.',
-        //     }).catch(console.error);
-        //     cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-        //     return;
-        // }
-
         const permission = await getCommandPermissions(
             interaction, 
             {

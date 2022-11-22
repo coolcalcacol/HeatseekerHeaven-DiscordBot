@@ -42,22 +42,19 @@ module.exports = {
             .setRequired(false)
         ),
     async execute(interaction) {
-        const guildConfig = await guildConfigStorage.findOne({_id: interaction.guild.id}).catch(console.error);
-        var hasAdminRole = false;
-        if (guildConfig) {
-            for (const adminRole in guildConfig.adminRoles) {
-                const roleId = guildConfig.adminRoles[adminRole].id;
-                if (interaction.member._roles.includes(roleId)) { hasAdminRole = true; break;}
+        const permission = await getCommandPermissions(
+            interaction, 
+            {
+                creator: true,
+                owner: true,
+                admin: true,
+                superAdmin: true,
+                adminPermission: false
             }
-        }
-        if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !hasAdminRole) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'You do not have permission to use this command.',
-            }).catch(console.error);
-            cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-            return;
-        }
+        );
+        if (!permission) { return; }
+        
+        const guildConfig = await guildConfigStorage.findOne({_id: interaction.guild.id}).catch(console.error);
 
         const targetUser = interaction.options.getUser('user');
         const targetPlayerData = await playerData.getPlayerDataById(targetUser.id);

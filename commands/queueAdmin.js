@@ -157,28 +157,6 @@ module.exports = {
         },
     },
     async execute(interaction, overwrite = false) {
-        const guildId = interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId;
-        const guild = generalData.client.guilds.cache.get(guildId);
-
-        // if (interaction != null) {
-        //     const guildConfig = await guildConfigStorage.findOne({_id: guildId}).catch(console.error);
-        //     var hasAdminRole = false;
-        //     if (guildConfig) {
-        //         for (const adminRole in guildConfig.adminRoles) {
-        //             const roleId = guildConfig.adminRoles[adminRole].id;
-        //             if (interaction.member._roles.includes(roleId)) { hasAdminRole = true; break;}
-        //         }
-        //     }
-        //     if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !hasAdminRole) {
-        //         await interaction.reply({
-        //             ephemeral: true,
-        //             content: 'You do not have permission to use this command.',
-        //         }).catch(console.error);
-        //         cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-        //         return;
-        //     }
-        // }
-        
         const permission = await getCommandPermissions(
             interaction,
             {
@@ -186,11 +164,15 @@ module.exports = {
                 owner: true,
                 admin: true,
                 superAdmin: true,
-                adminPermission: true
+                adminPermission: false
             },
             guildId
         );
         if (!permission) { return; }
+
+        const guildId = interaction ? interaction.guild.id : generalData.botConfig.defaultGuildId;
+        const guild = generalData.client.guilds.cache.get(guildId);
+        
         
         const queueConfig = await queueSettings.getQueueDatabaseById({_id: guildId});
 

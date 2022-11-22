@@ -17,14 +17,6 @@ module.exports = {
      * @param {CommandInteraction} interaction
     */
     async execute(interaction) {
-        // if (!interaction.member.permissions.has([Permissions.FLAGS.ADMINISTRATOR])) {
-        //     await interaction.reply({
-        //         ephemeral: true,
-        //         content: 'You do not have permission to use this command.',
-        //     }).catch(console.error);
-        //     cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use this command`);
-        //     return;
-        // }
         const permission = await getCommandPermissions(
             interaction, 
             {
