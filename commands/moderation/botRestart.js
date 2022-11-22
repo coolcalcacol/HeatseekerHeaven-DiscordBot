@@ -4,11 +4,21 @@ const cConsole = require('../../utils/customConsoleLog');
 const { getCommandPermissions } = require('../../utils/userPermissions');
 const { token } = require('../../config/private.json');
 const generalData = require('../../data/generalData');
+const queueConfigStorage = require('../../data/database/queueConfigStorage');
+const queueSettings = require('../../data/queueSettings');
+const guildConfigStorage = require('../../data/database/guildConfigStorage');
+const clientSendMessage = require('../../utils/clientSendMessage');
+
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('force-restart')
-        .setDescription('Restarts the bot'),
+        .setDescription('Restarts the bot')
+        .addStringOption(option => option
+            .setName('reason')
+            .setDescription('The reason to restart the bot')
+            .setRequired(true)
+        ),
 
     /** 
      * @param {CommandInteraction} interaction
@@ -26,6 +36,22 @@ module.exports = {
         );
         if (!permission) { return; }
         
+        const queueConfig = await queueSettings.getQueueDatabaseById(interaction.guild.id);
+        const guildData = await guildConfigStorage.findOne({_id: interaction.guild.id}).catch(console.error);
+        if (queueConfig.channelSettings.logChannel) {
+            let adminRoleMention = '';
+            for (const role in guildData.adminRoles) {
+                adminRoleMention += role + ' ';
+            }
+            clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
+                `||${adminRoleMention}||`,
+                `**The bot is being __Restarted__** by <@${interaction.user.id}>`,
+                `user ID: \`${interaction.user.id}\``,
+                `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
+                `> Reason: \`${interaction.options.getString('reason')}\``
+            ].join('\n'));
+        }
+
         cConsole.log('[fg=red]Restarting bot...[/>]', {autoColorize: false});
         await interaction.reply({
             ephemeral: true,
