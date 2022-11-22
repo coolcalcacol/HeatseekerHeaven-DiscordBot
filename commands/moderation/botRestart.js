@@ -44,7 +44,7 @@ module.exports = {
                 adminRoleMention += role + ' ';
             }
             clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
-                `||${adminRoleMention}||`,
+                // `||${adminRoleMention}||`,
                 `**The bot is being __Restarted__** by <@${interaction.user.id}>`,
                 `user ID: \`${interaction.user.id}\``,
                 `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
