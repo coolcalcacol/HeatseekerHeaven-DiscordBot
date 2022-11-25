@@ -11,6 +11,8 @@ const clientSendMessage = require('../../../utils/clientSendMessage');
 const generalData = require('../../../data/generalData');
 const queueGameChannels = require('../../../data/queueGameChannels');
 
+const cConsole = require('../../../utils/customConsoleLog');
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,7 +20,6 @@ module.exports = {
     async execute(interaction) {
         const report = reportCommand.reportData[interaction.customId.split('_')[2]];
         const gameData = report.gameData;
-        
 
         var targetTeam; // The team that the reporter is a part of
         var oponentTeam; // The oposite team;
@@ -84,7 +85,16 @@ module.exports = {
             queueData.info.globalQueueData.gameHistory.push(gameData);
 
             const inProgressList = queueData.info.globalQueueData.gamesInProgress;
-            queueData.info.globalQueueData.gamesInProgress.splice(inProgressList.indexOf(item => item.gameId === gameData.gameId), 1);
+            thisLog({inProgress: inProgressList});
+            // queueData.info.globalQueueData.gamesInProgress.splice(inProgressList.indexOf(item => item.gameId == gameData.gameId) + 1, 1);
+            for (let i = 0; i < inProgressList.length; i++) {
+                const game = inProgressList[i];
+                if (game.gameId == gameData.gameId) {
+                    thisLog('splicing: ' + game.gameId + ' | index: ' + i + ' of ' + inProgressList.length);
+                    queueData.info.globalQueueData.gamesInProgress.splice(i, 1);
+                    break;
+                }
+            }
             
             delete reportCommand.reportData[gameData.gameId];
 
@@ -102,3 +112,13 @@ module.exports = {
         // return;
     },
 };
+
+function thisLog(message) {
+    if (!generalData.logOptions.gameReport) return;
+    if (typeof message === 'object') {
+        cConsole.log('--------[fg=green]Report Select[/>]--------');
+        console.log(message);
+    } else {
+        cConsole.log('[fg=green]Report Select[/>]: ' + message);
+    }
+}

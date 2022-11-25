@@ -23,8 +23,7 @@
         "config/": true,
         "index.js": true,
         "deploy-commands.js": true,
-        "utils/databaseUtilities.js": true,
-        "events/": true
+        "utils/databaseUtilities.js": true
     },
     "hidefiles.configurationType": "local",
     "hidefiles.globalConfig": {
@@ -38,8 +37,7 @@
                     "config/",
                     "index.js",
                     "deploy-commands.js",
-                    "utils/databaseUtilities.js",
-                    "events/"
+                    "utils/databaseUtilities.js"
                 ],
                 "name": "Un-Commen-Use",
                 "description": "",

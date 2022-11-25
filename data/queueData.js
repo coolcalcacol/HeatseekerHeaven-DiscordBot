@@ -85,7 +85,7 @@ const globalQueueData = {
                 orange: '',
             }
             this.queueStartMessage = {content: 'no message content for ' + this.gameId};
-            this.reportStatus;
+            this.reportStatus = null;
             this.gameResults;
             this.bypassTeamGeneration = bypass;
             this.requestGameId();

@@ -7,7 +7,9 @@ const queueSettings = require('../data/queueSettings');
 const playerData = require('../data/playerData');
 const generalData = require('../data/generalData');
 const mmrCalculator = require('../data/mmrCalculator');
+
 const generalUtilities = require('../utils/generalUtilities');
+const cConsole = require('../utils/customConsoleLog');
 const embedUtilities = require('../utils/embedUtilities');
 const clientSendMessage = require('../utils/clientSendMessage');
 
@@ -18,7 +20,8 @@ module.exports = {
     data: new SlashCommandBuilder().setName('report').setDescription('Report the outcome of the game you participated in'),
     reportData: {},
     async execute(interaction) {
-        console.log('Searchig GameData containing reporter')
+        thisLog('Searchig GameData containing reporter');
+        thisLog(queueData.info.globalQueueData);
         var targetGameData = null;
         for (let i = 0; i < queueData.info.globalQueueData.gamesInProgress.length; i++) {
             const game = queueData.info.globalQueueData.gamesInProgress[i];
@@ -87,6 +90,8 @@ module.exports = {
         this.reportData[targetGameData.gameId].reportMessage = await interaction.fetchReply();
 
         // console.log(this.reportData[targetGameData.gameId]);
+        thisLog('Game data validated');
+        thisLog(this.reportData);
     },
     constructMessageComponent(gameId) {
         const gameOutcomeSelector = new MessageSelectMenu({
@@ -110,3 +115,13 @@ module.exports = {
         return reportActionRow;
     }
 };
+
+function thisLog(message) {
+    if (!generalData.logOptions.gameReport) return;
+    if (typeof message == 'object') {
+        cConsole.log('--------[fg=green]Game Report[/>]--------');
+        console.log(message);
+    } else {
+        cConsole.log('[fg=green]Game Report[/>]: ' + message);
+    }
+}
