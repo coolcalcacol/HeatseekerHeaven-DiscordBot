@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Permissions } = require('discord.js');
+const { CommandInteraction } = require('discord.js');
 
 const QueueDatabase = require('../../data/database/queueDataStorage');
 const guildConfigStorage = require('../../data/database/guildConfigStorage')
@@ -42,6 +42,10 @@ module.exports = {
             .setDescription('The number of seconds to blacklist this user')
             .setRequired(false)
         ),
+
+    /** 
+     * @param {CommandInteraction} interaction
+    */
     async execute(interaction) {
         const permission = await getCommandPermissions(
             interaction, 
@@ -85,16 +89,17 @@ module.exports = {
         const guildQueueData = await getGuildQueueData(interaction.guild.id);
 
         const guildBlacklist = await guildQueueData.userBlacklist;
-        guildBlacklist[targetPlayerData._id] = {playerData: targetPlayerData, duration: durationTime};
+        console.log(targetUser);
+        guildBlacklist[targetUser.id] = {playerData: targetPlayerData, userData: targetUser.toJSON(), duration: durationTime};
 
         guildQueueData.__v = guildQueueData.__v + 1;
         await QueueDatabase.updateOne({_id: interaction.guild.id}, guildQueueData);
 
-        new botUpdate.UpdateTimer(targetPlayerData._id, durationTime.getTime(), this.removeUserFromBlacklist.bind(this, targetPlayerData._id, interaction.guild.id));
+        new botUpdate.UpdateTimer(targetUser.id, durationTime.getTime(), this.removeUserFromBlacklist.bind(this, targetUser.id, interaction.guild.id));
 
         await interaction.reply({
             ephemeral: true,
-            content: `${targetPlayerData.userData.mention} has been added to the blacklist.\nBlacklist experation: <t:${generalUtilities.generate.getTimestamp(durationTime)}:R>`
+            content: `<@${targetUser.id}> has been added to the blacklist.\nBlacklist experation: <t:${generalUtilities.generate.getTimestamp(durationTime)}:R>`
         }).catch(console.error);
     },
     async removeUserFromBlacklist(id, guildId) {

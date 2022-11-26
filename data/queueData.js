@@ -344,8 +344,8 @@ const globalQueueData = {
         const blacklist = guildQueueData.userBlacklist;
 
         for (const user in blacklist) {
+            if (user == 'placeholder') continue;
             if (userId == user) {
-                if (user == 'placeholder') continue;
                 return 'userIsBlacklisted';
             }
         }
