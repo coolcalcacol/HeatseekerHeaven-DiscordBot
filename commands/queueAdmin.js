@@ -169,11 +169,8 @@ module.exports = {
             },
             guildId
         );
-        if (!permission) { return; }
+        if (!permission && !overwrite) { return; }
         const guild = generalData.client.guilds.cache.get(guildId);
-
-        
-        
         const queueConfig = await queueSettings.getQueueDatabaseById({_id: guildId});
 
         const subCommand = overwrite ? this.overwriteOptions.command : interaction.options.getSubcommand();

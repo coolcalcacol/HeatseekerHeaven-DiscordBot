@@ -47,7 +47,7 @@ async function getCommandPermissions(interaction, commandPermissions = new UserP
 		return false;
 	}
 	else if (!guildId) { guildId = interaction.guild.id; }
-	const perms = await getUserPermissions(interaction, interaction.user, guildId);
+	const perms = await getUserPermissions(interaction, (interaction) ? interaction.user : null, guildId);
 	for (const key in perms) {
 		if (generalData.logOptions.userPermissions) {
 			cConsole.log(`key: ${key} | required: ${commandPermissions[key]} | user: ${perms[key]}`);
@@ -62,11 +62,13 @@ async function getCommandPermissions(interaction, commandPermissions = new UserP
 		}
 	}
 
-	await interaction.reply({
-		ephemeral: true,
-		content: 'You do not have permission to use this command.',
-	}).catch(console.error);
-	cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use the /[fg=cyan]${interaction.commandName}[/>] command`);
+	if (interaction) {
+		await interaction.reply({
+			ephemeral: true,
+			content: 'You do not have permission to use this command.',
+		}).catch(console.error);
+		cConsole.log(`[style=bold][fg=red]${interaction.user.username}[/>] Has been [fg=red]denied[/>] to use the /[fg=cyan]${interaction.commandName}[/>] command`);
+	}
 	cConsole.log(perms);
 	return false;
 }
@@ -81,7 +83,7 @@ async function getUserPermissions(interaction, user, guildId) {
 	if ((!interaction && !user) || (!interaction && !guildId)) {
 		cConsole.log(`\n[fg=red]getUserPermissions: (Interaction and user) or (interaction and guildId) are null[/>]`);
 		cConsole.log(`interaction: ${interaction} | user: ${user} | guildId: ${guildId}\n`);
-		return null;
+		return new UserPermissions();
 	}
 	const perms = new UserPermissions();
 
