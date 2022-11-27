@@ -90,8 +90,8 @@ module.exports = {
 			switch (generalData.debugOptions.gameOnStartLobby) {
 				case 'ones': {
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'ones', 1, queueSettingsData); // CTN
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'ones', 1, queueSettingsData);
-					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData); // 888%
+					// await queueData.actions.fillQueueWithPlayers(userWhitelist, 'ones', 1, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'ones', 1, queueSettingsData); // 888%
 					// await queueData.actions.fillQueueWithPlayers(userWhitelist, 'ones', 1, queueSettingsData);
 					// await queueData.actions.fillQueueWithPlayers(['988513771452526623'], 'ones', 1, queueSettingsData); // CTN-Originals
 					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'ones', 1, queueSettingsData);
