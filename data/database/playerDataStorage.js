@@ -12,6 +12,7 @@ const PlayerDataSchema = new mongoose.Schema({
         avatar: String,
         createdAt: Date,
         joinedAt: Date,
+        isMember: {type: Boolean, default: true},
     },
     stats: {
         global: {

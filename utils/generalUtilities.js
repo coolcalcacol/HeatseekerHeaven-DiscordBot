@@ -1,6 +1,8 @@
 const generalData = require("../data/generalData");
 const config = require('../config/config.json');
 const cConsole = require('./customConsoleLog');
+const playerData = require('../data/playerData');
+const PlayerDatabase = require('../data/database/playerDataStorage');
 
 const { errorLogWebhook } = require('../config/private.json');
 const Errorhandler = require('discord-error-handler');
@@ -15,8 +17,16 @@ async function getMemberById(id) {
 		output = await guild.members.fetch(id);
 	} catch(err) {
 		// const username = await getUserById(id).username;
+		const targetPlayerData = await playerData.getPlayerDataById(id).catch(console.error);
+
 		handleError().createrr(generalData.client, generalData.botConfig.defaultGuildId, 'Could not get member data for```\n<@' + id + '> ```' + id, err)
-		cConsole.log(`ERROR: Could not get member data for ${id}.\nPlease make sure that this user is still in the server\n`);
+		cConsole.log(`ERROR: Could not get member data for ${targetPlayerData.userData.name} [${id}].\nPlease make sure that this user is still in the server\n`);
+
+		if (targetPlayerData) {
+			targetPlayerData.userData.isMember = false;
+			await PlayerDatabase.updateOne({_id: targetPlayerData._id}, targetPlayerData).catch(console.error);
+		}
+
 		return null;
 	}
 	return output;

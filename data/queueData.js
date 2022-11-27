@@ -2,6 +2,7 @@
     const QueueConfigStorage = require('./database/queueConfigStorage');
     const QueueDatabase = require('./database/queueDataStorage');
     const PlayerData = require('./playerData');
+    const PlayerDatabase = require('./database/playerDataStorage');
     const generalData = require('./generalData');
     const queueSettings = require('./queueSettings');
     const queueGameChannels = require('./queueGameChannels');
@@ -238,10 +239,16 @@ const globalQueueData = {
                     console.log('Received PlayerData [addPlayerToQueue]');
                     console.log(foundData);
                 }
+                if (!foundData.userData.isMember) {
+                    foundData.userData.isMember = true;
+                    await PlayerDatabase.updateOne({_id: userId}, foundData).catch(console.error);
+                    cConsole.log(`[fg=green][style=bold]${foundData.userData.name}[/>] [fg=blue]has come back to the server. [fg=green]Enabling[/>][fg=blue] their playerData again[/>]`, {autoColorize: false});
+                }
                 playerData = foundData;
             })
             .catch(console.error);
         globalQueueData.lobby[lobby].players[userId] = playerData;
+        
 
         if (Object.keys(globalQueueData.lobby[lobby].players).length == globalQueueData.lobby[lobby].queueSize) {
             // Start the queue

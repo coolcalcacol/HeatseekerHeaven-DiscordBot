@@ -57,8 +57,8 @@ async function updatePlayerRanks(guildId) {
         "stats.global.winRate": -1, 
         "stats.global.gamesPlayed": -1
     });
-    const debug = generalData.debugMode;
-    // const debug = false;
+    // const debug = generalData.debugMode;
+    const debug = false;
 
     var spliceStart = 0;
     var spliceEnd;
@@ -116,6 +116,7 @@ async function updatePlayerRanks(guildId) {
         thisLog('\n---- [fg=green]' + dist + '[/>] ---- [' + effectedPlayers.length + ' | ' + spliceStart + ' | ' + spliceEnd +']');
         for (const effected in effectedPlayers) {
             const player = effectedPlayers[effected];
+            if (!player.userData.isMember) { continue; }
             thisLog(player.userData.name);
             if (!debug && player.stats.global.rank != rank.role) {
                 const memberData = await generalUtilities.info.getMemberById(player['_id']);
@@ -137,6 +138,7 @@ async function updatePlayerRanks(guildId) {
     thisLog('\n---- [fg=green]Unranked[/>] ----');
     for (const remaining in remainingPlayers) {
         const player = remainingPlayers[remaining];
+        if (!player.userData.isMember) { continue; }
         thisLog(player.userData.name);
         if (!debug) {
             const memberData = await generalUtilities.info.getMemberById(player['_id']);
