@@ -208,6 +208,76 @@ function getTimeAgo(start = new Date(), end = new Date(), prettyNumbers = false,
 	}
 //#endregion
 
+
+//#region Get Caller/Stack
+	class CallSiteObject {
+		constructor(stack) {
+			this.type = stack.getTypeName();
+			this.function = stack.getFunctionName();
+			this.functionName = stack.getFunctionName();
+			this.fileName = stack.getFileName();
+			this.lineNumber = stack.getLineNumber();
+			this.columnNumber = stack.getColumnNumber();
+			this.evalOrigin = stack.getEvalOrigin();
+			this.isToplevel = stack.isToplevel();
+			this.isEval = stack.isEval();
+			this.isNative = stack.isNative();
+			this.isConstructor = stack.isConstructor();
+		}
+	}
+
+	// Source: https://stackoverflow.com/questions/13227489/how-to-get-the-caller-function-in-javascript
+	/** 
+	 * @returns {NodeJS.CallSite} Returns the caller function of the current function.
+	*/
+	function getCaller() {
+		var stack = getStack()
+		// console.log(stack);
+		
+		// Remove superfluous function calls on stack
+		stack.shift() // getCaller --> getStack
+		
+		// console.log(stack[1]);
+		// Return caller's caller
+		return stack[1]
+	}
+	function getCallerObject() {
+		var stack = getStack()
+		
+		// Remove superfluous function calls on stack
+		stack.shift() // getCaller --> getStack
+		
+		// Return caller's caller
+		return new CallSiteObject(stack[1])
+	}
+	
+	function getStack() {
+		// Save original Error.prepareStackTrace
+		var origPrepareStackTrace = Error.prepareStackTrace
+	
+		// Override with function that just returns `stack`
+		Error.prepareStackTrace = function (_, stack) {
+			return stack
+		}
+	
+		// Create a new `Error`, which automatically gets `stack`
+		var err = new Error()
+	
+		// Evaluate `err.stack`, which calls our new `Error.prepareStackTrace`
+		var stack = err.stack
+	
+		// Restore original `Error.prepareStackTrace`
+		Error.prepareStackTrace = origPrepareStackTrace
+	
+		// Remove superfluous function call on stack
+		stack.shift() // getStack --> Error
+	
+		return stack
+	}
+//#endregion
+
+
+
 module.exports.info = {
     getUserById,
 	getMemberById,
@@ -220,7 +290,9 @@ module.exports.generate = {
     roundToFloat,
     getAllCobinations,
 	getTimestamp,
-	getTimeAgo
+	getTimeAgo,
+	getCaller,
+	getCallerObject,
 }
 module.exports.actions = {
 	handleError,

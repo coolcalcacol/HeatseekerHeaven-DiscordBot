@@ -95,12 +95,28 @@ module.exports = {
         guildQueueData.__v = guildQueueData.__v + 1;
         await QueueDatabase.updateOne({_id: interaction.guild.id}, guildQueueData);
 
-        new botUpdate.UpdateTimer(targetUser.id, durationTime.getTime(), this.removeUserFromBlacklist.bind(this, targetUser.id, interaction.guild.id));
+        // new botUpdate.UpdateTimer(`blacklist_${targetUser.id}`, durationTime.getTime(), await this.removeUserFromBlacklist.bind(this.removeUserFromBlacklist, targetUser.id, interaction.guild.id));
 
         await interaction.reply({
             ephemeral: true,
             content: `<@${targetUser.id}> has been added to the blacklist.\nBlacklist experation: <t:${generalUtilities.generate.getTimestamp(durationTime)}:R>`
         }).catch(console.error);
+    },
+    async updateUserBlacklist() {
+        const storedQueueData = await QueueDatabase.find({}).catch(console.error);
+        for (const guildQueueData of storedQueueData) {
+            const guildId = guildQueueData._id;
+            const guildBlacklist = guildQueueData.userBlacklist;
+            for (let i = 0; i < Object.keys(guildBlacklist).length; i++) {
+                const userId = Object.keys(guildBlacklist)[i];
+                if (userId == 'placeholder') { continue; }
+                const userBlacklistData = guildBlacklist[userId];
+                const duration = userBlacklistData.duration;
+                if (new Date(duration).getTime() < new Date().getTime()) {
+                    this.removeUserFromBlacklist(userId, guildId);
+                }
+            }
+        }
     },
     async removeUserFromBlacklist(id, guildId) {
         const guildQueueData = await getGuildQueueData(guildId);
@@ -108,5 +124,5 @@ module.exports = {
         
         await QueueDatabase.updateOne({_id: guildId}, guildQueueData).catch(console.error);
         cConsole.log('removed user from blacklist\n' + id + '\n');
-    }
+    },
 };

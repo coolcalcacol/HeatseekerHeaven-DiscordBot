@@ -214,8 +214,8 @@ async function leaderboardPreset(page, interaction, returnMaxPage = false) {
         if (target['_id'] == interactorId) {
             targetUser['data'] = target;
             let staleSubstract = (staleStart > staleEnd) ? staleStart - staleEnd : staleEnd - staleStart;
-            console.log(`index: ${i} | stale: ${staleStart} | ${staleEnd} | ${staleSubstract}`);
             targetUser['index'] = (i > 9 && i - staleSubstract >= 0) ? i - staleSubstract : i;
+            // console.log(`index: ${i} | stale: ${staleStart} | ${staleEnd} | ${staleSubstract}`);
             break;
         }
     }

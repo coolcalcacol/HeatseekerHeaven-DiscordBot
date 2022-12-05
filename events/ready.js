@@ -3,8 +3,9 @@ const { Presence, PermissionOverwrites } = require('discord.js');
 const QueueConfigDatabase = require('../data/database/queueConfigStorage');
 const PlayerDatabase = require('../data/database/playerDataStorage');
 const BotConfigDatabase = require('../data/database/botConfigStorage');
-const queueSettings = require('../data/queueSettings');
+const GuildDatabase = require('../data/database/guildDataStorage');
 
+const queueSettings = require('../data/queueSettings');
 const generalData = require('../data/generalData');
 const playerData = require('../data/playerData');
 const queueData = require('../data/queueData');
@@ -35,6 +36,8 @@ module.exports = {
 		await this.runTestActions(client);
 	},
 	async Awake(client) {
+		
+
 		generalData.botStats.upTime = new Date();
 		
 		client.user.setPresence({
@@ -61,6 +64,7 @@ module.exports = {
 		cConsole.log(`Client ID: ${client.user.id}`);
 		cConsole.log(`Setting the default guild id to: [fg=green]${botConfig._id}[/>]`);
 		generalData.botConfig.defaultGuildId = botConfig._id;
+		const guildData = await GuildDatabase.findOne({_id: generalData.botConfig.defaultGuildId});
 
 		cConsole.log(`Debug mode is: ${generalData.debugMode}`);
 		cConsole.log(`Released Version is: ${generalData.releasedVersion}`);
@@ -82,6 +86,14 @@ module.exports = {
 
 
 		clearQueueCommand.execute();
+		if (guildData) {
+			for (const timerName in guildData.activeTimers) {
+				if (timerName == 'placeholder') continue;
+				const timer = guildData.activeTimers[timerName];
+				botUpdate.registeredTimers.push(timer);
+			}
+			// console.log(botUpdate.registeredTimers);
+		}
 		botUpdate.Start();
 	},
 	async runTestActions(client) {
@@ -137,6 +149,9 @@ module.exports = {
 				default: break;
 			}
 		}
+
+		// const caller = generalUtilities.generate.getCaller();
+		// console.log(`${caller} - Test Actions Complete`);
 
 		// const testPlayerData = [
 		// 	await playerData.getPlayerDataById('479936093047750659'),
