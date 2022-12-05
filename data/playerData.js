@@ -289,7 +289,7 @@ async function resetPlayerStats(interaction, reason) {
             adminRoleMention += role + ' ';
         }
         clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
-            `||${adminRoleMention}||`,
+            `${adminRoleMention}`,
             `**PlayerData has been __Reset__** by <@${interaction.user.id}>`,
             `user ID: \`${interaction.user.id}\``,
             `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
@@ -301,14 +301,14 @@ async function resetPlayerStats(interaction, reason) {
 async function clearPlayerData(interaction, password, reason) {
     const queueConfig = await queueSettings.getQueueDatabaseById(interaction.guild.id);
     const guildData = await guildSettings.findOne({_id: interaction.guild.id}).catch(console.error);
+    let adminRoleMention = '';
+    for (const role in guildData.adminRoles) {
+        adminRoleMention += `${role} `;
+    }
     console.log(guildData);
     if (password != clearPlayerDataPass) {
-        let adminRoleMention = '';
-        for (const role in guildData.adminRoles) {
-            adminRoleMention += role + ' ';
-        }
         const message = [
-            `<@&${adminRoleMention}>`,
+            `${adminRoleMention}`,
             `A user just tried to clear all of the PlayerData but didnt enter the correct password.`,
             `-------- User Info --------`,
             `${interaction.user.username}#${interaction.user.discriminator}`,
@@ -331,7 +331,7 @@ async function clearPlayerData(interaction, password, reason) {
 
         if (queueConfig.channelSettings.logChannel) {
             clientSendMessage.sendMessageTo(queueConfig.channelSettings.logChannel, [
-                // `||<@&${guildData.adminRole}>||`,
+                `${adminRoleMention}`,
                 `**PlayerData has been __Cleared__** by <@${interaction.user.id}>`,
                 `user ID: \`${interaction.user.id}\``,
                 `User Name: \`${interaction.user.username}#${interaction.user.discriminator}\``,
