@@ -19,9 +19,9 @@ module.exports = {
                 interaction, 
                 {
                     creator: true,
-                    owner: true,
+                    owner: false,
                     admin: false,
-                    superAdmin: true,
+                    superAdmin: false,
                     adminPermission: false
                 }
             );
