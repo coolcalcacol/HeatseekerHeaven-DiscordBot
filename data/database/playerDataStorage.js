@@ -47,7 +47,15 @@ const PlayerDataSchema = new mongoose.Schema({
             winRate: {type: Number, default: 0},
             rank: {type: Object, default: null},
         },
-    }
+    },
+    persistentStats: {
+        averageMmr: {type: Number, default: 600},
+        gamesPlayed: {type: Number, default: 0},
+        gamesWon: {type: Number, default: 0},
+        gamesLost: {type: Number, default: 0},
+        winRate: {type: Number, default: 0},
+        timePlayed: {type: Number, default: 0},
+    },
 }, {timestamps: true});
 
 module.exports = mongoose.model('PlayerDatabase', PlayerDataSchema);
