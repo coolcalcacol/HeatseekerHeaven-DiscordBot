@@ -8,7 +8,7 @@ const clientSendMessage = require('../utils/clientSendMessage');
 
 var debugLog = {'[fg=green]winners[/>]': {team: {}}, '[fg=red]losers[/>]': {team: {}}}
 
-function getGameResults(winningTeam, losingTeam, equationValues) {
+function getGameResults(winningTeam, losingTeam, gameData, equationValues) {
     const combinedMmr = winningTeam.mmr + losingTeam.mmr;
     const lobbySize = Object.keys(winningTeam.members).length + Object.keys(losingTeam.members).length
     const mode = lobbySize == 2 ? 'ones' : lobbySize == 4 ? 'twos' : lobbySize == 6 ? 'threes' : 'ERROR';
@@ -31,8 +31,10 @@ function getGameResults(winningTeam, losingTeam, equationValues) {
         
         data.stats.global.gamesWon++;
         data.stats.global.gamesPlayed++;
+        data.persistentStats.gamesWon++;
+        data.persistentStats.gamesPlayed++;
 
-        updatePlayerStats(data, mode, equationValues);
+        updatePlayerStats(data, gameData, mode, equationValues);
     }
     for (const player in losingTeam.members) {
         const data = losingTeam.members[player];
@@ -47,8 +49,10 @@ function getGameResults(winningTeam, losingTeam, equationValues) {
 
         data.stats.global.gamesLost++;
         data.stats.global.gamesPlayed++;
+        data.persistentStats.gamesLost++;
+        data.persistentStats.gamesPlayed++;
 
-        updatePlayerStats(data, mode, equationValues);
+        updatePlayerStats(data, gameData, mode, equationValues);
     }
     if (GeneralData.logOptions.gameMmrResults) { 
         cConsole.log(debugLog)
@@ -134,16 +138,17 @@ function calculatePlayerMmr(equationValues, combined, stats, teamMmr, gameOutcom
     };
 }
 
-function updatePlayerStats(data, mode, equationValues) {
+function updatePlayerStats(data, gameData, mode, equationValues) {
     const w = data.stats[mode].gamesWon;
     const l = data.stats[mode].gamesLost;
-    // data.stats[mode].gamesPlayed = w + l;
-    data.stats[mode].winRate = generalUtilities.generate.roundToFloat((w / (w + l) * 100), 2);
-
     const globalW = data.stats.global.gamesWon;
     const globalL = data.stats.global.gamesLost;
-    // data.stats.global.gamesPlayed = globalW + globalL;
+
+    data.stats[mode].winRate = generalUtilities.generate.roundToFloat((w / (w + l) * 100), 2);
     data.stats.global.winRate = generalUtilities.generate.roundToFloat((globalW / (globalW + globalL) * 100), 2);
+    data.persistentStats.winRate = generalUtilities.generate.roundToFloat((data.persistentStats.gamesWon / (data.persistentStats.gamesWon + data.persistentStats.gamesLost) * 100), 2);
+
+    data.persistentStats.timePlayed += gameData.gameDuration;
 
     PlayerData.updatePlayerData(data, equationValues);
 }

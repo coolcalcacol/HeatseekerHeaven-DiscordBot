@@ -80,6 +80,7 @@ const globalQueueData = {
             }
             this.gameId;
             this.startTime = new Date();
+            this.gameDuration = 0; // in milliseconds
             this.channels = {
                 gameChat: '',
                 blue: '',

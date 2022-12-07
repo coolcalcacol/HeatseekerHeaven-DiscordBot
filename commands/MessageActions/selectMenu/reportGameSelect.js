@@ -62,8 +62,8 @@ module.exports = {
 
         try {
             const gameResults = await interaction.values[0] == 'game_won' ? 
-                mmrCalculator.getGameResults(targetTeam, oponentTeam, queueSettingsData.mmrSettings) : 
-                mmrCalculator.getGameResults(oponentTeam, targetTeam, queueSettingsData.mmrSettings) ;
+                mmrCalculator.getGameResults(targetTeam, oponentTeam, gameData, queueSettingsData.mmrSettings) : 
+                mmrCalculator.getGameResults(oponentTeam, targetTeam, gameData, queueSettingsData.mmrSettings) ;
             const winningTeamName = interaction.values[0] == 'game_won' ? targetTeamName : oponentTeamName;
             
 

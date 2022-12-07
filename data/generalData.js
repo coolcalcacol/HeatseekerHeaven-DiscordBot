@@ -28,7 +28,7 @@ module.exports = {
         getPlayerData: false,
         gameData: false,
         teamGeneration: false,
-        gameMmrResults: true,
+        gameMmrResults: false,
         gameReport: false,
         queueSettings: false,
         queueConfigCommands: false,

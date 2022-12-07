@@ -27,6 +27,7 @@ async function createPlayerData(userData, queueSettingsData) {
 async function updatePlayerData(data, equationValues) {
     const user = await generalUtilities.info.getUserById(data['_id']);
     const newData = await getPlayerDataObject(user, {mmrSettings: equationValues});
+    newData.persistentStats = data.persistentStats;
     const gameModes = ['ones', 'twos', 'threes', 'global']
     
     for (let i = 0; i < gameModes.length; i++) {
@@ -51,6 +52,8 @@ async function updatePlayerData(data, equationValues) {
         currentGain = currentGain * (equationValues.placementSettings.gain - (data.stats.global.gamesPlayed / equationValues.placementSettings.gameCount) * (equationValues.placementSettings.gain - 1));
     }
     newData.stats.global.mmr = Math.round(data.stats.global.mmr + currentGain);
+    newData.persistentStats.totalMmr += newData.stats.global.mmr;
+    newData.persistentStats.averageMmr = Math.round(newData.persistentStats.totalMmr / newData.persistentStats.gamesPlayed);
 
     newData['__v'] = (data['__v'] + 1);
     await PlayerDatabase.updateMany({_id: data['_id']}, newData);

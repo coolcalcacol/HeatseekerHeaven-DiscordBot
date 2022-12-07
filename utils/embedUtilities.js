@@ -128,8 +128,8 @@ function gameResultPreset(gameData, gameResults, reporter, winningTeamName) {
     embed.addFields(
         { name: 'Game ID', value: '```' + getFieldSpacing(gameData.gameId, 12) + '```', inline: true },
         { 
-            name: 'Reported By', 
-            value: '```' + getFieldSpacing(reporter.username, 12) + '```',
+            name: 'Game Duration',
+            value: '```' + getFieldSpacing(`${Math.floor(gameData.gameDuration / 1000 / 60)} min ${Math.floor((gameData.gameDuration - (Math.floor(gameData.gameDuration / 1000 / 60) * 60 * 1000)) / 1000)} sec`, 12) + '```',
             inline: true
         },
         { name: 'Winners', value: '```' + getFieldSpacing('Team ' + winningTeamName, 12) + '```', inline: true },
@@ -150,7 +150,13 @@ function gameResultPreset(gameData, gameResults, reporter, winningTeamName) {
 }
 
 function playerStatsPreset(playerData, mode = 'global') {
-    const modeDisplay = mode == 'ones' ? '1v1' : mode == 'twos' ? '2v2' : mode == 'threes' ? '3v3' : 'Global';
+    const modeDisplay = 
+        (mode == 'ones') ? '1v1' : 
+        (mode == 'twos') ? '2v2' : 
+        (mode == 'threes') ? '3v3' : 
+        (mode == 'persistent') ? 'Persistent' : 
+        'Global';
+
     const embed = new MessageEmbed();
     embed.setAuthor({name: `${playerData.userData.name} - ${modeDisplay} Stats`, iconURL: playerData.userData.avatar});
     embed.setColor(playerData.userData.displayColor);
@@ -167,6 +173,17 @@ function playerStatsPreset(playerData, mode = 'global') {
             { name: 'Games Played', value: bgMarker + playerData.stats[mode].gamesPlayed.toString() + bgMarker, inline: true },
             { name: 'Games Won', value: bgMarker + playerData.stats[mode].gamesWon.toString() + bgMarker, inline: true },
             { name: 'Games Lost', value: bgMarker + playerData.stats[mode].gamesLost.toString() + bgMarker, inline: true },
+        );
+    }
+    else if (mode == 'persistent') {
+        var timePlayed = `${Math.floor(playerData.persistentStats.timePlayed / 1000 / 60 / 60)} hours ${Math.floor((playerData.persistentStats.timePlayed - (Math.floor(playerData.persistentStats.timePlayed / 1000 / 60 / 60) * 60 * 60 * 1000)) / 1000 / 60)} min`;
+        embed.addFields(
+            { name: 'Average MMR', value: bgMarker + playerData.persistentStats.averageMmr.toString() + bgMarker, inline: true },
+            { name: 'Time Played', value: bgMarker + timePlayed + bgMarker, inline: true },
+            { name: 'Win Rate', value: bgMarker + playerData.persistentStats.winRate.toString() + '%' + bgMarker, inline: true },
+            { name: 'Games Played', value: bgMarker + playerData.persistentStats.gamesPlayed.toString() + bgMarker, inline: true },
+            { name: 'Games Won', value: bgMarker + playerData.persistentStats.gamesWon.toString() + bgMarker, inline: true },
+            { name: 'Games Lost', value: bgMarker + playerData.persistentStats.gamesLost.toString() + bgMarker, inline: true },
         );
     }
     else {
@@ -189,9 +206,9 @@ function playerStatsPreset(playerData, mode = 'global') {
 }
 
 async function leaderboardPreset(page, interaction, returnMaxPage = false) {
-    const playerDataList = await playerDataStorage.find().sort({
-        "stats.global.mmr": -1, 
-        "stats.global.winRate": -1, 
+    const playerDataList = await playerDataStorage.find({"userData.isMember": true}).sort({
+        "stats.global.mmr": -1,
+        "stats.global.winRate": -1,
         "stats.global.gamesPlayed": -1
     }).catch(console.error);
     var staleStart;

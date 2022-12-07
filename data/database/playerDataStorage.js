@@ -49,12 +49,13 @@ const PlayerDataSchema = new mongoose.Schema({
         },
     },
     persistentStats: {
-        averageMmr: {type: Number, default: 600},
+        averageMmr: {type: Number, default: 0},
+        totalMmr: {type: Number, default: 0}, // to calculate average, not displayed
+        timePlayed: {type: Number, default: 0},
+        winRate: {type: Number, default: 0},
         gamesPlayed: {type: Number, default: 0},
         gamesWon: {type: Number, default: 0},
         gamesLost: {type: Number, default: 0},
-        winRate: {type: Number, default: 0},
-        timePlayed: {type: Number, default: 0},
     },
 }, {timestamps: true});
 

@@ -76,6 +76,24 @@ module.exports = {
                 return;
             }
         }
+        
+        const startTime = new Date(targetGameData.startTime).getTime();
+        const endTime = new Date().getTime();
+        const gameDuration = (endTime - startTime) - ((endTime - startTime) * 0.1);
+        console.log(`Raw Seconds: ${(endTime - startTime) / 1000} = Game Duration: ${gameDuration / 1000}`);
+        targetGameData.gameDuration = gameDuration;
+
+        if (!generalData.debugMode) {
+            if ((gameDuration / 1000 / 60) < 1) { // duration is less than 1 minute
+                await interaction.reply({
+                    ephemeral: true,
+                    content: 'You can only report a game after 1 minutes of playing'
+                }).catch(console.error);
+                return;
+            }
+        }
+        
+
         this.reportData[targetGameData.gameId] = {
             gameData: targetGameData,
             initialReporter: interaction.user,

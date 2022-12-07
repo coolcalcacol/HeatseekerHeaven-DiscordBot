@@ -8,13 +8,13 @@ module.exports = {
         .setName('stats')
         .setDescription('Check your stats')
         .addStringOption(option => option
-            .setName('mode')
-            .setDescription('The game mode to show your stats for [Default = global]')
+            .setName('type')
+            .setDescription('The type of stats to display [Default = global]')
             .setRequired(false)
                 .addChoice('1v1', 'ones')
                 .addChoice('2v2', 'twos')
                 .addChoice('3v3', 'threes')
-                .addChoice('global', 'global')
+                .addChoice('persistent', 'persistent')
         )
         .addUserOption(option => option
             .setName('target-user')
@@ -31,8 +31,8 @@ module.exports = {
     async execute(interaction) {
         const userId = interaction.options.get('target-user') ? 
             interaction.options.get('target-user').user.id : interaction.user.id;
-        const mode = interaction.options.getString('mode') ? 
-            interaction.options.getString('mode') : 'global';
+        const mode = interaction.options.getString('type') ? 
+            interaction.options.getString('type') : 'global';
         const data = await PlayerData.getPlayerDataById(userId);
 
         if (!data) {
