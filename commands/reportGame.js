@@ -80,7 +80,7 @@ module.exports = {
         const startTime = new Date(targetGameData.startTime).getTime();
         const endTime = new Date().getTime();
         const gameDuration = (endTime - startTime) - ((endTime - startTime) * 0.1);
-        console.log(`Raw Seconds: ${(endTime - startTime) / 1000} = Game Duration: ${gameDuration / 1000}`);
+        // console.log(`Raw Seconds: ${(endTime - startTime) / 1000} = Game Duration: ${gameDuration / 1000}`);
         targetGameData.gameDuration = gameDuration;
 
         if (!generalData.debugMode) {

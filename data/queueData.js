@@ -306,7 +306,7 @@ const globalQueueData = {
             if (memberData._roles.includes(euRole.id)) { euPlayers++; }
             if (memberData._roles.includes(usRole.id)) { usPlayers++; }
         }
-        console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
+        // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
         if (euPlayers > usPlayers) {
             game.region = 'EU';
         }
