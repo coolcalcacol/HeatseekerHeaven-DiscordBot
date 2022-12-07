@@ -16,8 +16,8 @@ module.exports = {
         pauseQueue: false,
     },
     debugOptions: {
-        createGameOnStart: false,
-        gameOnStartLobby: 'ones'
+        createGameOnStart: true,
+        gameOnStartLobby: 'threes'
     },
     logOptions : {
         interactions: true,
@@ -28,7 +28,7 @@ module.exports = {
         getPlayerData: false,
         gameData: false,
         teamGeneration: false,
-        gameMmrResults: false,
+        gameMmrResults: true,
         gameReport: false,
         queueSettings: false,
         queueConfigCommands: false,
@@ -40,7 +40,7 @@ module.exports = {
         // '267442458638417921', // NoLimitGoten [lEFT THE SERVER]
         // '479936093047750659', // 888% [Bypass]
         // '382279435828723716', // FinnayBusiness [Bypass]
-        '614257446654967813', // orangecod
+        // '614257446654967813', // orangecod
         '280432147695665163', // Joshh
         '599339755662082057', // Darn
         '688819598686289952', // Lxyer

@@ -76,8 +76,9 @@ function calculatePlayerMmr(equationValues, combined, stats, teamMmr, gameOutcom
     const teamRatio = teamMmr / combined;
     const extremeTeamRatio = Math.max(0.1, Math.min((teamRatio - 0.5) * 2 + 0.5, 0.9));
     
-    var soloBonusEq;
-    var teamBonusEq;
+    var soloBonusEq = '';
+    var teamBonusEq = '';
+    var placementEq = '';
     const ratioDisplay = generalUtilities.generate.roundToFloat(ratio, 4);
     const teamRatioDisplay = generalUtilities.generate.roundToFloat(teamRatio, 4);
     const extremeTeamRatioDisplay = generalUtilities.generate.roundToFloat(extremeTeamRatio, 4);
@@ -106,6 +107,10 @@ function calculatePlayerMmr(equationValues, combined, stats, teamMmr, gameOutcom
         default: break;
     }
     result = totalBonus;
+    if (equationValues.placementSettings.modeBased && stats.gamesPlayed < equationValues.placementSettings.gameCount) {
+        placementEq = `${result} * (${equationValues.placementSettings.gain} - (${stats.gamesPlayed} / ${equationValues.placementSettings.gameCount}) * (${equationValues.placementSettings.gain} - 1))`;
+        result = result * (equationValues.placementSettings.gain - (stats.gamesPlayed / equationValues.placementSettings.gameCount) * (equationValues.placementSettings.gain - 1));
+    }
     
     // Round
         totalBonus = generalUtilities.generate.roundToFloat(totalBonus, 4);
@@ -124,7 +129,8 @@ function calculatePlayerMmr(equationValues, combined, stats, teamMmr, gameOutcom
         teamBonus: teamBonus,
         totalBonus: totalBonus,
         soloBonusEq: soloBonusEq,
-        teamBonusEq: teamBonusEq
+        teamBonusEq: teamBonusEq,
+        placementEq: placementEq
     };
 }
 
@@ -160,6 +166,7 @@ function equationDebug(target, equation, playerData, mode) {
 
     debugLog[root][user]
     [`[fg=cyan](${equation.teamBonusEq}) * (${equation.soloBonusEq})`] = '';
+    if (equation.placementEq) debugLog[root][user]['placement'] = equation.placementEq;
 
     debugLog[root][user]['[fg=white]Result[/>]'] = equation.output;
 }

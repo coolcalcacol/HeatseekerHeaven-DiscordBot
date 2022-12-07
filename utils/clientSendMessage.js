@@ -7,7 +7,8 @@ function setClient(client) {
     generalData.client = client;
 }
 async function sendMessageTo(channelID, msg) {
-    const channel = await generalData.client.channels.cache.get(channelID)
+    const channel = await generalData.client.channels.cache.get(channelID);
+    if (!channel) return;
     return await channel.send(msg).then((m) => { return m; }).catch(console.error);
 }
 function sendEmbedMessageTo(channelId, embed) {

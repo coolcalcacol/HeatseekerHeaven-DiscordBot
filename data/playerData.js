@@ -32,19 +32,25 @@ async function updatePlayerData(data, equationValues) {
     for (let i = 0; i < gameModes.length; i++) {
         const mode = gameModes[i];
         
-        newData.stats[mode].mmr = mode == 'global' ? 0 : data.stats[mode].mmr ? data.stats[mode].mmr : equationValues.startingMmr;
-        newData.stats[mode].gamesPlayed = data.stats[mode].gamesPlayed ? data.stats[mode].gamesPlayed : 0;
-        newData.stats[mode].gamesWon = data.stats[mode].gamesWon ? data.stats[mode].gamesWon : 0;
-        newData.stats[mode].gamesLost = data.stats[mode].gamesLost ? data.stats[mode].gamesLost : 0;
-        newData.stats[mode].winRate = data.stats[mode].winRate ? data.stats[mode].winRate : 0;
+        newData.stats[mode].mmr = (mode == 'global') ? 0 : (data.stats[mode].mmr) ? data.stats[mode].mmr : equationValues.startingMmr;
+        newData.stats[mode].gamesPlayed = (data.stats[mode].gamesPlayed) ? data.stats[mode].gamesPlayed : 0;
+        newData.stats[mode].gamesWon = (data.stats[mode].gamesWon) ? data.stats[mode].gamesWon : 0;
+        newData.stats[mode].gamesLost = (data.stats[mode].gamesLost) ? data.stats[mode].gamesLost : 0;
+        newData.stats[mode].winRate = (data.stats[mode].winRate) ? data.stats[mode].winRate : 0;
     }
     
     for (let i = 0; i < gameModes.length; i++) {
         const mode = gameModes[i];
         if (mode == 'global') continue;
-        newData.stats.global.mmr += data.stats[mode].mmr * equationValues[mode + 'Multiplier']
+        newData.stats.global.mmr += data.stats[mode].mmr * equationValues[mode + 'Multiplier'];
     }
-    newData.stats.global.mmr = Math.round(newData.stats.global.mmr);
+
+    let currentGain = newData.stats.global.mmr - data.stats.global.mmr;
+    if (!equationValues.placementSettings.modeBased && data.stats.global.gamesPlayed < equationValues.placementSettings.gameCount) {
+        cConsole.log(`${data.userData.name}: ${currentGain} * (${equationValues.placementSettings.gain} - (${data.stats.global.gamesPlayed} / ${equationValues.placementSettings.gameCount}) * (${equationValues.placementSettings.gain} - 1)) = ${currentGain * (equationValues.placementSettings.gain - (data.stats.global.gamesPlayed / equationValues.placementSettings.gameCount) * (equationValues.placementSettings.gain - 1))}`);
+        currentGain = currentGain * (equationValues.placementSettings.gain - (data.stats.global.gamesPlayed / equationValues.placementSettings.gameCount) * (equationValues.placementSettings.gain - 1));
+    }
+    newData.stats.global.mmr = Math.round(data.stats.global.mmr + currentGain);
 
     newData['__v'] = (data['__v'] + 1);
     await PlayerDatabase.updateMany({_id: data['_id']}, newData);

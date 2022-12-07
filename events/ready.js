@@ -149,6 +149,34 @@ module.exports = {
 				default: break;
 			}
 		}
+		
+
+		// // let result = 50;
+		// const equationValues = {
+		// 	placementGain: 4,
+		// 	placementGames: 10,
+		// }
+		// const testPlacementEquation = (result, gamesPlayed) => {
+		// 	result = result * (
+		// 	    equationValues.placementGain - 
+		// 	    ((gamesPlayed / equationValues.placementGames) * (equationValues.placementGain - 1))
+		// 	);
+		// 	return result;
+		// }
+
+		// console.log(testPlacementEquation(50, 0));
+		// console.log(testPlacementEquation(50, 1));
+		// console.log(testPlacementEquation(50, 2));
+		// console.log(testPlacementEquation(50, 3));
+		// console.log(testPlacementEquation(50, 4));
+		// console.log(testPlacementEquation(50, 5));
+		// console.log(testPlacementEquation(50, 6));
+		// console.log(testPlacementEquation(50, 7));
+		// console.log(testPlacementEquation(50, 8));
+		// console.log(testPlacementEquation(50, 9));
+		// console.log(testPlacementEquation(50, 10));
+
+		
 
 		// const caller = generalUtilities.generate.getCaller();
 		// console.log(`${caller} - Test Actions Complete`);

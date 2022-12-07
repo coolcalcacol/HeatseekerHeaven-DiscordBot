@@ -24,6 +24,11 @@ const QueueConfigSchema = new mongoose.Schema({
     mmrSettings: {
         startingMmr: {type: Number, default: 1000}, // 1000,
         baseGain: {type: Number, default: 50}, // 50,
+        placementSettings: {
+            modeBased: {type: Boolean, default: false}, // false, If the placement should be calculated for each more or just for global
+            gain: {type: Number, default: 2}, // 2, is multiplied by the reselt of a game and decreased by the amount of games played
+            gameCount: {type: Number, default: 10}, // 10,
+        },
         onesMultiplier: {type: Number, default: 0.2}, // 0.2,
         twosMultiplier: {type: Number, default: 0.3}, // 0.3,
         threesMultiplier: {type: Number, default: 0.5}, // 0.5,
