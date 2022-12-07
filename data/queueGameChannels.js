@@ -199,7 +199,6 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
     //     'autoQueue3VC'
     // ]
     if (reset != 'substitute') {
-        
         if (Object.keys(queueConfig.roleSettings.inActiveGameRole).length > 0) {
             const ingameRole = queueConfig.roleSettings.inActiveGameRole;
             for (const player in gameData.players) {
@@ -209,7 +208,7 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
                 if (guildConfig) {
                     for (const adminRole in guildConfig.adminRoles) {
                         const roleId = guildConfig.adminRoles[adminRole].id;
-                        if (memberData._roles.includes(roleId)) { hasAdminRole = true; break;}
+                        if (memberData._roles.includes(roleId)) { hasAdminRole = true; break; }
                     }
                     if (hasAdminRole) continue;
                 }
@@ -234,8 +233,12 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
     else if (reset == 'substitute' && Object.keys(substituteData.targetUser).length > 0 && Object.keys(substituteData.replaceUser).length > 0) {
         const targetUser = substituteData.targetUser;
         const replaceUser = substituteData.replaceUser;
+        const targetMemberData = await generalUtilities.info.getMemberById(targetUser.id);
+        const replaceMemberData = await generalUtilities.info.getMemberById(replaceUser.id);
         const targetTeam = substituteData.targetTeam;
         const otherTeam = targetTeam == 'blue' ? 'orange' : 'blue';
+        const inActiveGameRole = queueConfig.roleSettings.inActiveGameRole;
+
         console.log('targetUser: ' + targetUser.username);
         console.log('replaceUser: ' + replaceUser.username);
         console.log('targetTeam: ' + targetTeam);
@@ -267,15 +270,22 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
             catch (error) { console.error(error); }
         }
 
-        for (const target in targetChannels) {
-            const channel = await guild.channels.cache.get(queueConfig.channelSettings[targetChannels[target]])
-            const perms = await channel.permissionOverwrites.cache.get(targetUser.id)
-
-            await channel.permissionOverwrites.edit(replaceUser, {VIEW_CHANNEL: false});
-            if (!perms) continue;
-            try { await perms.delete(); } 
-            catch (error) { console.error(error); }
+        if (targetMemberData._roles.includes(inActiveGameRole.id)) {
+            targetMemberData.roles.remove(inActiveGameRole.id).catch(console.error);
         }
+        if (!replaceMemberData._roles.includes(inActiveGameRole.id)) {
+            replaceMemberData.roles.add(inActiveGameRole.id).catch(console.error);
+        }
+
+        // for (const target in targetChannels) {
+        //     const channel = await guild.channels.cache.get(queueConfig.channelSettings[targetChannels[target]])
+        //     const perms = await channel.permissionOverwrites.cache.get(targetUser.id)
+
+        //     await channel.permissionOverwrites.edit(replaceUser, {VIEW_CHANNEL: false});
+        //     if (!perms) continue;
+        //     try { await perms.delete(); } 
+        //     catch (error) { console.error(error); }
+        // }
     }
 }
 

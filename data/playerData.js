@@ -61,7 +61,7 @@ async function updatePlayerData(data, equationValues) {
 async function updatePlayerRanks(guildId) {
     const queueSettingsData = await QueueDatabase.findOne({_id: guildId}).catch(console.error);
     const rankData = await queueSettingsData.rankRoles.global;
-    const playerData = await PlayerDatabase.find().sort({
+    const playerData = await PlayerDatabase.find({"userData.isMember": true}).sort({
         "stats.global.mmr": -1, 
         "stats.global.winRate": -1, 
         "stats.global.gamesPlayed": -1

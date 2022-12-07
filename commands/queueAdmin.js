@@ -317,6 +317,9 @@ module.exports = {
                 
                 const targetUser = options.substitute.targetUser;
                 const replaceUser = options.substitute.replaceUser;
+                const targetMemberData = await generalUtilities.info.getMemberById(targetUser.id);
+                const replaceMemberData = await generalUtilities.info.getMemberById(replaceUser.id);
+                
                 if (targetUser == replaceUser) {
                     await interaction.reply({
                         ephemeral: true,
@@ -354,6 +357,11 @@ module.exports = {
                 // const targetIndex = Object.keys(targetGame.players).indexOf(targetUser.id);
                 targetGame.players[replaceUser.id] = replacePlayerData; // Add the replacer data to the players
                 delete targetGame.players[targetUser.id]; // Remove the target user from the players
+
+                const ingameRole = queueConfig.roleSettings.inActiveGameRole;
+                if (replaceMemberData._roles.includes(ingameRole.id)) {
+                    await replaceMemberData.roles.remove(ingameRole.id).catch(console.error);
+                }
 
                 var targetTeam;
                 var targetTeamName;
