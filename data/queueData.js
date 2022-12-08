@@ -70,7 +70,7 @@ const globalQueueData = {
             this.lobby = lobby;
             this.lobbyDisplay = '';
             this.players = {};
-            this.region = 'US-East';
+            this.region = 'EU';
             for (const p in players) {
                 this.players[p] = players[p];
             }
@@ -307,8 +307,8 @@ const globalQueueData = {
             if (memberData._roles.includes(usRole.id)) { usPlayers++; }
         }
         // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
-        if (euPlayers > usPlayers) {
-            game.region = 'EU';
+        if (usPlayers > euPlayers) {
+            game.region = 'US-EAST';
         }
 
         const queueStartMessage = {
