@@ -59,11 +59,11 @@ function queueGameStartPreset(gameData, teamsOnly = false) {
     const teamBlue = new MessageEmbed()
         .setColor('#0000FF')
         .addFields(
-            {name: 'Team Blue', value: getTeamMembers(gameData.teams.blue)}
+            {name: 'Team Blue', value: (getTeamMembers(gameData.teams.blue) != '') ? getTeamMembers(gameData.teams.blue) : 'ERROR'}
         );
     const teamOrange = new MessageEmbed()
         .setColor('#FF9100')
-        .addFields({name: 'Team Orange', value: getTeamMembers(gameData.teams.orange)});
+        .addFields({name: 'Team Orange', value: (getTeamMembers(gameData.teams.orange) != '') ? getTeamMembers(gameData.teams.orange) : 'ERROR'});
     
     const output = !teamsOnly ? [header, teamBlue, teamOrange] : [teamBlue, teamOrange];
     return output;

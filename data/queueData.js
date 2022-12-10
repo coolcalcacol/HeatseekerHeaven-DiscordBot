@@ -67,68 +67,49 @@ const globalQueueData = {
 //#region Classes
     class GameLobbyData {
         constructor(players, lobby, bypass = false) {
+            this.gameId;
             this.lobby = lobby;
             this.lobbyDisplay = '';
-            this.players = {};
+            this.teamSelection = 'random';
             this.region = 'EU';
-            for (const p in players) {
-                this.players[p] = players[p];
-            }
-            this.teams = {
-                blue: {},
-                orange: {}
-            }
-            this.gameId;
+            this.players = {};
+            this.teams = {blue: {}, orange: {}}
+            this.channels = {gameChat: '', blue: '', orange: ''}
+
             this.startTime = new Date();
             this.gameDuration = 0; // in milliseconds
-            this.channels = {
-                gameChat: '',
-                blue: '',
-                orange: '',
-            }
             this.queueStartMessage = {content: 'no message content for ' + this.gameId};
+
             this.reportStatus;
             this.gameResults;
-            this.bypassTeamGeneration = bypass;
+            // this.bypassTeamGeneration = bypass;
+
+            for (const p in players) { this.players[p] = players[p]; }
+
             this.requestGameId();
-            this.getTeams();
+            this.getTeams(this.teamSelection);
         }
         async requestGameId() {
             globalQueueData.gameId += 1;
             this.gameId = globalQueueData.gameId;
             await QueueConfigStorage.updateOne({}, {gameId: this.gameId}).catch(console.error);
         }
-        getTeams() {
+        getTeams(teamSelection) { // teamSelection = 'balanced' || 'random'
             switch (this.lobby) {
                 case 'ones':{
                     this.teams.blue = new TeamData([this.players[Object.keys(this.players)[0]]], this.lobby);
                     this.teams.orange = new TeamData([this.players[Object.keys(this.players)[1]]], this.lobby);
                 } break;
                 case 'twos':{
-                    const generatedTeams = this.getBalancedTeams(2)
+                    const generatedTeams = (teamSelection == 'balanced') ? this.getBalancedTeams(2) : this.getRandomTeams(2);
                     this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
                     this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
                 } break;
                 case 'threes':{
-                    if (!this.bypassTeamGeneration) {
-                        const generatedTeams = this.getBalancedTeams(3)
-                        this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
-                        this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
-                    }
-                    else {
-                        this.teams.blue = new TeamData([
-                            this.players[Object.keys(this.players)[0]],
-                            this.players[Object.keys(this.players)[1]],
-                            this.players[Object.keys(this.players)[2]],
-                        ], this.lobby);
-                        this.teams.orange = new TeamData([
-                            this.players[Object.keys(this.players)[3]],
-                            this.players[Object.keys(this.players)[4]],
-                            this.players[Object.keys(this.players)[5]],
-                        ], this.lobby);
-                    }
+                    const generatedTeams = (teamSelection == 'balanced') ? this.getBalancedTeams(3) : this.getRandomTeams(3);
+                    this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
+                    this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
                 } break;
-
                 default: break;
             }
             // console.log(this.teams);
@@ -192,6 +173,21 @@ const globalQueueData = {
             }
             return bestTeams;
         }
+        getRandomTeams(size) {
+            let array = [];
+            let output = [];
+            for (const playerData in this.players) {
+                array.push(this.players[playerData]);
+                array = generalUtilities.generate.randomizeArray(array);
+            }
+            switch(size) {
+                case 2: { return [[array[0], array[1]], [array[2], array[3]]] };
+                case 3: { return [[array[0], array[1], array[2]], [array[3], array[4], array[5]]]; };
+                default: break;
+            }
+            return array;
+        }
+
         getTeamMembersLog(teamX, teamY) {
             var output = '';
             for (let i = 0; i < 2; i++) {
@@ -308,7 +304,7 @@ const globalQueueData = {
         }
         // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
         if (usPlayers > euPlayers) {
-            game.region = 'US-EAST';
+            game.region = 'US-East';
         }
 
         const queueStartMessage = {
