@@ -16,7 +16,7 @@ module.exports = {
         pauseQueue: false,
     },
     debugOptions: {
-        createGameOnStart: true,
+        createGameOnStart: false,
         gameOnStartLobby: 'threes'
     },
     logOptions : {
@@ -53,7 +53,6 @@ module.exports = {
         '95630080893521920',  // kaelan
         '568449733228756993', // Bramble
         '198802539783651328', // tavz
-        '201039454930993152', // Marshmallow
         '510829824483524638', // coco_ice
         '723703418274971700', // j.
         '457617584033103892', // Orcas
@@ -68,6 +67,7 @@ module.exports = {
         '434732958360797204', // TOG
         '476834059431968772', // Hunter
         '393061621393784833', // Egol
+        // '201039454930993152', // Marshmallow [left server]
         // '510636937489416196', // Nate [left server]
         // '178625919559270409', // ncj [left server]
     ]

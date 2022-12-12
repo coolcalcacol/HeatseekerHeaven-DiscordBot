@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const leaderboardCommand = require('../../displayLeaderboard');
-const embedUtilities = require('../../../utils/embedUtilities')
+const embedUtilities = require('../../../utils/embedUtilities');
 
 module.exports = {
     data: new SlashCommandBuilder()

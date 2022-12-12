@@ -1,3 +1,5 @@
+const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+
 //#region Data
     const QueueConfigStorage = require('./database/queueConfigStorage');
     const QueueDatabase = require('./database/queueDataStorage');
@@ -42,6 +44,10 @@ const globalQueueData = {
     gamesInProgress: [],
     gameHistory: [],
     
+    /** 
+     * @param {string} gameId
+     * @returns {GameLobbyData}
+    */
     getActiveGame(gameId) {
         for (let i = 0; i < this.gamesInProgress.length; i++) {
             const game = this.gamesInProgress[i];
@@ -67,18 +73,34 @@ const globalQueueData = {
 //#region Classes
     class GameLobbyData {
         constructor(players, lobby, bypass = false) {
+            this.gameStatusEnum = Object.freeze({
+                INITIATED: 0, 
+                TEAM_SELECTION: 1, 
+                IN_PROGRESS: 3, 
+                FINISHED: 4, 
+                CANCELLED: 5
+            });
+
             this.gameId;
+            this.status = this.gameStatusEnum.INITIATED;
             this.lobby = lobby;
+            this.lobbyChannelId = '';
             this.lobbyDisplay = '';
             this.teamSelection = 'random';
+            this.teamSelectionVotes = {balanced: {count: 0, users: []}, random: {count: 0, users: []}}
+            this.teamSelectionVoteTime = new Date().getTime(); // Starts in onChannelsCreated()
             this.region = 'EU';
             this.players = {};
             this.teams = {blue: {}, orange: {}}
             this.channels = {gameChat: '', blue: '', orange: ''}
 
+            this.teamSelectMessage = {};
+            this.queueStartMessage = {};
+            this.teamSelectMessageContent = {content: 'ERROR: No team selection message content for ' + this.gameId};
+            this.queueStartMessageContent = {content: 'ERROR: No message content for ' + this.gameId};
+
             this.startTime = new Date();
             this.gameDuration = 0; // in milliseconds
-            this.queueStartMessage = {content: 'no message content for ' + this.gameId};
 
             this.reportStatus;
             this.gameResults;
@@ -87,14 +109,141 @@ const globalQueueData = {
             for (const p in players) { this.players[p] = players[p]; }
 
             this.requestGameId();
-            this.getTeams(this.teamSelection);
+            // this.getTeamSelectionMessageContent(true);
+            // this.getTeams(this.teamSelection);
+            // this.sendGameStartMessage();
         }
         async requestGameId() {
             globalQueueData.gameId += 1;
             this.gameId = globalQueueData.gameId;
             await QueueConfigStorage.updateOne({}, {gameId: this.gameId}).catch(console.error);
         }
-        getTeams(teamSelection) { // teamSelection = 'balanced' || 'random'
+
+        onChannelsCreated() {
+            this.status = this.gameStatusEnum.TEAM_SELECTION;
+
+            if (this.lobby == 'ones') { 
+                this.teamSelection = 'random';
+                this.startGame();
+                return;
+            }
+
+            this.teamSelectionVoteTime = new Date(new Date().setSeconds(new Date().getSeconds() + 30)).getTime()
+            this.getTeamSelectionMessageContent(true);
+            new botUpdate.UpdateTimer(`${this.gameId}-teamSelection`, this.teamSelectionVoteTime, this.startGame.bind(this));
+        }
+        startGame() {
+            if (this.status >= 3) { return; } // Game already started
+            this.status = this.gameStatusEnum.IN_PROGRESS;
+            this.getGameRegion();
+            this.getTeams();
+            this.startTime = new Date();
+            this.sendGameStartMessage();
+
+            cConsole.log(`\n-------- [fg=green]Game[/>] ${this.gameId} [fg=green]started[/>] --------`);
+            cConsole.log({
+                gameId: this.gameId,
+                lobby: this.lobby,
+                region: this.region,
+                teamSelection: this.teamSelection,
+            });
+            cConsole.log(' ');
+        }
+
+        async getTeamSelectionMessageContent(send = false) {
+            if (this.status >= 3) { return; } // Game already started
+            const buttons = {
+                balanced: new MessageButton({
+                    customId: `team-selection_balanced_${this.gameId}`,
+                    label: 'Balanced', 
+                    style: 'PRIMARY', 
+                    disabled: false,
+                }),
+                random: new MessageButton({
+                    customId: `team-selection_random_${this.gameId}`,
+                    label: 'Random', 
+                    style: 'PRIMARY', 
+                    disabled: false,
+                })
+            }
+            const buttonRow = new MessageActionRow().addComponents(buttons.balanced, buttons.random);
+
+            const embed = new MessageEmbed({
+                title: 'Team Selection',
+                description: 'Vote for a team selection method\n' + `Time to vote: <t:${generalUtilities.generate.getTimestamp(this.teamSelectionVoteTime)}:R>`,
+                fields: [
+                    {name: 'Balanced', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.balanced.count, 5, true)}\``, inline: true},
+                    {name: 'Random', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.random.count, 5, true)}\``, inline: true},
+                ],
+                color: 'BLUE',
+            });
+            
+            if (!send) return {embeds: [embed], components: [buttonRow]};
+            else {
+                if (Object.keys(this.teamSelectMessage).length > 0) {
+                    this.teamSelectMessage = await clientSendMessage.editMessage(
+                        this.teamSelectMessage.channelId, 
+                        this.teamSelectMessage.id, 
+                        {
+                            embeds: [embed], 
+                            components: [buttonRow]
+                        }
+                    );
+                }
+                else {
+                    this.teamSelectMessage = await clientSendMessage.sendMessageTo(
+                        this.channels.gameChat.id,
+                        {
+                            embeds: [embed],
+                            components: [buttonRow]
+                        }
+                    );
+                }
+            }
+        }
+        async sendGameStartMessage() {
+            var msgContent = '';
+            for (const player in this.players) {
+                const user = this.players[player];
+                if (generalData.debugMode) {
+                    msgContent += '`' + user.userData.mention + '` ';
+                }
+                else {
+                    msgContent += user.userData.mention + ' ';
+                }
+            }
+
+            const queueStartMessage = {
+                content: msgContent,
+                embeds: embedUtilities.presets.queueGameStartPreset(this)
+            }
+            this.queueStartMessageContent = queueStartMessage;
+
+            if (Object.keys(this.teamSelectMessage).length > 0) {
+                this.queueStartMessage = await clientSendMessage.editMessage(
+                    this.teamSelectMessage.channelId, 
+                    this.teamSelectMessage.id, 
+                    {
+                        content: queueStartMessage.content,
+                        embeds: queueStartMessage.embeds,
+                        components: []
+                    }
+                );
+            }
+            else {
+                this.queueStartMessage = await clientSendMessage.sendMessageTo(
+                    this.channels.gameChat.id,
+                    {
+                        content: queueStartMessage.content,
+                        embeds: queueStartMessage.embeds,
+                        components: []
+                    }
+                );
+            }
+            // await this.channels.gameChat.send({content: queueStartMessage.content, embeds: [queueStartMessage.embeds]});
+        }
+
+        getTeams(teamSelection = this.teamSelection) { // teamSelection = 'balanced' || 'random'
             switch (this.lobby) {
                 case 'ones':{
                     this.teams.blue = new TeamData([this.players[Object.keys(this.players)[0]]], this.lobby);
@@ -175,7 +324,6 @@ const globalQueueData = {
         }
         getRandomTeams(size) {
             let array = [];
-            let output = [];
             for (const playerData in this.players) {
                 array.push(this.players[playerData]);
                 array = generalUtilities.generate.randomizeArray(array);
@@ -187,7 +335,6 @@ const globalQueueData = {
             }
             return array;
         }
-
         getTeamMembersLog(teamX, teamY) {
             var output = '';
             for (let i = 0; i < 2; i++) {
@@ -199,8 +346,35 @@ const globalQueueData = {
             }
             return output;
         }
-        get game() {
-            return this;
+        getPlayersString(mention = false) {
+            var output = '';
+            for (const player in this.players) {
+                if (mention) {
+                    output += `<@${player}> `;
+                }
+                else {
+                    output += this.players[player].userData.name + ' ';
+                }
+            }
+            return output;
+        }
+        async getGameRegion() {
+            const queueConfig = await getQueueConfig();
+            const euRole = (queueConfig.roleSettings.regionEU.id) ? queueConfig.roleSettings.regionEU : null;
+            const usRole = (queueConfig.roleSettings.regionUS.id) ? queueConfig.roleSettings.regionUS : null;
+
+            var euPlayers = 0;
+            var usPlayers = 0;
+            for (const player in this.players) {
+                const memberData = await generalUtilities.info.getMemberById(player);
+                if (!euRole || !usRole) continue;
+                if (memberData._roles.includes(euRole.id)) { euPlayers++; }
+                if (memberData._roles.includes(usRole.id)) { usPlayers++; }
+            }
+            // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
+            if (usPlayers > euPlayers) {
+                this.region = 'US-East';
+            }
         }
     }
     class TeamData {
@@ -277,48 +451,17 @@ const globalQueueData = {
     */
     async function startQueue(lobby, guildId, gameData = null) {
         const game = gameData ? gameData : new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
-        const lobbyChannelId = await queueSettings.getRankedLobbyByName(lobby, guildId)
-            .then(globalQueueData.clearLobbyQueue(lobby));
-        const queueConfig = await getQueueConfig();
-        const euRole = (queueConfig.roleSettings.regionEU.id) ? queueConfig.roleSettings.regionEU : null;
-        const usRole = (queueConfig.roleSettings.regionUS.id) ? queueConfig.roleSettings.regionUS : null;
-
+        game.lobbyChannelId = await queueSettings.getRankedLobbyByName(lobby, guildId).then(globalQueueData.clearLobbyQueue(lobby));
+        
         globalQueueData.gamesInProgress.push(game);
         if (generalData.logOptions.gameData) console.log(globalQueueData.gamesInProgress);
-
-        var msgContent = '';
-        var euPlayers = 0;
-        var usPlayers = 0;
-        for (const player in game.players) {
-            const user = game.players[player];
-            const memberData = await generalUtilities.info.getMemberById(player);
-            if (generalData.debugMode) {
-                msgContent += '`' + user.userData.mention + '` ';
-            }
-            else {
-                msgContent += user.userData.mention + ' ';
-            }
-            if (!euRole || !usRole) continue;
-            if (memberData._roles.includes(euRole.id)) { euPlayers++; }
-            if (memberData._roles.includes(usRole.id)) { usPlayers++; }
-        }
-        // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
-        if (usPlayers > euPlayers) {
-            game.region = 'US-East';
-        }
-
-        const queueStartMessage = {
-            content: msgContent,
-            embeds: embedUtilities.presets.queueGameStartPreset(game)
-        }
-        game.queueStartMessage = queueStartMessage;
 
         if (await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).then((data) => {
             return data.channelSettings.teamChannelCategory;
         })) { 
             queueGameChannels.createGameChannels(game); 
         }
-        else { clientSendMessage.sendMessageTo(lobbyChannelId, queueStartMessage); }
+        else { clientSendMessage.sendMessageTo(game.lobbyChannelId, game.queueStartMessage); }
         return game;
     }
 //#endregion
@@ -392,6 +535,26 @@ const globalQueueData = {
             return globalQueueData;
         }
     }
+
+    /** 
+     * @param {String} gameId
+     * @returns {GameLobbyData} The game data
+    */
+    function getGameDataById(gameId) {
+        for (let i = 0; i < globalQueueData.gamesInProgress.length; i++) {
+            const game = globalQueueData.gamesInProgress[i];
+            if (game.gameId == gameId) {
+                return game;
+            }
+        }
+        for (let i = 0; i < globalQueueData.gameHistory.length; i++) {
+            const game = globalQueueData.gameHistory[i];
+            if (game.gameId == gameId) {
+                return game;
+            }
+        }
+        return null;
+    }
 //#endregion
 
 
@@ -406,6 +569,7 @@ module.exports.info = {
     getCurrentQueue,
     userReservedStatus,
     getLobbyString,
+    getGameDataById,
     globalQueueData,
     GameLobbyData
     // getCurrentQueueMessage

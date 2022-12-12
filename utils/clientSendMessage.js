@@ -9,17 +9,16 @@ function setClient(client) {
 async function sendMessageTo(channelID, msg) {
     const channel = await generalData.client.channels.cache.get(channelID);
     if (!channel) return;
-    return await channel.send(msg).then((m) => { return m; }).catch(console.error);
+    return await channel.send((msg) ? msg : 'ERROR').then((m) => { return m; }).catch(console.error);
 }
 function sendEmbedMessageTo(channelId, embed) {
     generalData.client.channels.cache.get(channelId).send({embeds: embed});
 }
 async function editMessage(channelId, messageId, msg) {
-    await generalData.client.channels.cache.get(channelId).messages
+    return await generalData.client.channels.cache.get(channelId).messages
         .fetch(messageId)
-        .then((message) => {message.edit(msg)})
+        .then((message) => {message.edit(msg); return message;})
         .catch(console.error);
-    // console.log(message.content);
 }
 function sendTestMessage(msg) {
     const channel = generalData.client.channels.cache.get(config.channels.test);

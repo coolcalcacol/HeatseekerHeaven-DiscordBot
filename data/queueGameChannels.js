@@ -40,9 +40,9 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
     }
 
     const channelPermissions = {
-        gameChat: defaultChannelPermissions,
-        blue: defaultChannelPermissions,
-        orange: defaultChannelPermissions,
+        gameChat: defaultChannelPermissions.concat(),
+        blue: defaultChannelPermissions.concat(),
+        orange: defaultChannelPermissions.concat(),
     };
 
     for (const team in gameData.teams) {
@@ -52,7 +52,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
 
             channelPermissions.gameChat.push({
                 id: user.id,
-                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'USE_APPLICATION_COMMANDS', 'READ_MESSAGE_HISTORY']
+                allow: ['SEND_MESSAGES', 'VIEW_CHANNEL', 'USE_APPLICATION_COMMANDS', 'READ_MESSAGE_HISTORY']
             });
             channelPermissions[team].push({
                 id: user.id,
@@ -65,8 +65,6 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
             });
         }
     }
-    // console.log(channelPermissions);
-
 
     // create team VC's
     gameData.channels.blue = await guild.channels.create(`hs${gameData.gameId} | Blue`, {
@@ -87,33 +85,6 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         topic: channelTopic,
         permissionOverwrites: channelPermissions.gameChat,
     }).catch(console.error);
-
-    // for (const adminRole in adminRoles) {
-    //     const roleId = adminRoles[adminRole].id;
-
-    //     gameData.channels.gameChat.permissionOverwrites([
-    //         {
-    //             id: roleId,
-    //             allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'USE_APPLICATION_COMMANDS', 'READ_MESSAGE_HISTORY']
-    //         }
-    //     ])
-
-    //     // gameData.channels.gameChat.updateOverwrite(roleId, {
-    //     //     VIEW_CHANNEL: true,
-    //     //     SEND_MESSAGES: true,
-    //     //     USE_APPLICATION_COMMANDS: true,
-    //     //     READ_MESSAGE_HISTORY: true
-    //     // });
-    //     // for (const team in gameData.teams) {
-    //     //     gameData.channels[team].updateOverwrite(roleId, {
-    //     //         CONNECT: true,
-    //     //         VIEW_CHANNEL: true,
-    //     //         SEND_MESSAGES: true,
-    //     //         USE_APPLICATION_COMMANDS: true,
-    //     //         READ_MESSAGE_HISTORY: true,
-    //     //     });
-    //     // }
-    // }
 
     var autoQueueVC;
     const autoQueuePlayers = [];
@@ -141,17 +112,19 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
             `Team Blue: ${gameData.channels.blue}`,
             `Team Orange: ${gameData.channels.orange}`,
             `The main ranked channels will be hidden for everyone in this game lobby until you report the game.`,
-            `If you experiance any problems with during this game, ask help from the \`@Moderators\` or \`@Admins\` in this chat.`
+            `If you experiance any problems with during this game, ask help from the \`@Bot Admins\` in this chat.`
         ].join('\n')
     );
 
     //#region Timers
         // Send the queue starting message again in the created game chat
-        new botUpdate.UpdateTimer(
-            'queueStartMessage' + gameData.channels.gameChat.id, 
-            new Date().setSeconds(new Date().getSeconds() + 2), 
-            clientSendMessage.sendMessageTo.bind(this, gameData.channels.gameChat.id, gameData.queueStartMessage)
-        );
+        if (gameData.channels.gameChat) {
+            new botUpdate.UpdateTimer(
+                'queueStartMessage' + gameData.channels.gameChat.id, 
+                new Date().setSeconds(new Date().getSeconds() + 2),
+                gameData.onChannelsCreated.bind(gameData)
+            );
+        }
         
         // Add the InGame role to the players
         new botUpdate.UpdateTimer(

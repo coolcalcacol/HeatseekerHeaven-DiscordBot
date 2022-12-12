@@ -52,17 +52,25 @@ function queueGameStartPreset(gameData, teamsOnly = false) {
     const header = new MessageEmbed()
         .setColor('#000000')
         .setTitle('Teams have been selected!')
-        .setDescription([
-            '__**Game ID**__:\n```js\n' + getFieldSpacing('hs' + gameData.gameId, 23) + '\n```',
-            '__**Game Region**__:\n```js\n' + getFieldSpacing(gameData.region, 23) + '\n```',
-        ].join('\n'))
+        
+        // .setDescription([
+        //     '__**Game ID**__:\n```js\n' + getFieldSpacing('hs' + gameData.gameId, 23) + '\n```',
+        //     '__**Game Region**__:\n```js\n' + getFieldSpacing(gameData.region, 23) + '\n```',
+        // ].join('\n'))
+        .addFields(
+            {name: 'Game ID', value: '```js\n' + getFieldSpacing('hs' + gameData.gameId, 13, true) + '\n```', inline: true},
+            {name: 'Game Region', value: '```js\n' + getFieldSpacing(gameData.region, 13, true) + '\n```', inline: true},
+            {name: 'Team Selection', value: '```js\n' + getFieldSpacing(gameData.teamSelection, 13, true) + '\n```', inline: true},
+        )
     const teamBlue = new MessageEmbed()
         .setColor('#0000FF')
+        
         .addFields(
             {name: 'Team Blue', value: (getTeamMembers(gameData.teams.blue) != '') ? getTeamMembers(gameData.teams.blue) : 'ERROR'}
         );
     const teamOrange = new MessageEmbed()
         .setColor('#FF9100')
+        
         .addFields({name: 'Team Orange', value: (getTeamMembers(gameData.teams.orange) != '') ? getTeamMembers(gameData.teams.orange) : 'ERROR'});
     
     const output = !teamsOnly ? [header, teamBlue, teamOrange] : [teamBlue, teamOrange];
@@ -324,14 +332,20 @@ async function leaderboardPreset(page, interaction, returnMaxPage = false) {
     if (returnMaxPage) return [[embed], Math.ceil((playerDataList.length - 1) / 10)]
     else return [embed];
 }
-function getFieldSpacing(value, spaces) {
+
+/** 
+ * @param {string} value The string to be centered
+ * @param {number} spaces The total number of spaces to be used
+ * @param {boolean} optimize Whether or not to strictly center the string (wont be the same if the string is even) 
+*/
+function getFieldSpacing(value, spaces, optimize = false) {
     var output = '';
 
     // value = value.toString().replace(' ', '◘')
     
     var chars = value.toString().split('').length;
     var space = spaces - chars;
-    var leftSpace = Math.ceil(space / 2);
+    var leftSpace = Math.ceil(space / 2) - ((optimize && chars % 2 == 0) ? 1 : 0);
     var rightSpace = Math.floor(space / 2);
 
     for (let i = 0; i < leftSpace; i++) { output += ' '; }
@@ -437,5 +451,6 @@ module.exports.presets = {
     mmrStats,
 }
 module.exports.methods = {
-    getTeamMembers
+    getTeamMembers,
+    getFieldSpacing
 }

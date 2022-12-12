@@ -17,6 +17,7 @@ const clientSend = require('../utils/clientSendMessage');
 
 const botUpdate = require('./botUpdate');
 const clearQueueCommand = require('../commands/debug/clearGameChannels');
+const teamSelectionButtons = require('../commands/MessageActions/buttons/teamSelectionButtons');
 
 const sleep = require('node:timers/promises').setTimeout;
 // const config = require('../config/config.json');
@@ -36,8 +37,6 @@ module.exports = {
 		await this.runTestActions(client);
 	},
 	async Awake(client) {
-		
-
 		generalData.botStats.upTime = new Date();
 		
 		client.user.setPresence({

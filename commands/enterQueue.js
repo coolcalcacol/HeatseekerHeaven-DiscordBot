@@ -76,9 +76,17 @@ module.exports = {
             } break;
             case 'gameStarted': {
                 const game = queueData.info.globalQueueData.getActiveGame(responseArgs);
+                
+                const embed = new MessageEmbed({
+                    title: 'Game has started!',
+                    description: game.getPlayersString(true),
+                    color: '#00ff00',
+                    timestamp: new Date().getTime(),
+                });
                 await interaction.reply({
-                    embeds: embedUtilities.presets.queueGameStartLobbyPreset(game),
+                    embeds: [embed],
                     ephemeral: false
+                    // embeds: embedUtilities.presets.queueGameStartLobbyPreset(game), // teams are not selected yet
                 });
                 if (this.currentQueueMessage[lobby]) { this.currentQueueMessage[lobby].delete(); }
                 this.currentQueueMessage[lobby] = null;
