@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { ButtonInteraction } = require('discord.js');
+const generalData = require('../../../data/generalData');
 
 const queueData = require('../../../data/queueData');
 
@@ -19,7 +20,10 @@ module.exports = {
             console.log('Game not found');
             return;
         }
-        if (gameData.teamSelectionVotes.balanced.users.includes(interaction.user.id) || gameData.teamSelectionVotes.random.users.includes(interaction.user.id)) {
+        if (
+            !generalData.debugMode &&
+            (gameData.teamSelectionVotes.balanced.users.includes(interaction.user.id) || gameData.teamSelectionVotes.random.users.includes(interaction.user.id))
+        ) {
             console.log('User has already voted');
             await interaction.deferUpdate();
             return;

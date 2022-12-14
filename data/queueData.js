@@ -92,7 +92,8 @@ const globalQueueData = {
             this.region = 'EU';
             this.players = {};
             this.teams = {blue: {}, orange: {}}
-            this.channels = {gameChat: '', blue: '', orange: ''}
+            this.channels = {gameChat: null, blue: null, orange: null, category: null}
+            this.channelPermissions = {default: [], gameChat: [], blue: [], orange: []}
 
             this.teamSelectMessage = {};
             this.queueStartMessage = {};
@@ -119,7 +120,7 @@ const globalQueueData = {
             await QueueConfigStorage.updateOne({}, {gameId: this.gameId}).catch(console.error);
         }
 
-        onChannelsCreated() {
+        onGameChatCreated() {
             this.status = this.gameStatusEnum.TEAM_SELECTION;
 
             if (this.lobby == 'ones') { 
@@ -132,11 +133,12 @@ const globalQueueData = {
             this.getTeamSelectionMessageContent(true);
             new botUpdate.UpdateTimer(`${this.gameId}-teamSelection`, this.teamSelectionVoteTime, this.startGame.bind(this));
         }
-        startGame() {
+        async startGame() {
             if (this.status >= 3) { return; } // Game already started
             this.status = this.gameStatusEnum.IN_PROGRESS;
             this.getGameRegion();
             this.getTeams();
+            await queueGameChannels.createVoiceChannels(this);
             this.startTime = new Date();
             this.sendGameStartMessage();
 
@@ -177,15 +179,16 @@ const globalQueueData = {
                 ],
                 color: 'BLUE',
             });
-            
-            if (!send) return {embeds: [embed], components: [buttonRow]};
+
+            if (!send) return {content: msgContent, embeds: [embed], components: [buttonRow]};
             else {
                 if (Object.keys(this.teamSelectMessage).length > 0) {
                     this.teamSelectMessage = await clientSendMessage.editMessage(
-                        this.teamSelectMessage.channelId, 
-                        this.teamSelectMessage.id, 
+                        this.teamSelectMessage.channelId,
+                        this.teamSelectMessage.id,
                         {
-                            embeds: [embed], 
+                            content: this.getPlayersString(!generalData.debugMode),
+                            embeds: [embed],
                             components: [buttonRow]
                         }
                     );
@@ -194,6 +197,7 @@ const globalQueueData = {
                     this.teamSelectMessage = await clientSendMessage.sendMessageTo(
                         this.channels.gameChat.id,
                         {
+                            content: this.getPlayersString(!generalData.debugMode),
                             embeds: [embed],
                             components: [buttonRow]
                         }
@@ -202,19 +206,8 @@ const globalQueueData = {
             }
         }
         async sendGameStartMessage() {
-            var msgContent = '';
-            for (const player in this.players) {
-                const user = this.players[player];
-                if (generalData.debugMode) {
-                    msgContent += '`' + user.userData.mention + '` ';
-                }
-                else {
-                    msgContent += user.userData.mention + ' ';
-                }
-            }
-
             const queueStartMessage = {
-                content: msgContent,
+                content: this.getPlayersString(!generalData.debugMode),
                 embeds: embedUtilities.presets.queueGameStartPreset(this)
             }
             this.queueStartMessageContent = queueStartMessage;

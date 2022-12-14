@@ -1,3 +1,5 @@
+const { MessageEmbed } = require('discord.js');
+
 const queueSettings = require('../data/queueSettings');
 const queueData = require('../data/queueData');
 
@@ -31,7 +33,9 @@ module.exports = {
                 const split = response.split(':');
                 response = split[0]
                 responseArgs = split[1];
+                console.log(responseArgs)
             }
+            const gameData = queueData.info.getGameDataById(responseArgs);
             
             if (response == 'queuePaused') return;
             else if (response != 'gameStarted') {
@@ -42,9 +46,22 @@ module.exports = {
                 enterQueueCommand.currentQueueMessage[targetLobby] = enterQueueMessage;
             }
             else {
+                const embed = new MessageEmbed({
+                    title: 'Game has started!',
+                    color: '#00ff00',
+                    timestamp: new Date().getTime(),
+                });
+
+                if (gameData) {
+                    embed.description = gameData.getPlayersString(true);
+                }
+                else {
+                    cConsole.error('VoiceStateUpdate: Game data not found for game ID: ' + responseArgs);
+                }
+                
                 await clientSendMessage.sendMessageTo(
                     await queueSettings.getRankedLobbyByName(targetLobby, interaction.guild.id), 
-                    {embeds: embedUtilities.presets.queueGameStartLobbyPreset(queueData.info.globalQueueData.getActiveGame(responseArgs))}
+                    {embeds: [embed]}
                 );
                 enterQueueCommand.currentQueueMessage[targetLobby] = null;
             }

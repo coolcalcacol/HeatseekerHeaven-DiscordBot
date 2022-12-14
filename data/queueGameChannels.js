@@ -22,7 +22,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
     const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
     const queueConfig = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId);
     const guildConfig = await guildConfigStorage.findOne({_id: generalData.botConfig.defaultGuildId}).catch(console.error);
-    const parent = await guild.channels.cache.find(c => c.id == queueConfig.channelSettings.teamChannelCategory);
+    gameData.channels.category = await guild.channels.cache.find(c => c.id == queueConfig.channelSettings.teamChannelCategory);
 
     const adminRoles = guildConfig.adminRoles;
     const defaultChannelPermissions = [
@@ -39,26 +39,39 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         })
     }
 
-    const channelPermissions = {
-        gameChat: defaultChannelPermissions.concat(),
-        blue: defaultChannelPermissions.concat(),
-        orange: defaultChannelPermissions.concat(),
-    };
+    gameData.channelPermissions.default = defaultChannelPermissions.concat();
+    gameData.channelPermissions.gameChat = defaultChannelPermissions.concat();
+    gameData.channelPermissions.blue = defaultChannelPermissions.concat();
+    gameData.channelPermissions.orange = defaultChannelPermissions.concat();
+
+    // const channelPermissions = {
+    //     gameChat: defaultChannelPermissions.concat(),
+    //     blue: defaultChannelPermissions.concat(),
+    //     orange: defaultChannelPermissions.concat(),
+    // };
+
+    for (const player in gameData.players) {
+        const user = await generalUtilities.info.getUserById(player);
+        gameData.channelPermissions.gameChat.push({
+            id: user.id,
+            allow: ['SEND_MESSAGES', 'VIEW_CHANNEL', 'USE_APPLICATION_COMMANDS', 'READ_MESSAGE_HISTORY']
+        });
+    }
 
     for (const team in gameData.teams) {
         for (const player in gameData.teams[team].members) {
             const user = await generalUtilities.info.getUserById(player);
             const otherTeam = team == 'blue' ? 'orange' : 'blue';
 
-            channelPermissions.gameChat.push({
+            gameData.channelPermissions.gameChat.push({
                 id: user.id,
                 allow: ['SEND_MESSAGES', 'VIEW_CHANNEL', 'USE_APPLICATION_COMMANDS', 'READ_MESSAGE_HISTORY']
             });
-            channelPermissions[team].push({
+            gameData.channelPermissions[team].push({
                 id: user.id,
                 allow: ['CONNECT', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'USE_APPLICATION_COMMANDS', 'READ_MESSAGE_HISTORY']
             });
-            channelPermissions[otherTeam].push({
+            gameData.channelPermissions[otherTeam].push({
                 id: user.id, 
                 allow: ['VIEW_CHANNEL'],
                 deny: ['CONNECT']
@@ -66,43 +79,13 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         }
     }
 
-    // create team VC's
-    gameData.channels.blue = await guild.channels.create(`hs${gameData.gameId} | Blue`, {
-        type: 'GUILD_VOICE',
-        parent: parent,
-        permissionOverwrites: channelPermissions.blue,
-    }).catch(console.error)
-    gameData.channels.orange = await guild.channels.create(`hs${gameData.gameId} | Orange`, {
-        type: 'GUILD_VOICE',
-        parent: parent,
-        permissionOverwrites: channelPermissions.orange,
-    }).catch(console.error);
-
-    const channelTopic = `id:${gameData.gameId}_AvoiceChannels:${gameData.channels.blue.id},${gameData.channels.orange.id}_lobby:${gameData.lobby}_created:${new Date().getTime()}`; //replace with team vc id's
+    const channelTopic = `id:${gameData.gameId}_lobby:${gameData.lobby}_created:${new Date().getTime()}`; //replace with team vc id's
     gameData.channels.gameChat = await guild.channels.create(`hs${gameData.gameId}-gamechat`, {
         type: 'GUILD_TEXT',
-        parent: parent,
+        parent: gameData.channels.category,
         topic: channelTopic,
-        permissionOverwrites: channelPermissions.gameChat,
+        permissionOverwrites: gameData.channelPermissions.gameChat,
     }).catch(console.error);
-
-    var autoQueueVC;
-    const autoQueuePlayers = [];
-    switch(gameData.lobby) {
-        case 'ones': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue1VC); } break;
-        case 'twos': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue2VC); } break;
-        case 'threes': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue3VC); } break;
-        default: break;
-    }
-    for (const team in gameData.teams) {
-        autoQueueVC.members.map(async (member) => {
-            if (Object.keys(gameData.teams[team].members).includes(member.id)) {
-                autoQueuePlayers.push(member.id);
-                await member.voice.setChannel(gameData.channels[team]);
-            }
-        });
-    }
-    gameData.channels.gameChat.setTopic(gameData.channels.gameChat.topic + `_AautoQueuePlayers:${autoQueuePlayers.join(',')}`)
     
     //Send an info message explaining why the main queue channels are not visable anymore and how to gain access back
     clientSendMessage.sendMessageTo(
@@ -122,7 +105,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
             new botUpdate.UpdateTimer(
                 'queueStartMessage' + gameData.channels.gameChat.id, 
                 new Date().setSeconds(new Date().getSeconds() + 2),
-                gameData.onChannelsCreated.bind(gameData)
+                gameData.onGameChatCreated.bind(gameData)
             );
         }
         
@@ -144,6 +127,61 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         // new botUpdate.UpdateTimer(gameData.channels.gameChat.topic, new Date().setSeconds(new Date().getSeconds() + 10), deleteGameChannels.bind(this, gameData))
     //#endregion
 }
+
+async function createVoiceChannels(gameData = new queueData.info.GameLobbyData()) {
+    const queueConfig = await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId);
+    const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
+    
+    // Set the channel permissions
+    for (const team in gameData.teams) {
+        for (const player in gameData.teams[team].members) {
+            const user = await generalUtilities.info.getUserById(player);
+            const otherTeam = team == 'blue' ? 'orange' : 'blue';
+
+            gameData.channelPermissions[team].push({
+                id: user.id,
+                allow: ['CONNECT', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'USE_APPLICATION_COMMANDS', 'READ_MESSAGE_HISTORY']
+            });
+            gameData.channelPermissions[otherTeam].push({
+                id: user.id, 
+                allow: ['VIEW_CHANNEL'],
+                deny: ['CONNECT']
+            });
+        }
+    }
+
+    // create team VC's
+    gameData.channels.blue = await guild.channels.create(`hs${gameData.gameId} | Blue`, {
+        type: 'GUILD_VOICE',
+        parent: gameData.channels.category,
+        permissionOverwrites: gameData.channelPermissions.blue,
+    }).catch(console.error)
+    gameData.channels.orange = await guild.channels.create(`hs${gameData.gameId} | Orange`, {
+        type: 'GUILD_VOICE',
+        parent: gameData.channels.category,
+        permissionOverwrites: gameData.channelPermissions.orange,
+    }).catch(console.error);
+
+    var autoQueueVC;
+    const autoQueuePlayers = [];
+    switch(gameData.lobby) {
+        case 'ones': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue1VC); } break;
+        case 'twos': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue2VC); } break;
+        case 'threes': { autoQueueVC = await guild.channels.cache.get(queueConfig.channelSettings.autoQueue3VC); } break;
+        default: break;
+    }
+    for (const team in gameData.teams) {
+        autoQueueVC.members.map(async (member) => {
+            if (Object.keys(gameData.teams[team].members).includes(member.id)) {
+                autoQueuePlayers.push(member.id);
+                await member.voice.setChannel(gameData.channels[team]);
+            }
+        });
+    }
+    gameData.channels.gameChat.setTopic(gameData.channels.gameChat.topic + `_AvoiceChannels:${gameData.channels.blue.id},${gameData.channels.orange.id}_AautoQueuePlayers:${autoQueuePlayers.join(',')}`);
+}
+
+
 async function deleteGameChannels(gameData) {
     const channel = gameData.channels.gameChat;
     const guild = await generalData.client.guilds.cache.get(generalData.botConfig.defaultGuildId);
@@ -306,6 +344,7 @@ async function manageChannelPermissions(reset, gameData, substituteData = {targe
 
 module.exports = {
     createGameChannels,
+    createVoiceChannels,
     deleteGameChannels,
     manageChannelPermissions
 }
