@@ -136,8 +136,8 @@ const globalQueueData = {
         async startGame() {
             if (this.status >= 3) { return; } // Game already started
             this.status = this.gameStatusEnum.IN_PROGRESS;
-            this.getGameRegion();
             this.getTeams();
+            await  this.getGameRegion();
             await queueGameChannels.createVoiceChannels(this);
             this.startTime = new Date();
             this.sendGameStartMessage();
@@ -364,9 +364,13 @@ const globalQueueData = {
                 if (memberData._roles.includes(euRole.id)) { euPlayers++; }
                 if (memberData._roles.includes(usRole.id)) { usPlayers++; }
             }
-            // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers);
+            // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers + ' | ' + (euPlayers >= usPlayers ? 'eu' : 'us'));
             if (usPlayers > euPlayers) {
                 this.region = 'US-East';
+            }
+            else if (euPlayers == usPlayers) {
+                const num = generalUtilities.generate.getRandomInt(0, 1);
+                this.region = (num == 0) ? 'US-East' : 'EU';
             }
         }
     }
