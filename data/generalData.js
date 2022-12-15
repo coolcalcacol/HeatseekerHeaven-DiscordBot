@@ -16,7 +16,7 @@ module.exports = {
         pauseQueue: false,
     },
     debugOptions: {
-        createGameOnStart: false,
+        createGameOnStart: true,
         gameOnStartLobby: 'threes'
     },
     logOptions : {

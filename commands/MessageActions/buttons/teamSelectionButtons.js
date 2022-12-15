@@ -17,14 +17,14 @@ module.exports = {
         const gameData = queueData.info.getGameDataById(gameId);
 
         if (!gameData) {
-            console.log('Game not found');
+            console.error('Game not found');
             return;
         }
         if (
             !generalData.debugMode &&
             (gameData.teamSelectionVotes.balanced.users.includes(interaction.user.id) || gameData.teamSelectionVotes.random.users.includes(interaction.user.id))
         ) {
-            console.log('User has already voted');
+            console.log(interaction.user.username + ' has already voted');
             await interaction.deferUpdate();
             return;
         }

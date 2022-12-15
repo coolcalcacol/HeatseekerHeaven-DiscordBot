@@ -148,8 +148,7 @@ module.exports = {
 				default: break;
 			}
 		}
-		
-
+				
 		// // let result = 50;
 		// const equationValues = {
 		// 	placementGain: 4,
@@ -162,6 +161,7 @@ module.exports = {
 		// 	);
 		// 	return result;
 		// }
+		
 
 		// console.log(testPlacementEquation(50, 0));
 		// console.log(testPlacementEquation(50, 1));
