@@ -38,23 +38,6 @@ module.exports = {
                     .setRequired(true)
                 )
         )
-        .addSubcommand(subcommand => subcommand // set-roles
-                .setName('set-roles')
-                .setDescription('Set some relevant roles')
-                .addStringOption(option => option // type
-                    .setName('type')
-                    .setDescription('The type of queue')
-                    .setRequired(true)
-                        .addChoice('In active game', 'inActiveGameRole')
-                        .addChoice('Region EU', 'regionEU')
-                        .addChoice('Region US', 'regionUS')
-                )
-                .addRoleOption(option => option // role
-                    .setName('role')
-                    .setDescription('The role to be used')
-                    .setRequired(true)
-                )
-        )
         .addSubcommand(subcommand => subcommand // mmr-settings
             .setName('mmr-settings')
             .setDescription('Set some MMR related values for the MMR equation')
@@ -94,6 +77,55 @@ module.exports = {
                 .setName('max-cap')
                 .setDescription('Mmr cant get above this value (Value must be > maxStart) [DEFAULT = 2500]')
             )
+        )
+        .addSubcommand(subcommand => subcommand // set-roles
+                .setName('set-roles')
+                .setDescription('Set some relevant roles')
+                .addStringOption(option => option // type
+                    .setName('type')
+                    .setDescription('The type of role')
+                    .setRequired(true)
+                        .addChoice('In active game', 'inActiveGameRole')
+                        .addChoice('Region EU', 'regionEU')
+                        .addChoice('Region US', 'regionUS')
+                )
+                .addRoleOption(option => option // role
+                    .setName('role')
+                    .setDescription('The role to be used')
+                    .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand => subcommand // set-region-roles
+                .setName('set-region-roles')
+                .setDescription('Define the region roles')
+                .addStringOption(option => option // region
+                    .setName('region')
+                    .setDescription('The region accronym (EU, US, USE, etc.)')
+                    .setRequired(true)
+                        .addChoice('EU', 'EU')
+                        .addChoice('US', 'US')
+                        .addChoice('USE', 'USE')
+                        .addChoice('USW', 'USW')
+                        .addChoice('SAM', 'SAM')
+                        .addChoice('MENA', 'MENA')
+                        .addChoice('SSA', 'SSA')
+                        .addChoice('OCE', 'OCE')
+                )
+                .addStringOption(option => option // region
+                    .setName('region-display')
+                    .setDescription('The region display name (Europe, United States, etc.)')
+                    .setRequired(true)
+                )
+                .addRoleOption(option => option // role
+                    .setName('role')
+                    .setDescription('The role to be used')
+                    .setRequired(true)
+                )
+                .addStringOption(option => option // region
+                    .setName('region-neighbours')
+                    .setDescription('The region neighbours seperated by a commas (EU, US, USE, etc.)')
+                    .setRequired(true)
+                )
         )
         .addSubcommand(subcommand => subcommand // set-rank-role
             .setName('set-rank-role')
@@ -181,20 +213,6 @@ module.exports = {
                     ' is now set as the **' + targetChannel + '** channel'
                 });
             } break;
-            case 'set-roles': {
-                const targetRole = interaction.options.getString('type');
-                const inputRole = interaction.options.getRole('role');
-                try {
-                    queueSettingsData.roleSettings[targetRole] = inputRole.toJSON();
-                } catch (err) {console.error(err);}
-                compare = false;
-
-                await interaction.reply({
-                    ephemeral: true,
-                    content: '<@&' + interaction.options.getRole('role') + '>' +
-                    ' is now set as **' + targetRole + '**'
-                });
-            } break;
             case 'mmr-settings': {
                 const eq = queueSettingsData.mmrSettings;
                 eq.startingMmr = interaction.options.getNumber('starting-mmr') ? interaction.options.getNumber('starting-mmr') : eq.startingMmr;
@@ -215,6 +233,55 @@ module.exports = {
                         '__**New MMR values have been set**__\n```js\n' + 
                         queueSettingsData.mmrSettings + 
                         '\n```'
+                });
+            } break;
+            case 'set-roles': {
+                const targetRole = interaction.options.getString('type');
+                const inputRole = interaction.options.getRole('role');
+                try {
+                    queueSettingsData.roleSettings[targetRole] = inputRole.toJSON();
+                } catch (err) {console.error(err);}
+                compare = false;
+
+                await interaction.reply({
+                    ephemeral: true,
+                    content: '<@&' + interaction.options.getRole('role') + '>' +
+                    ' is now set as **' + targetRole + '**'
+                });
+            } break;
+            case 'set-region-roles': {
+                const targetRegion = interaction.options.getString('region');
+                const regionDisplay = interaction.options.getString('region-display');
+                const inputRole = interaction.options.getRole('role');
+                const regionNeighbours = interaction.options.getString('region-neighbours');
+
+                const regionObject = {
+                    region: targetRegion,
+                    regionDisplay: regionDisplay,
+                    role: inputRole.toJSON(),
+                    neighbours: regionNeighbours.replaceAll(' ', '').split(',')
+                }
+
+                let index = -1;
+                for (let i = 0; i < queueSettingsData.roleSettings.regionRoles.length; i++) { // check if the region already exists
+                    if (queueSettingsData.roleSettings.regionRoles[i].region == targetRegion) {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index != -1) {
+                    queueSettingsData.roleSettings.regionRoles[index] = regionObject;
+                }
+                else {
+                    queueSettingsData.roleSettings.regionRoles.push(regionObject);
+                }
+
+                compare = false;
+
+                await interaction.reply({
+                    ephemeral: true,
+                    content: '<@&' + interaction.options.getRole('role') + '>' +
+                    ' is now set as **' + regionDisplay + '**'
                 });
             } break;
             case 'set-rank-role': {

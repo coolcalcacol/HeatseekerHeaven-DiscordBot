@@ -92,8 +92,8 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         gameData.channels.gameChat.id, 
         [
             `This channel is created for game \`${gameData.gameId}\` and 2 voice channels for each team;`,
-            `Team Blue: ${gameData.channels.blue}`,
-            `Team Orange: ${gameData.channels.orange}`,
+            `Team Blue: \`hs${gameData.gameId} | Blue\``,
+            `Team Orange: \`hs${gameData.gameId} | Orange\``,
             `The main ranked channels will be hidden for everyone in this game lobby until you report the game.`,
             `If you experiance any problems with during this game, ask help from the \`@Bot Admins\` in this chat.`
         ].join('\n')

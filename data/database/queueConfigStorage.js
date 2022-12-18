@@ -16,11 +16,6 @@ const QueueConfigSchema = new mongoose.Schema({
         teamChannelCategory: {type: String, default: ''},
         logChannel: {type: String, default: ''},
     },
-    roleSettings: {
-        inActiveGameRole: {type: Object, default: {}},
-        regionEU: {type: Object, default: {}},
-        regionUS: {type: Object, default: {}},
-    },
     mmrSettings: {
         startingMmr: {type: Number, default: 1000}, // 1000,
         baseGain: {type: Number, default: 50}, // 50,
@@ -36,6 +31,12 @@ const QueueConfigSchema = new mongoose.Schema({
         minCap: {type: Number, default: 0}, // 0,
         maxStart: {type: Number, default: 1500}, // 1500,
         maxCap: {type: Number, default: 2500}, // 2500,
+    },
+    roleSettings: {
+        inActiveGameRole: {type: Object, default: {}},
+        regionRoles: {type: Array, default: []}, // [{name: 'US-East', role: {roleObject}, region: 'USE', neighbors: ['USW', 'EU']}]
+        regionEU: {type: Object, default: {}},
+        regionUS: {type: Object, default: {}},
     },
     rankRoles: {
         global: {type: Array, default: []},
