@@ -59,7 +59,7 @@ function queueGameStartPreset(gameData, teamsOnly = false) {
         // ].join('\n'))
         .addFields(
             {name: 'Game ID', value: '```js\n' + getFieldSpacing('hs' + gameData.gameId, 13, true) + '\n```', inline: true},
-            {name: 'Game Region', value: '```js\n' + getFieldSpacing(gameData.region, 13, true) + '\n```', inline: true},
+            {name: 'Game Region', value: '```js\n' + getFieldSpacing(gameData.region.regionDisplay, 13, true) + '\n```', inline: true},
             {name: 'Team Selection', value: '```js\n' + getFieldSpacing(gameData.teamSelection, 13, true) + '\n```', inline: true},
         )
     const teamBlue = new MessageEmbed()

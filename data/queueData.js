@@ -89,7 +89,7 @@ const globalQueueData = {
             this.teamSelection = 'balanced';
             this.teamSelectionVotes = {balanced: {count: 0, users: []}, random: {count: 0, users: []}}
             this.teamSelectionVoteTime = new Date().getTime(); // Starts in onChannelsCreated()
-            this.region = 'EU';
+            this.region = {region: 'EU', regionDisplay: 'EU', role: null, neighbours: [], tieBreaker: true};
             this.players = {};
             this.teams = {blue: {}, orange: {}}
             this.channels = {gameChat: null, blue: null, orange: null, category: null}
@@ -103,16 +103,19 @@ const globalQueueData = {
             this.startTime = new Date();
             this.gameDuration = 0; // in milliseconds
 
+            this.queueConfig = null;
+
             this.reportStatus;
             this.gameResults;
-            // this.bypassTeamGeneration = bypass;
 
             for (const p in players) { this.players[p] = players[p]; }
 
+            this.validateGameData();
             this.requestGameId();
-            // this.getTeamSelectionMessageContent(true);
-            // this.getTeams(this.teamSelection);
-            // this.sendGameStartMessage();
+        }
+
+        async validateGameData() {
+            this.queueConfig = await getQueueConfig();
         }
         async requestGameId() {
             globalQueueData.gameId += 1;
@@ -128,6 +131,11 @@ const globalQueueData = {
                 this.startGame();
                 return;
             }
+            else if (generalData.debugMode) {
+                this.teamSelection = (generalUtilities.generate.getRandomInt(0, 1) == 0) ? 'balanced' : 'random';
+                this.startGame();
+                return;
+            }
 
             this.teamSelectionVoteTime = new Date(new Date().setSeconds(new Date().getSeconds() + 30)).getTime()
             this.getTeamSelectionMessageContent(true);
@@ -137,7 +145,7 @@ const globalQueueData = {
             if (this.status >= 3) { return; } // Game already started
             this.status = this.gameStatusEnum.IN_PROGRESS;
             this.getTeams();
-            await  this.getGameRegion();
+            await this.getGameRegion();
             await queueGameChannels.createVoiceChannels(this);
             this.startTime = new Date();
             this.sendGameStartMessage();
@@ -146,7 +154,7 @@ const globalQueueData = {
             cConsole.log({
                 gameId: this.gameId,
                 lobby: this.lobby,
-                region: this.region,
+                region: this.region.regionDisplay,
                 teamSelection: this.teamSelection,
             });
             cConsole.log(' ');
@@ -301,18 +309,11 @@ const globalQueueData = {
                     }
                 }
             }
-            if (generalData.logOptions.teamGeneration) {
-                cConsole.log(`-------- [fg=blue]Team Generation Result[/>] --------`);
-                cConsole.log(
-                    `[style=bold][fg=green]${this.getTeamMembersLog(bestTeams[0], bestTeams[1])}[/>]`,
-                    {autoColorize: false}
-                );
-
-                if (generalData.logOptions.gameData) {
-                    cConsole.log(`-------- [fg=blue]Generated Team Data[/>] --------`);
-                    console.log(bestTeams);
-                }
-            }
+            this.gameDataLog(
+                [`[style=bold][fg=green]${this.getTeamMembersLog(bestTeams[0], bestTeams[1])}[/>]`, bestTeams],
+                "team",
+                {autoColorize: false}
+            );
             return bestTeams;
         }
         getRandomTeams(size) {
@@ -335,7 +336,7 @@ const globalQueueData = {
                 for (const data in team) {
                     output += team[data].userData.name + ' ';
                 }
-                output += '\n';
+                output += (i == 1) ? '' : '\n';
             }
             return output;
         }
@@ -351,28 +352,155 @@ const globalQueueData = {
             }
             return output;
         }
-        async getGameRegion() {
-            const queueConfig = await getQueueConfig();
-            const euRole = (queueConfig.roleSettings.regionEU.id) ? queueConfig.roleSettings.regionEU : null;
-            const usRole = (queueConfig.roleSettings.regionUS.id) ? queueConfig.roleSettings.regionUS : null;
 
-            var euPlayers = 0;
-            var usPlayers = 0;
+        async getGameRegion() {
+            // Get the queue configuration and the region roles
+            const regionRoles = this.queueConfig.roleSettings.regionRoles;
+            const logMessages = [];
+        
+            // Initialize counters for each region
+            const regionCounts = {};
+            for (const regionRole of regionRoles) {
+                regionCounts[regionRole.region] = {
+                    count: 0,
+                    neighbours: 0,
+                    score: (regionRole.tieBreaker) ? 1 : 0,
+                    // neighbourRegions: regionRole.neighbours
+                };
+            }
+        
+            // Count the number of players in each region
             for (const player in this.players) {
                 const memberData = await generalUtilities.info.getMemberById(player);
-                if (!euRole || !usRole) continue;
-                if (memberData._roles.includes(euRole.id)) { euPlayers++; }
-                if (memberData._roles.includes(usRole.id)) { usPlayers++; }
+                for (const regionRole of regionRoles) {
+                    if (memberData._roles.includes(regionRole.role.id)) {
+                        const region = regionRole.region;
+                        regionCounts[region].count++;
+                    }
+                }
             }
-            // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers + ' | ' + (euPlayers >= usPlayers ? 'eu' : 'us'));
-            if (usPlayers > euPlayers) {
-                this.region = 'US-East';
+
+            // Count the number of players in each region's neighbours and add it to the neighbour count
+            for (const region in regionCounts) {
+                const targetRegion = regionRoles.find(x => x.region == region);
+                if (!targetRegion) { continue; }
+    
+                for (const neighbour of targetRegion.neighbours) {
+                    if (regionCounts[neighbour]) {
+                        regionCounts[neighbour].neighbours += regionCounts[region].count;
+                    }
+                }
             }
-            else if (euPlayers == usPlayers) {
-                const num = generalUtilities.generate.getRandomInt(0, 1);
-                this.region = (num == 0) ? 'US-East' : 'EU';
+
+            // Calculate the score for each region
+            for (const region in regionCounts) {
+                regionCounts[region].score = regionCounts[region].count + regionCounts[region].neighbours;
+            }
+        
+            
+            // Find the region with the most players
+            let bestRegionName = 'EU';
+            let bestScore = 0;
+            for (const [region, {score}] of Object.entries(regionCounts)) {
+                if (score > bestScore) {
+                    bestRegionName = region;
+                    bestScore = score;
+                }
+                else if (score == bestScore) {
+                    let rng = generalUtilities.generate.getRandomInt(0, 1);
+                    let otherRegion = (rng > 0) ? region : bestRegionName;
+                    bestRegionName = (rng == 0) ? region : bestRegionName;
+
+                    logMessages.push(`[fg=yellow]Randomly selected[/>] [fg=green]${bestRegionName}[/>] [fg=cyan]over[/>] [fg=red]${otherRegion}[/>]: ${rng}`);
+                }
+            }
+            let bestRegion = regionRoles.find(x => x.region == bestRegionName);
+            
+            logMessages.push(`[fg=green]Chosen Region[/>]: ${bestRegion.regionDisplay} | ${bestScore}`); // Debugging line to check the region with the most players
+            logMessages.push(regionCounts); // Debugging line to check the region counts
+            this.gameDataLog(logMessages, "region");
+            this.region = bestRegion;
+        }
+
+        gameDataLog(msg, type = null, logOptions = null) {
+            if (type == null) {
+                cConsole.log(`\n-------- [fg=green]Game Data[/>] --------`);
+                if (typeof msg == "object") {
+                    console.log(msg);
+                }
+                else if (Array.isArray(msg)) {
+                    for (let i = 0; i < msg.length; i++) {
+                        if (typeof msg[i] == "object") {
+                            console.log(msg[i]);
+                        }
+                        else {
+                            cConsole.log(msg[i], logOptions);
+                        }
+                    }
+                }
+                else {
+                    cConsole.log(msg, logOptions);
+                }
+            }
+            else {
+                if (!generalData.logOptions.gameData[type]) { return; }
+                cConsole.log(`\n-------- [fg=green]Game Data[/>] [fg=cyan]${type}[/>] --------`);
+                if (typeof msg == "object" && !Array.isArray(msg)) {
+                    console.log(msg);
+                }
+                else if (Array.isArray(msg)) {
+                    for (let i = 0; i < msg.length; i++) {
+                        if (typeof msg[i] == "object") {
+                            console.log(msg[i]);
+                        }
+                        else {
+                            cConsole.log(msg[i], logOptions);
+                        }
+                    }
+                }
+                else {
+                    cConsole.log(msg, logOptions);
+                }
             }
         }
+        /* GPT: 
+            This function first initializes a counter for each region,
+            then counts the number of players in each region.
+            It then finds the region with the most players and stores it in maxRegion.
+            If there is a tie,
+            it iterates through the neighboring regions of the region with the most players and checks if there are any players in those regions.
+            If it finds a region with players,
+            it sets this.
+            region to the display name of that region and returns.
+            If it doesn't find a neighboring region with players,
+            or if there is no tie,
+            it sets this.
+            region to a random region using the generate.
+            getRandomInt() function.
+        */
+
+        // async getGameRegion() {
+        //     const queueConfig = await getQueueConfig();
+        //     const euRole = (queueConfig.roleSettings.regionEU.id) ? queueConfig.roleSettings.regionEU : null;
+        //     const usRole = (queueConfig.roleSettings.regionUS.id) ? queueConfig.roleSettings.regionUS : null;
+
+        //     var euPlayers = 0;
+        //     var usPlayers = 0;
+        //     for (const player in this.players) {
+        //         const memberData = await generalUtilities.info.getMemberById(player);
+        //         if (!euRole || !usRole) continue;
+        //         if (memberData._roles.includes(euRole.id)) { euPlayers++; }
+        //         if (memberData._roles.includes(usRole.id)) { usPlayers++; }
+        //     }
+        //     // console.log('eu: ' + euPlayers + ' | us: ' + usPlayers + ' | ' + (euPlayers >= usPlayers ? 'eu' : 'us'));
+        //     if (usPlayers > euPlayers) {
+        //         this.region = 'US-East';
+        //     }
+        //     else if (euPlayers == usPlayers) {
+        //         const num = generalUtilities.generate.getRandomInt(0, 1);
+        //         this.region = (num == 0) ? 'US-East' : 'EU';
+        //     }
+        // }
     }
     class TeamData {
         constructor(team, mode) {
@@ -451,7 +579,7 @@ const globalQueueData = {
         game.lobbyChannelId = await queueSettings.getRankedLobbyByName(lobby, guildId).then(globalQueueData.clearLobbyQueue(lobby));
         
         globalQueueData.gamesInProgress.push(game);
-        if (generalData.logOptions.gameData) console.log(globalQueueData.gamesInProgress);
+        if (generalData.logOptions.gameData.general) console.log(globalQueueData.gamesInProgress);
 
         if (await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).then((data) => {
             return data.channelSettings.teamChannelCategory;

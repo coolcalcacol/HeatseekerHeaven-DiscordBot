@@ -104,7 +104,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         if (gameData.channels.gameChat) {
             new botUpdate.UpdateTimer(
                 'queueStartMessage' + gameData.channels.gameChat.id, 
-                new Date().setSeconds(new Date().getSeconds() + 2),
+                new Date().setSeconds(new Date().getSeconds() + ((generalData.debugMode) ? 0 : 2)),
                 gameData.onGameChatCreated.bind(gameData)
             );
         }
@@ -112,7 +112,7 @@ async function createGameChannels(gameData = new queueData.info.GameLobbyData())
         // Add the InGame role to the players
         new botUpdate.UpdateTimer(
             'managePerms' + gameData.channels.gameChat.id, 
-            new Date().setSeconds(new Date().getSeconds() + 12), 
+            new Date().setSeconds(new Date().getSeconds() + ((generalData.debugMode) ? 1 : 12)),
             manageChannelPermissions.bind(this, false, gameData)
         );
     

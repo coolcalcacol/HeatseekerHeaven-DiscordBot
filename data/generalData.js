@@ -16,7 +16,7 @@ module.exports = {
         pauseQueue: false,
     },
     debugOptions: {
-        createGameOnStart: false,
+        createGameOnStart: true,
         gameOnStartLobby: 'threes'
     },
     logOptions : {
@@ -26,7 +26,11 @@ module.exports = {
         database: false,
         playerData: false,
         getPlayerData: false,
-        gameData: false,
+        gameData: {
+            general: true,
+            team: true,
+            region: true,
+        },
         teamGeneration: false,
         gameMmrResults: false,
         gameReport: false,

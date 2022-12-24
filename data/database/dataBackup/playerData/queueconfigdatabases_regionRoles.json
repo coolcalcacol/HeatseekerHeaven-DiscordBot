@@ -1,0 +1,57 @@
+[{
+  "roleSettings": {
+    "regionRoles": [
+      {
+        "region": "EU",
+        "regionDisplay": "EU",
+        "role": {
+          "guild": "811667577985302528",
+          "icon": null,
+          "unicodeEmoji": null,
+          "id": "1038547800671146104",
+          "name": "EU",
+          "color": 0,
+          "hoist": false,
+          "rawPosition": 16,
+          "permissions": "4295033856",
+          "managed": false,
+          "mentionable": false,
+          "tags": null,
+          "createdTimestamp": {
+            "$numberLong": "1667679490965"
+          }
+        },
+        "neighbours": [
+          "USE",
+          "MENA",
+          "OCE"
+        ]
+      },
+      {
+        "region": "USE",
+        "regionDisplay": "US-East",
+        "role": {
+          "guild": "811667577985302528",
+          "icon": null,
+          "unicodeEmoji": null,
+          "id": "1053768022516584549",
+          "name": "US-East",
+          "color": 0,
+          "hoist": false,
+          "rawPosition": 14,
+          "permissions": "4295033856",
+          "managed": false,
+          "mentionable": false,
+          "tags": null,
+          "createdTimestamp": {
+            "$numberLong": "1671308274631"
+          }
+        },
+        "neighbours": [
+          "USW",
+          "EU"
+        ]
+      }
+    ]
+  }
+}]

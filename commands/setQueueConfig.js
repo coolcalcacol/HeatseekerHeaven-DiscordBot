@@ -126,6 +126,11 @@ module.exports = {
                     .setDescription('The region neighbours seperated by a commas (EU, US, USE, etc.)')
                     .setRequired(true)
                 )
+                .addBooleanOption(option => option
+                    .setName('tie-breaker')
+                    .setDescription('Should this region break a tie?')
+                    .setRequired(false)
+                )
         )
         .addSubcommand(subcommand => subcommand // set-rank-role
             .setName('set-rank-role')
@@ -253,13 +258,15 @@ module.exports = {
                 const targetRegion = interaction.options.getString('region');
                 const regionDisplay = interaction.options.getString('region-display');
                 const inputRole = interaction.options.getRole('role');
-                const regionNeighbours = interaction.options.getString('region-neighbours');
+                const regionNeighbours = interaction.options.getString('region-neighbours').replaceAll(' ', '').split(',');
+                const tieBreaker = (interaction.options.getBoolean('tie-breaker')) ? interaction.options.getBoolean('tie-breaker') : false;
 
                 const regionObject = {
                     region: targetRegion,
                     regionDisplay: regionDisplay,
                     role: inputRole.toJSON(),
-                    neighbours: regionNeighbours.replaceAll(' ', '').split(',')
+                    neighbours: regionNeighbours,
+                    tieBreaker: tieBreaker
                 }
 
                 let index = -1;
