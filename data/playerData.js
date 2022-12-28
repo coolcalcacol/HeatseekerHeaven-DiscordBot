@@ -248,7 +248,7 @@ async function getPlayerDataObject(userData, queueSettingsData) { // The user da
         _id: userData.id,
         userData: {
             name: userData.username,
-            nickname: memberData ? memberData.nickname : '',
+            nickname: memberData ? memberData.nickname : userData.username,
             mention: `<@${userData.id}>`,
             discriminator: userData.discriminator,
             roles: memberData ? memberData._roles : [],

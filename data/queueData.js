@@ -84,29 +84,46 @@ const globalQueueData = {
             this.gameId;
             this.status = this.gameStatusEnum.INITIATED;
             this.lobby = lobby;
+            this.lobbyChannel = {};
             this.lobbyChannelId = '';
             this.lobbyDisplay = '';
             this.teamSelection = 'balanced';
-            this.teamSelectionVotes = {balanced: {count: 0, users: []}, random: {count: 0, users: []}}
-            this.teamSelectionVoteTime = new Date().getTime(); // Starts in onChannelsCreated()
-            this.region = {region: 'EU', regionDisplay: 'EU', role: null, neighbours: [], tieBreaker: true};
+            
             this.players = {};
             this.teams = {blue: {}, orange: {}}
             this.channels = {gameChat: null, blue: null, orange: null, category: null}
             this.channelPermissions = {default: [], gameChat: [], blue: [], orange: []}
+            this.region = {region: 'EU', regionDisplay: 'EU', role: null, neighbours: [], tieBreaker: true};
+            
+            this.messages = {
+                teamSelect: {
+                    message: {},
+                    content: {content: 'ERROR: No team selection message content for ' + this.gameId}
+                },
+                captainSelect: {
+                    message: {},
+                    content: {content: 'ERROR: No captain selection message content for ' + this.gameId}
+                },
+                queueStart: {
+                    message: {},
+                    content: {content: 'ERROR: No message content for ' + this.gameId}
+                },
+            }
+            this.teamSelectionVotes = {balanced: {count: 0, users: []}, random: {count: 0, users: []}, captains: {count: 0, users: []}}
+            this.teamSelectionTotalVoteTime = 30; // in secconds
+            this.captainSelectionTotalTime = 60; // in secconds
+            this.teamSelectionVoteTime = new Date().getTime(); // Starts in onChannelsCreated()
+            this.captainSelectionTime = new Date().getTime(); // Starts in onChannelsCreated()
 
-            this.teamSelectMessage = {};
-            this.queueStartMessage = {};
-            this.teamSelectMessageContent = {content: 'ERROR: No team selection message content for ' + this.gameId};
-            this.queueStartMessageContent = {content: 'ERROR: No message content for ' + this.gameId};
-
-            this.startTime = new Date();
+            this.startTime = new Date(); // is set again in startGame()
             this.gameDuration = 0; // in milliseconds
 
             this.queueConfig = null;
 
             this.reportStatus;
             this.gameResults;
+
+            this.tmpStorage;
 
             for (const p in players) { this.players[p] = players[p]; }
 
@@ -123,29 +140,34 @@ const globalQueueData = {
             await QueueConfigStorage.updateOne({}, {gameId: this.gameId}).catch(console.error);
         }
 
-        onGameChatCreated() {
+        async onGameChatCreated() {
             this.status = this.gameStatusEnum.TEAM_SELECTION;
+            this.teamSelectionVoteTime = new Date(new Date().setSeconds(new Date().getSeconds() + this.teamSelectionTotalVoteTime)).getTime();
+            
 
             if (this.lobby == 'ones') { 
                 this.teamSelection = 'random';
                 this.startGame();
                 return;
             }
-            else if (generalData.debugMode) {
-                this.teamSelection = (generalUtilities.generate.getRandomInt(0, 1) == 0) ? 'balanced' : 'random';
-                this.startGame();
-                return;
-            }
+            // else if (generalData.debugMode) {
+            //     // this.teamSelection = (generalUtilities.generate.getRandomInt(0, 1) == 0) ? 'balanced' : 'random';
+            //     this.teamSelection = 'captains';
+            //     this.tmpStorage = this.channels.gameChat;
+            //     // this.channels.gameChat = this.lobbyChannel;
+            //     this.startGame();
+            //     return;
+            // }
 
-            this.teamSelectionVoteTime = new Date(new Date().setSeconds(new Date().getSeconds() + 30)).getTime()
             this.getTeamSelectionMessageContent(true);
             new botUpdate.UpdateTimer(`${this.gameId}-teamSelection`, this.teamSelectionVoteTime, this.startGame.bind(this));
         }
         async startGame() {
             if (this.status >= 3) { return; } // Game already started
             this.status = this.gameStatusEnum.IN_PROGRESS;
-            this.getTeams();
+            await this.getTeams();
             await this.getGameRegion();
+            // this.channels.gameChat = this.tmpStorage;
             await queueGameChannels.createVoiceChannels(this);
             this.startTime = new Date();
             this.sendGameStartMessage();
@@ -174,9 +196,15 @@ const globalQueueData = {
                     label: 'Random', 
                     style: 'PRIMARY', 
                     disabled: false,
+                }),
+                captains: new MessageButton({
+                    customId: `team-selection_captains_${this.gameId}`,
+                    label: 'Captains', 
+                    style: 'PRIMARY', 
+                    disabled: false,
                 })
             }
-            const buttonRow = new MessageActionRow().addComponents(buttons.balanced, buttons.random);
+            const buttonRow = new MessageActionRow().addComponents(buttons.balanced, buttons.random, buttons.captains);
 
             const embed = new MessageEmbed({
                 title: 'Team Selection',
@@ -184,16 +212,17 @@ const globalQueueData = {
                 fields: [
                     {name: 'Balanced', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.balanced.count, 5, true)}\``, inline: true},
                     {name: 'Random', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.random.count, 5, true)}\``, inline: true},
+                    {name: 'Captains', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.captains.count, 5, true)}\``, inline: true},
                 ],
                 color: 'BLUE',
             });
 
             if (!send) return {content: msgContent, embeds: [embed], components: [buttonRow]};
             else {
-                if (Object.keys(this.teamSelectMessage).length > 0) {
-                    this.teamSelectMessage = await clientSendMessage.editMessage(
-                        this.teamSelectMessage.channelId,
-                        this.teamSelectMessage.id,
+                if (Object.keys(this.messages.teamSelect.message).length > 0) {
+                    this.messages.teamSelect.message = await clientSendMessage.editMessage(
+                        this.messages.teamSelect.message.channelId,
+                        this.messages.teamSelect.message.id,
                         {
                             content: this.getPlayersString(!generalData.debugMode),
                             embeds: [embed],
@@ -202,7 +231,7 @@ const globalQueueData = {
                     );
                 }
                 else {
-                    this.teamSelectMessage = await clientSendMessage.sendMessageTo(
+                    this.messages.teamSelect.message = await clientSendMessage.sendMessageTo(
                         this.channels.gameChat.id,
                         {
                             content: this.getPlayersString(!generalData.debugMode),
@@ -218,21 +247,29 @@ const globalQueueData = {
                 content: this.getPlayersString(!generalData.debugMode),
                 embeds: embedUtilities.presets.queueGameStartPreset(this)
             }
-            this.queueStartMessageContent = queueStartMessage;
+            this.messages.queueStart.content = queueStartMessage;
 
-            if (Object.keys(this.teamSelectMessage).length > 0) {
-                this.queueStartMessage = await clientSendMessage.editMessage(
-                    this.teamSelectMessage.channelId, 
-                    this.teamSelectMessage.id, 
-                    {
-                        content: queueStartMessage.content,
-                        embeds: queueStartMessage.embeds,
-                        components: []
-                    }
+            const message = {
+                content: queueStartMessage.content,
+                embeds: queueStartMessage.embeds,
+                components: []
+            }
+            if (Object.keys(this.messages.teamSelect.message).length > 0) {
+                this.messages.queueStart.message = await clientSendMessage.editMessage(
+                    this.messages.teamSelect.message.channelId, 
+                    this.messages.teamSelect.message.id, 
+                    message
                 );
             }
+            // else if (Object.keys(this.messages.captainSelect.message).length > 0) {
+            //     this.messages.queueStart.message = await clientSendMessage.editMessage(
+            //         this.messages.captainSelect.message.channelId, 
+            //         this.messages.captainSelect.message.id, 
+            //         message
+            //     );
+            // }
             else {
-                this.queueStartMessage = await clientSendMessage.sendMessageTo(
+                this.messages.queueStart.message = await clientSendMessage.sendMessageTo(
                     this.channels.gameChat.id,
                     {
                         content: queueStartMessage.content,
@@ -244,21 +281,32 @@ const globalQueueData = {
             // await this.channels.gameChat.send({content: queueStartMessage.content, embeds: [queueStartMessage.embeds]});
         }
 
-        getTeams(teamSelection = this.teamSelection) { // teamSelection = 'balanced' || 'random'
+        async getTeams(teamSelection = this.teamSelection) { // teamSelection = 'balanced' || 'random' || 'captains'
             switch (this.lobby) {
-                case 'ones':{
+                case 'ones': {
                     this.teams.blue = new TeamData([this.players[Object.keys(this.players)[0]]], this.lobby);
                     this.teams.orange = new TeamData([this.players[Object.keys(this.players)[1]]], this.lobby);
                 } break;
-                case 'twos':{
-                    const generatedTeams = (teamSelection == 'balanced') ? this.getBalancedTeams(2) : this.getRandomTeams(2);
+                case 'twos': {
+                    const generatedTeams = 
+                        (teamSelection == 'balanced') ? 
+                            this.getBalancedTeams(2) : this.getRandomTeams(2);
+
                     this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
                     this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
                 } break;
-                case 'threes':{
-                    const generatedTeams = (teamSelection == 'balanced') ? this.getBalancedTeams(3) : this.getRandomTeams(3);
-                    this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
-                    this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
+                case 'threes': {
+                    if (teamSelection == 'captains') {
+                        await this.getCaptainsTeams(3).then((teams) => {
+                            this.teams.blue = new TeamData(teams[0], this.lobby);
+                            this.teams.orange = new TeamData(teams[1], this.lobby);
+                        }).catch(console.error);
+                    }
+                    else {
+                        const generatedTeams = (teamSelection == 'balanced') ? this.getBalancedTeams(3) : this.getRandomTeams(3);
+                        this.teams.blue = new TeamData(generatedTeams[0], this.lobby);
+                        this.teams.orange = new TeamData(generatedTeams[1], this.lobby);
+                    }
                 } break;
                 default: break;
             }
@@ -329,6 +377,136 @@ const globalQueueData = {
             }
             return array;
         }
+        async getCaptainsTeams(size = 3) {
+            return new Promise(async (resolve) => {    
+                // Sort players by MMR in descending order
+                const playerArray = Object.values(this.players);
+                const sortedPlayers = playerArray.sort((a, b) => b.stats.global.mmr - a.stats.global.mmr);
+                const availablePlayers = [sortedPlayers[2], sortedPlayers[3], sortedPlayers[4], sortedPlayers[5]];
+    
+                // Select the first two players as captains
+                const captain1 = sortedPlayers[0];
+                const captain2 = sortedPlayers[1];
+                var targetCaptain = captain1;
+
+                // Create the teams
+                const team1 = [captain1];
+                const team2 = [captain2];
+
+                const voteTime = () => {
+                    const time = new Date();
+                    const timeLeft = this.captainSelectionTime;
+                    const secondsLeft = Math.floor((timeLeft - time) / 1000);
+                    return new Date(time.getTime() + ((secondsLeft / (availablePlayers.length - 1) * 1000)));
+                }
+
+                this.captainSelectionTime = new Date(new Date().setSeconds(new Date().getSeconds() + this.captainSelectionTotalTime)).getTime();
+
+                // Send a message to the channel with buttons for each player, and have the captains select their players
+                //#region Message
+                    const getPlayerButtons = (players) => {
+                        const buttons = [];
+                        for (const player of players) {
+                            buttons.push(
+                                new MessageButton({
+                                    customId: `gameData_captainChoice_${this.gameId}_${player._id}`,
+                                    label: (player.userData.nickname) ? player.userData.nickname : player.userData.name, 
+                                    style: 'PRIMARY', 
+                                    disabled: false,
+                                })
+                            );
+                        }
+                        return buttons;
+                    }
+                    const getMessage = () => {
+                        const content = (generalData.debugMode) ? 
+                            `It's your turn to pick **${targetCaptain.userData.name}**` :
+                            `It's your turn to pick <@${targetCaptain._id}>`;
+                        const embeds = [new MessageEmbed({
+                            title: 'Select your players',
+                            description: [
+                                `Click the buttons below to select your players.`,
+                                `Total time Left: <t:${generalUtilities.generate.getTimestamp(this.captainSelectionTime)}:R>`,
+                                `Captain vote time Left: <t:${generalUtilities.generate.getTimestamp(voteTime().getTime())}:R>`
+                            ].join('\n'),
+                            fields: [
+                                {name: 'Captains', value: [captain1, captain2].map(player => `<@${player._id}>`).join(' '), inline: true},
+                                {name: 'Team 1', value: team1.map(player => `<@${player._id}>`).join('\n'), inline: true},
+                                {name: 'Team 2', value: team2.map(player => `<@${player._id}>`).join('\n'), inline: true},
+                            ],
+                            color: targetCaptain.userData.displayColor,
+                        })];
+                        const components = [new MessageActionRow().addComponents(getPlayerButtons(availablePlayers))]
+                        
+                        if (availablePlayers.length > 0) {
+                            return {content: content, embeds: embeds, components: components}
+                        }
+                        return {content: content, embeds: embeds}
+                    }
+                    this.messages.captainSelect.content = getMessage();
+                    if (Object.keys(this.messages.teamSelect.message).length > 0) {
+                        this.messages.captainSelect.message = await clientSendMessage.editMessage(
+                            this.channels.gameChat.id, 
+                            this.messages.teamSelect.message.id, 
+                            this.messages.captainSelect.content
+                        );
+                    }
+                    else {
+                        this.messages.captainSelect.message = await clientSendMessage.sendMessageTo(
+                            this.channels.gameChat.id,
+                            this.messages.captainSelect.content
+                        );
+                    }
+                //#endregion
+                
+                /** 
+                 * @param {MessageButton} btnPress
+                */
+                const filter = async (btnPress) => {
+                    if (btnPress.type == 'MESSAGE_COMPONENT' && btnPress.customId.includes(`gameData_captainChoice_${this.gameId}`)) {
+                        btnPress.deferUpdate();
+                        if (btnPress.user.id == targetCaptain._id) {
+                            return true;
+                        }
+                    }
+                };
+                const btnCollector = await this.channels.gameChat.createMessageComponentCollector({ filter, time: this.captainSelectionTotalTime * 1000 });
+                
+                await btnCollector.on('collect', async (m) => {
+                    if (m.customId.includes(`gameData_captainChoice_${this.gameId}`)) {
+                        if (m.user.id == targetCaptain._id) {
+                            // console.log(m);
+                            // console.log(targetCaptain.userData.name + ' selected ' + m.customId.split('_')[3]);
+                            const selectedPlayer = this.players[m.customId.split('_')[3]];
+                            availablePlayers.splice(availablePlayers.indexOf(selectedPlayer), 1);
+                            if (targetCaptain == captain1) {
+                                team1.push(selectedPlayer);
+                                targetCaptain = captain2;
+                            } else {
+                                team2.push(selectedPlayer);
+                            }
+
+                            if (availablePlayers.length == 1) {
+                                team1.push(availablePlayers[0]);
+                                availablePlayers.splice(0, 1);
+                                // console.log(this.messages);
+                                // return;
+                                resolve([team1, team2]);
+                            }
+                            else {
+                                this.messages.captainSelect.content = getMessage();
+                                await this.messages.captainSelect.message.edit(this.messages.captainSelect.content);
+                            }
+                        }
+                    }
+                });
+    
+                // Return the teams
+                setTimeout(() => resolve([team1, team2]), this.captainSelectionTime - new Date().getTime());
+                // return [team1, team2];
+            });
+        }
+
         getTeamMembersLog(teamX, teamY) {
             var output = '';
             for (let i = 0; i < 2; i++) {
@@ -577,6 +755,7 @@ const globalQueueData = {
     async function startQueue(lobby, guildId, gameData = null) {
         const game = gameData ? gameData : new GameLobbyData(globalQueueData.lobby[lobby].players, lobby);
         game.lobbyChannelId = await queueSettings.getRankedLobbyByName(lobby, guildId).then(globalQueueData.clearLobbyQueue(lobby));
+        game.lobbyChannel = await generalData.client.guilds.cache.get(guildId).channels.cache.get(game.lobbyChannelId);
         
         globalQueueData.gamesInProgress.push(game);
         if (generalData.logOptions.gameData.general) console.log(globalQueueData.gamesInProgress);
@@ -584,9 +763,9 @@ const globalQueueData = {
         if (await queueSettings.getQueueDatabaseById(generalData.botConfig.defaultGuildId).then((data) => {
             return data.channelSettings.teamChannelCategory;
         })) { 
-            queueGameChannels.createGameChannels(game); 
+            queueGameChannels.createGameChannels(game);
         }
-        else { clientSendMessage.sendMessageTo(game.lobbyChannelId, game.queueStartMessage); }
+        else { clientSendMessage.sendMessageTo(game.lobbyChannelId, game.messages.queueStart.message); }
         return game;
     }
 //#endregion

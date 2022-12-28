@@ -11,19 +11,7 @@
         "node_modules/": true,
         "package.json": true,
         ".gitignore": true,
-        ".eslintrc.json": true,
-        ".vscode/": true,
-        "commands/Archive/": true,
-        "commands/test/": true,
-        "Examples/": true,
-        "images/": true,
-        "commands/debug/": true,
-        "commands/fun/": true,
-        "commands/guildConfig.js": true,
-        "config/": true,
-        "index.js": true,
-        "deploy-commands.js": true,
-        "utils/databaseUtilities.js": true
+        ".eslintrc.json": true
     },
     "hidefiles.configurationType": "local",
     "hidefiles.globalConfig": {
@@ -78,5 +66,5 @@
             }
         ]
     },
-    "hidefiles.selectedProfile": "Un-Commen-Use"
+    "hidefiles.selectedProfile": "External"
 }

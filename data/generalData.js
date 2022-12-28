@@ -6,17 +6,17 @@ const { Client } = require('discord.js');
 */
 module.exports = {
     client: null,
-    debugMode: false,
-    releasedVersion: true,
+    debugMode: true,
+    releasedVersion: false,
     botConfig: {
         defaultGuildId: '349360638088314881',
         botSetupGuildId: '811667577985302528',
     },
     generalQueueSettings: {
-        pauseQueue: true,
+        pauseQueue: false,
     },
     debugOptions: {
-        createGameOnStart: false,
+        createGameOnStart: true,
         gameOnStartLobby: 'threes'
     },
     logOptions : {
@@ -29,7 +29,7 @@ module.exports = {
         gameData: {
             general: false,
             team: false,
-            region: true,
+            region: false,
         },
         teamGeneration: false,
         gameMmrResults: false,

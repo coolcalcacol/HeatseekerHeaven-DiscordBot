@@ -119,8 +119,8 @@ module.exports = {
 				} break;
 				case 'threes': {
 					await queueData.actions.fillQueueWithPlayers(['306395424690929674'], 'threes', 1, queueSettingsData); // CTN
-					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 5, queueSettingsData);
-					// await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1, queueSettingsData); //888%
+					await queueData.actions.fillQueueWithPlayers(userWhitelist, 'threes', 4, queueSettingsData);
+					await queueData.actions.fillQueueWithPlayers(['479936093047750659'], 'threes', 1, queueSettingsData); //888%
 					// await queueData.actions.fillQueueWithPlayers(['88109760729088000'], 'threes', 1, queueSettingsData);
 					// await queueData.actions.fillQueueWithPlayers(['382279435828723716'], 'threes', 1, queueSettingsData);
 					// await queueData.actions.fillQueueWithPlayers(['362052637400498187'], 'threes', 1, queueSettingsData);
@@ -286,6 +286,12 @@ module.exports = {
 		// const oo = o == 'ones' ? '1v1' : o == 'twos' ? '2v2' : o == 'threes' ? '3v3' : 'ERROR';
 		// console.log(`${xo} ${yo} ${zo} ${oo}`)
 	},
+
+	// async returnPromise() {
+	// 	return new Promise(resolve => {
+
+	// 	})
+	// }
 
 	// Region selection Test
 		// async getGameRegion(testCase) {
