@@ -394,7 +394,7 @@ const globalQueueData = {
 
             // Calculate the score for each region
             for (const region in regionCounts) {
-                regionCounts[region].score = regionCounts[region].count + regionCounts[region].neighbours;
+                regionCounts[region].score = regionCounts[region].count + (regionCounts[region].neighbours * 0.5);
             }
         
             

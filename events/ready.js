@@ -157,6 +157,10 @@ module.exports = {
 		// await this.getGameRegion({EU: 1, USE: 1, USW: 2, MENA: 2});
 		// await this.getGameRegion({EU: 0, USE: 0, USW: 3, MENA: 3});
 		// await this.getGameRegion({EU: 3, USE: 0, USW: 0, MENA: 3});
+
+		// await this.getGameRegion({EU: 4, USE: 2, USW: 0, MENA: 0});
+		// await this.getGameRegion({EU: 2, USE: 4, USW: 0, MENA: 0});
+		// await this.getGameRegion({EU: 2, USE: 3, USW: 0, MENA: 0, OCE: 1});
 				
 		// // let result = 50;
 		// const equationValues = {
@@ -314,7 +318,7 @@ module.exports = {
 
 		// 	// Initialize counters for each region
 		// 	for (const region in regionCounts) {
-		// 		regionCounts[region].score += regionCounts[region].count + regionCounts[region].neighbours;
+		// 		regionCounts[region].score += regionCounts[region].count + (regionCounts[region].neighbours * 0.5);
 		// 	}
 
 		// 	// Find the region with the most players
