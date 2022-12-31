@@ -154,7 +154,7 @@ const globalQueueData = {
             //     // this.teamSelection = (generalUtilities.generate.getRandomInt(0, 1) == 0) ? 'balanced' : 'random';
             //     this.teamSelection = 'captains';
             //     this.tmpStorage = this.channels.gameChat;
-            //     // this.channels.gameChat = this.lobbyChannel;
+            //     this.channels.gameChat = this.lobbyChannel;
             //     this.startGame();
             //     return;
             // }
@@ -167,7 +167,7 @@ const globalQueueData = {
             this.status = this.gameStatusEnum.IN_PROGRESS;
             await this.getTeams();
             await this.getGameRegion();
-            // this.channels.gameChat = this.tmpStorage;
+            // if (generalData.debugMode) { this.channels.gameChat = this.tmpStorage; }
             await queueGameChannels.createVoiceChannels(this);
             this.startTime = new Date();
             this.sendGameStartMessage();
@@ -382,7 +382,7 @@ const globalQueueData = {
                 // Sort players by MMR in descending order
                 const playerArray = Object.values(this.players);
                 const sortedPlayers = playerArray.sort((a, b) => b.stats.global.mmr - a.stats.global.mmr);
-                const availablePlayers = [sortedPlayers[2], sortedPlayers[3], sortedPlayers[4], sortedPlayers[5]];
+                const availablePlayers = generalUtilities.generate.randomizeArray([sortedPlayers[2], sortedPlayers[3], sortedPlayers[4], sortedPlayers[5]]);
     
                 // Select the first two players as captains
                 const captain1 = sortedPlayers[0];
@@ -393,12 +393,13 @@ const globalQueueData = {
                 const team1 = [captain1];
                 const team2 = [captain2];
 
-                const voteTime = () => {
-                    const time = new Date();
-                    const timeLeft = this.captainSelectionTime;
-                    const secondsLeft = Math.floor((timeLeft - time) / 1000);
-                    return new Date(time.getTime() + ((secondsLeft / (availablePlayers.length - 1) * 1000)));
-                }
+                // const voteTime = () => {
+                //     const time = new Date();
+                //     const timeLeft = this.captainSelectionTime;
+                //     const secondsLeft = Math.floor((timeLeft - time) / 1000);
+                //     return new Date(time.getTime() + ((secondsLeft / (availablePlayers.length - 1) * 1000)));
+                // }
+                // let currentVoteTime = voteTime();
 
                 this.captainSelectionTime = new Date(new Date().setSeconds(new Date().getSeconds() + this.captainSelectionTotalTime)).getTime();
 
@@ -419,6 +420,7 @@ const globalQueueData = {
                         return buttons;
                     }
                     const getMessage = () => {
+                        // currentVoteTime = voteTime();
                         const content = (generalData.debugMode) ? 
                             `It's your turn to pick **${targetCaptain.userData.name}**` :
                             `It's your turn to pick <@${targetCaptain._id}>`;
@@ -426,8 +428,8 @@ const globalQueueData = {
                             title: 'Select your players',
                             description: [
                                 `Click the buttons below to select your players.`,
-                                `Total time Left: <t:${generalUtilities.generate.getTimestamp(this.captainSelectionTime)}:R>`,
-                                `Captain vote time Left: <t:${generalUtilities.generate.getTimestamp(voteTime().getTime())}:R>`
+                                `Time Left: <t:${generalUtilities.generate.getTimestamp(this.captainSelectionTime)}:R>`,
+                                // `Captain vote time Left: <t:${generalUtilities.generate.getTimestamp(currentVoteTime.getTime())}:R>`
                             ].join('\n'),
                             fields: [
                                 {name: 'Captains', value: [captain1, captain2].map(player => `<@${player._id}>`).join(' '), inline: true},
@@ -489,8 +491,7 @@ const globalQueueData = {
                             if (availablePlayers.length == 1) {
                                 team1.push(availablePlayers[0]);
                                 availablePlayers.splice(0, 1);
-                                // console.log(this.messages);
-                                // return;
+                                btnCollector.stop();
                                 resolve([team1, team2]);
                             }
                             else {
@@ -502,7 +503,22 @@ const globalQueueData = {
                 });
     
                 // Return the teams
-                setTimeout(() => resolve([team1, team2]), this.captainSelectionTime - new Date().getTime());
+                setTimeout(() => {
+                    btnCollector.stop();
+                    if (availablePlayers.length > 0) {
+                        for (const player of availablePlayers) {
+                            if (team1.length < 3) {
+                                team1.push(player);
+                                continue;
+                            }
+                            else if (team2.length < 3) {
+                                team2.push(player);
+                                continue;
+                            }
+                        }
+                    }
+                    resolve([team1, team2])
+                }, this.captainSelectionTime - new Date().getTime(), );
                 // return [team1, team2];
             });
         }
