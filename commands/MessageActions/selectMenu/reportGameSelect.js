@@ -11,6 +11,8 @@ const clientSendMessage = require('../../../utils/clientSendMessage');
 const generalData = require('../../../data/generalData');
 const queueGameChannels = require('../../../data/queueGameChannels');
 
+const botUpdate = require('../../../events/botUpdate');
+
 const cConsole = require('../../../utils/customConsoleLog');
 
 
@@ -100,6 +102,12 @@ module.exports = {
 
             playerData.updatePlayerRanks(interaction.guild.id);
             queueGameChannels.deleteGameChannels(gameData);
+
+            // new botUpdate.UpdateTimer(`DebugLogStats_${gameData.gameId}`, new Date(new Date().setSeconds(new Date().getSeconds() + 1)).getTime(), this.debugLogStats.bind(this.debugLogStats, 
+            //     ['global', 'persistent'],
+            //     [await playerData.getPlayerDataById(targetTeam.members[Object.keys(targetTeam.members)[0]]._id), await playerData.getPlayerDataById(oponentTeam.members[Object.keys(oponentTeam.members)[0]]._id)],
+            //     interaction.channel.id
+            // ));
         } catch(err) {
             console.error(err);
         }
@@ -111,6 +119,22 @@ module.exports = {
         // }).catch(console.error);
         // return;
     },
+
+    /** 
+     * @param {Array} modes
+     * @param {Array} players
+    */
+    async debugLogStats(modes, players, channelId = '842093944502616104') {
+        const embeds = [];
+        for (const player of players) {
+            for (const mode of modes) {
+                embeds.push(embedUtilities.presets.playerStatsPreset(player, mode));
+            }
+        }
+        await clientSendMessage.sendMessageTo(channelId, {
+            embeds: embeds
+        }).catch(console.error);
+    }
 };
 
 function thisLog(message) {
