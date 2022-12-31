@@ -363,9 +363,9 @@ const globalQueueData = {
             for (const regionRole of regionRoles) {
                 regionCounts[regionRole.region] = {
                     count: 0,
-                    neighbours: 0,
-                    score: (regionRole.tieBreaker) ? 1 : 0,
-                    // neighbourRegions: regionRole.neighbours
+                    neighbors: 0,
+					multiplier: (regionRole.tieBreaker) ? 0.75 : 0.5,
+					score: (regionRole.tieBreaker) ? 1 : 0
                 };
             }
         
@@ -382,19 +382,24 @@ const globalQueueData = {
 
             // Count the number of players in each region's neighbours and add it to the neighbour count
             for (const region in regionCounts) {
-                const targetRegion = regionRoles.find(x => x.region == region);
-                if (!targetRegion) { continue; }
-    
-                for (const neighbour of targetRegion.neighbours) {
-                    if (regionCounts[neighbour]) {
-                        regionCounts[neighbour].neighbours += regionCounts[region].count;
-                    }
-                }
-            }
+				const targetRegion = regionRoles.find(x => x.region == region);
+				if (!targetRegion) { continue; }
+
+				// console.log(targetRegion)
+				for (const neighbor of targetRegion.neighbors) {
+					if (regionCounts[neighbor]) {
+                        regionCounts[neighbor].neighbors += regionCounts[region].count;
+					}
+				}
+				if (targetRegion.preferredRegion) {
+					regionCounts[targetRegion.preferredRegion].multiplier += (regionCounts[region].count * 0.1875);
+				}
+			}
 
             // Calculate the score for each region
             for (const region in regionCounts) {
-                regionCounts[region].score = regionCounts[region].count + (regionCounts[region].neighbours * 0.5);
+                const regionScore = regionCounts[region];
+                regionScore.score = regionScore.count + (regionScore.neighbors * regionScore.multiplier);
             }
         
             

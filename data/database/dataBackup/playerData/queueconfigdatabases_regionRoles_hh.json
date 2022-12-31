@@ -5,135 +5,130 @@
         "region": "USE",
         "regionDisplay": "US-East",
         "role": {
-          "guild": "811667577985302528",
+          "guild": "349360638088314881",
           "icon": null,
           "unicodeEmoji": null,
-          "id": "1053768022516584549",
+          "id": "941828658476232705",
           "name": "US-East",
-          "color": 0,
+          "color": 8261648,
           "hoist": false,
-          "rawPosition": 14,
-          "permissions": "4295033856",
+          "rawPosition": 42,
+          "permissions": "67109888",
           "managed": false,
           "mentionable": false,
           "tags": null,
           "createdTimestamp": {
-            "$numberLong": "1671308274631"
+            "$numberLong": "1644619850511"
           }
         },
-        "neighbors": [
+        "neighbours": [
           "EU",
           "USW"
         ],
-        "preferredRegion": null,
         "tieBreaker": true
       },
       {
         "region": "USW",
         "regionDisplay": "US-West",
         "role": {
-          "guild": "811667577985302528",
+          "guild": "349360638088314881",
           "icon": null,
           "unicodeEmoji": null,
-          "id": "1053768101700841493",
+          "id": "1056588867748241458",
           "name": "US-West",
-          "color": 0,
+          "color": 6687242,
           "hoist": false,
-          "rawPosition": 13,
-          "permissions": "4295033856",
+          "rawPosition": 41,
+          "permissions": "0",
           "managed": false,
           "mentionable": false,
           "tags": null,
           "createdTimestamp": {
-            "$numberLong": "1671308293510"
+            "$numberLong": "1671980816543"
           }
         },
-        "neighbors": [
+        "neighbours": [
           "USE",
           "OCE"
         ],
-        "preferredRegion": "USE",
         "tieBreaker": false
       },
       {
         "region": "EU",
         "regionDisplay": "EU",
         "role": {
-          "guild": "811667577985302528",
+          "guild": "349360638088314881",
           "icon": null,
           "unicodeEmoji": null,
-          "id": "1038547800671146104",
+          "id": "941828717368459295",
           "name": "EU",
-          "color": 0,
+          "color": 350878,
           "hoist": false,
-          "rawPosition": 16,
-          "permissions": "4295033856",
+          "rawPosition": 40,
+          "permissions": "67109888",
           "managed": false,
           "mentionable": false,
           "tags": null,
           "createdTimestamp": {
-            "$numberLong": "1667679490965"
+            "$numberLong": "1644619864552"
           }
         },
-        "neighbors": [
+        "neighbours": [
           "USE",
           "MENA"
         ],
-        "preferredRegion": null,
         "tieBreaker": true
       },
       {
         "region": "MENA",
         "regionDisplay": "Middle-East",
         "role": {
-          "guild": "811667577985302528",
+          "guild": "349360638088314881",
           "icon": null,
           "unicodeEmoji": null,
-          "id": "1053748281303371817",
+          "id": "1056560807678316636",
           "name": "MENA",
-          "color": 0,
+          "color": 11027200,
           "hoist": false,
-          "rawPosition": 12,
-          "permissions": "4295033856",
+          "rawPosition": 39,
+          "permissions": "0",
           "managed": false,
           "mentionable": false,
           "tags": null,
           "createdTimestamp": {
-            "$numberLong": "1671303567959"
+            "$numberLong": "1671974126501"
           }
         },
-        "neighbors": [
+        "neighbours": [
           "EU",
           "OCE"
         ],
-        "preferredRegion": "EU",
         "tieBreaker": false
       },
       {
         "region": "OCE",
-        "regionDisplay": "Ociennia",
+        "regionDisplay": "Oceania",
         "role": {
-          "guild": "811667577985302528",
+          "guild": "349360638088314881",
           "icon": null,
           "unicodeEmoji": null,
-          "id": "1002550472562982912",
-          "name": "Prospect",
-          "color": 6323595,
-          "hoist": true,
-          "rawPosition": 34,
-          "permissions": "4296084480",
+          "id": "941828747353542697",
+          "name": "OCE/Asia",
+          "color": 1146986,
+          "hoist": false,
+          "rawPosition": 38,
+          "permissions": "67109888",
           "managed": false,
           "mentionable": false,
           "tags": null,
           "createdTimestamp": {
-            "$numberLong": "1659097059146"
+            "$numberLong": "1644619871701"
           }
         },
-        "neighbors": [
-          "USW",
-          "MENA"
+        "neighbours": [
+          "MENA",
+          "USW"
         ],
-        "preferredRegion": "USW",
         "tieBreaker": false
       }
     ]

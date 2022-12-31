@@ -35,8 +35,6 @@ const QueueConfigSchema = new mongoose.Schema({
     roleSettings: {
         inActiveGameRole: {type: Object, default: {}},
         regionRoles: {type: Array, default: []}, // [{name: 'US-East', role: {roleObject}, region: 'USE', neighbors: ['USW', 'EU']}]
-        regionEU: {type: Object, default: {}},
-        regionUS: {type: Object, default: {}},
     },
     rankRoles: {
         global: {type: Array, default: []},
