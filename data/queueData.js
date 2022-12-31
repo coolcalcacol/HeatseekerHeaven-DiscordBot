@@ -204,7 +204,7 @@ const globalQueueData = {
                     disabled: false,
                 })
             }
-            const buttonRow = new MessageActionRow().addComponents(buttons.balanced, buttons.random, buttons.captains);
+            const buttonRow = (this.lobby == 'threes') ? new MessageActionRow().addComponents(buttons.balanced, buttons.random, buttons.captains) : new MessageActionRow().addComponents(buttons.balanced, buttons.random);
 
             const embed = new MessageEmbed({
                 title: 'Team Selection',
@@ -212,10 +212,12 @@ const globalQueueData = {
                 fields: [
                     {name: 'Balanced', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.balanced.count, 5, true)}\``, inline: true},
                     {name: 'Random', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.random.count, 5, true)}\``, inline: true},
-                    {name: 'Captains', value: `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.captains.count, 5, true)}\``, inline: true},
                 ],
                 color: 'BLUE',
             });
+            if (this.lobby == 'threes') {
+                embed.addField('Captains', `\`${embedUtilities.methods.getFieldSpacing(this.teamSelectionVotes.captains.count, 5, true)}\``, true);
+            }
 
             if (!send) return {content: msgContent, embeds: [embed], components: [buttonRow]};
             else {
