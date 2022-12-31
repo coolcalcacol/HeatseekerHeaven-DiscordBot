@@ -33,8 +33,10 @@ const QueueConfigSchema = new mongoose.Schema({
         maxCap: {type: Number, default: 2500}, // 2500,
     },
     roleSettings: {
-        inActiveGameRole: {type: Object, default: {}},
         regionRoles: {type: Array, default: []}, // [{name: 'US-East', role: {roleObject}, region: 'USE', neighbors: ['USW', 'EU']}]
+        inActiveGameRole: {type: Object, default: {}},
+        regionEU: {type: Object, default: {}},
+        regionUS: {type: Object, default: {}},
     },
     rankRoles: {
         global: {type: Array, default: []},
