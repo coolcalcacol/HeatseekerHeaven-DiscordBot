@@ -157,6 +157,13 @@ module.exports = {
 		// await this.getGameRegion({EU: 1, USE: 1, USW: 2, MENA: 2});
 		// await this.getGameRegion({EU: 0, USE: 0, USW: 3, MENA: 3});
 		// await this.getGameRegion({EU: 3, USE: 0, USW: 0, MENA: 3});
+
+		// await this.getGameRegion({EU: 4, USE: 2, USW: 0, MENA: 0});
+		// await this.getGameRegion({EU: 2, USE: 4, USW: 0, MENA: 0});
+		// await this.getGameRegion({EU: 2, USE: 3, USW: 0, MENA: 1});
+		// await this.getGameRegion({EU: 2, USE: 3, USW: 0, MENA: 0, OCE: 1});
+		// await this.getGameRegion({EU: 2, USE: 2, USW: 0, MENA: 0, OCE: 2});
+		// await this.getGameRegion({EU: 0, USE: 0, USW: 0, MENA: 3, OCE: 3});
 				
 		// // let result = 50;
 		// const equationValues = {
@@ -304,29 +311,44 @@ module.exports = {
 		// 		const targetRegion = regionRoles[regionIndex];
 		// 		const caseRegion = testCase[targetRegion.region];
 		// 		if (caseRegion == null) { continue; }
-		// 		regionCounts[targetRegion.region] = {count: caseRegion, neighbours: 0, score: (targetRegion.tieBreaker) ? 1 : 0};
+		// 		regionCounts[targetRegion.region] = {
+		// 			count: caseRegion,
+		// 			neighbors: 0,
+		// 			multiplier: (targetRegion.tieBreaker) ? 0.75 : 0.5,
+		// 			score: (targetRegion.tieBreaker) ? 1 : 0
+		// 		};
 		// 	}
 
 		// 	for (const region in regionCounts) {
 		// 		const targetRegion = regionRoles.find(x => x.region == region);
 		// 		if (!targetRegion) { continue; }
 
-		// 		for (const neighbour of targetRegion.neighbours) {
-		// 			if (regionCounts[neighbour]) {
-		// 				regionCounts[neighbour].neighbours += regionCounts[region].count;
+		// 		// console.log(targetRegion)
+		// 		for (const neighbor of targetRegion.neighbors) {
+		// 			if (regionCounts[neighbor]) {
+        //                 regionCounts[neighbor].neighbors += regionCounts[region].count;
 		// 			}
+		// 		}
+		// 		if (targetRegion.preferredRegion) {
+		// 			regionCounts[targetRegion.preferredRegion].multiplier += (regionCounts[region].count * 0.1875);
 		// 		}
 		// 	}
 
 		// 	// Initialize counters for each region
 		// 	for (const region in regionCounts) {
-		// 		regionCounts[region].score += regionCounts[region].count + regionCounts[region].neighbours;
-		// 	}
+        //         const regionScore = regionCounts[region];
+        //         regionScore.score = regionScore.count + (regionScore.neighbors * regionScore.multiplier);
+        //     }
 
 		// 	// Find the region with the most players
 		// 	let bestRegion = null;
 		// 	let bestScore = 0;
 		// 	for (const [region, {score}] of Object.entries(regionCounts)) {
+		// 		if (!bestRegion) {
+		// 			bestRegion = region;
+		// 			bestScore = score;
+		// 			continue;
+		// 		}
 		// 		if (score > bestScore) {
 		// 			bestRegion = region;
 		// 			bestScore = score;
@@ -344,7 +366,7 @@ module.exports = {
 		// 	cConsole.log(`[fg=green]Chosen Region[/>]: ${bestRegion} | ${bestScore}`); // Debugging line to check the region with the most players
 		// 	console.log(regionCounts); // Debugging line to check the region counts
 		// 	console.log(' ')
-	// }
+		// }
 };
 
 

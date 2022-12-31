@@ -122,9 +122,14 @@ module.exports = {
                     .setRequired(true)
                 )
                 .addStringOption(option => option // region
-                    .setName('region-neighbours')
+                    .setName('region-neighbors')
                     .setDescription('The region neighbours seperated by a commas (EU, US, USE, etc.)')
                     .setRequired(true)
+                )
+                .addStringOption(option => option // region
+                    .setName('preferred-region')
+                    .setDescription('The prefered region if this region is not available (EU, US, USE, etc.)')
+                    .setRequired(false)
                 )
                 .addBooleanOption(option => option
                     .setName('tie-breaker')
@@ -258,14 +263,16 @@ module.exports = {
                 const targetRegion = interaction.options.getString('region');
                 const regionDisplay = interaction.options.getString('region-display');
                 const inputRole = interaction.options.getRole('role');
-                const regionNeighbours = interaction.options.getString('region-neighbours').replaceAll(' ', '').split(',');
+                const regionNeighbors = interaction.options.getString('region-neighbors').replaceAll(' ', '').split(',');
+                const preferredRegion = interaction.options.getString('preferred-region');
                 const tieBreaker = (interaction.options.getBoolean('tie-breaker')) ? interaction.options.getBoolean('tie-breaker') : false;
 
                 const regionObject = {
                     region: targetRegion,
                     regionDisplay: regionDisplay,
                     role: inputRole.toJSON(),
-                    neighbours: regionNeighbours,
+                    neighbors: regionNeighbors,
+                    preferredRegion: preferredRegion,
                     tieBreaker: tieBreaker
                 }
 
