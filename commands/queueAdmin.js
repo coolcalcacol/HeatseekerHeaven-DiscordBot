@@ -256,30 +256,46 @@ module.exports = {
                             continue;
                         }
                     }
-                    const mmr =  player.stats[targetGame.lobby].mmr;
+                    const mmr = player.stats[targetGame.lobby].mmr;
                     // player.stats[targetGame.lobby].mmr = Math.round(results[1].replace('+', '').replace('-', ''));
 
+                    const prePerStats = JSON.parse(JSON.stringify(player.persistentStats));
+
                     if (results[1].split('').includes('+')) {
-                        player.stats[targetGame.lobby].mmr = mmr - Math.round(results[1].replace('+', ''));
+                        // player.stats[targetGame.lobby].mmr = mmr - Math.round(results[1].replace('+', ''));
+                        player.stats[targetGame.lobby].mmr = mmr - parseFloat(results[1].replace('+', ''));
                         player.stats[targetGame.lobby].gamesWon -= 1;
                         player.stats.global.gamesWon -= 1;
+                        player.persistentStats.gamesWon -= 1;
                     }
                     else {
-                        player.stats[targetGame.lobby].mmr = mmr + Math.round(results[1].replace('-', ''));
+                        // player.stats[targetGame.lobby].mmr = mmr + Math.round(results[1].replace('-', ''));
+                        player.stats[targetGame.lobby].mmr = mmr + parseFloat(results[1].replace('-', ''));
                         player.stats[targetGame.lobby].gamesLost -= 1;
                         player.stats.global.gamesLost -= 1;
+                        player.persistentStats.gamesLost -= 1;
                     }
                     player.stats[targetGame.lobby].gamesPlayed -= 1;
                     player.stats.global.gamesPlayed -= 1;
-                    // player.stats[targetGame.lobby].mmr = results[1].split('').includes('+') ? 
-                    //     mmr - Math.round(results[1].replace('+', '')) : 
-                    //     mmr + Math.round(results[1].replace('-', ''))
-                    // ;
+                    
+                    // player.persistentStats.totalMmr -= player.stats.global.mmr;
+                    player.persistentStats.gamesPlayed -= 1;
+                    player.persistentStats.timePlayed -= targetGame.gameDuration;
 
-                    await playerData.updatePlayerData(player, queueConfig.mmrSettings);
+                    const postPerStats = player.persistentStats;
+                    const debugPerStats = {};
+                    for (const stat in prePerStats) {
+                        if (!['averageMmr', 'totalMmr', 'timePlayed', 'winRate', 'gamesPlayed', 'gamesWon', 'gamesLost'].includes(stat)) continue;
+                        debugPerStats[stat] = `[fg=red]${prePerStats[stat]}[/>] -> [fg=green]${postPerStats[stat]}[/>] ([fg=yellow]${postPerStats[stat] - prePerStats[stat]}[/>])`;
+                    }
+
+                    // thisLog(`---- [fg=green]${player.userData.name}[/>] [fg=red]Undo[/>] ----`)
+                    // thisLog(debugPerStats, true);
+
+                    await playerData.updatePlayerData(player, queueConfig.mmrSettings, true);
                 }
 
-                const index = queueData.info.globalQueueData.gameHistory.indexOf(targetGame)
+                const index = queueData.info.globalQueueData.gameHistory.indexOf(targetGame);
                 const lobbyChannelId = await queueSettings.getRankedLobbyByName(targetGame.lobby, guildId);
                 const message = new MessageEmbed({
                     title: 'The report for ' + targetGame.gameId + ' has been undone',
@@ -291,7 +307,7 @@ module.exports = {
                     timestamp: new Date().getTime()
                 });
 
-                targetGame.reportStatus = false;
+                targetGame.reportStatus = 'undone';
                 queueData.info.globalQueueData.gameHistory.splice(index, 1);
                 queueData.info.globalQueueData.gamesInProgress.push(targetGame);
 
@@ -561,10 +577,14 @@ function getGameById(id, inHistory = false) {
     return null;
 }
 
-function thisLog(log, endLineBreak = true) {
+function thisLog(log, customLog = false, endLineBreak = true) {
     if (!generalData.logOptions.queueAdmin) return;
-    if (generalUtilities.info.isObject(log)) {
+    if (generalUtilities.info.isObject(log) && !customLog) {
         cConsole.log('-------- QueueAdmin --------');
+        console.log(log);
+    }
+    else if (customLog) {
+        cConsole.log('-------- QueueAdmin --------\n');
         console.log(log);
     }
     else {

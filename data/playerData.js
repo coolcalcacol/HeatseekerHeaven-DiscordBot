@@ -24,10 +24,10 @@ async function createPlayerData(userData, queueSettingsData) {
         .catch((err) => {console.log(err);});
     return output;
 }
-async function updatePlayerData(data, equationValues) {
+async function updatePlayerData(data, equationValues, undo = false) {
     const user = await generalUtilities.info.getUserById(data['_id']);
     const newData = await getPlayerDataObject(user, {mmrSettings: equationValues});
-    newData.persistentStats = data.persistentStats;
+    newData.persistentStats = JSON.parse(JSON.stringify(data.persistentStats));
     const gameModes = ['ones', 'twos', 'threes', 'global']
     
     for (let i = 0; i < gameModes.length; i++) {
@@ -39,21 +39,30 @@ async function updatePlayerData(data, equationValues) {
         newData.stats[mode].gamesLost = (data.stats[mode].gamesLost) ? data.stats[mode].gamesLost : 0;
         newData.stats[mode].winRate = (data.stats[mode].winRate) ? data.stats[mode].winRate : 0;
     }
-    
     for (let i = 0; i < gameModes.length; i++) {
         const mode = gameModes[i];
         if (mode == 'global') continue;
+        thisLog(`${newData.stats.global.mmr} += ${data.stats[mode].mmr} * ${equationValues[mode + 'Multiplier']} = ${newData.stats.global.mmr + data.stats[mode].mmr * equationValues[mode + 'Multiplier']}`)
         newData.stats.global.mmr += data.stats[mode].mmr * equationValues[mode + 'Multiplier'];
     }
 
     let currentGain = newData.stats.global.mmr - data.stats.global.mmr;
-    if (!equationValues.placementSettings.modeBased && data.stats.global.gamesPlayed < equationValues.placementSettings.gameCount) {
-        cConsole.log(`${data.userData.name}: ${currentGain} * (${equationValues.placementSettings.gain} - (${data.stats.global.gamesPlayed} / ${equationValues.placementSettings.gameCount}) * (${equationValues.placementSettings.gain} - 1)) = ${currentGain * (equationValues.placementSettings.gain - (data.stats.global.gamesPlayed / equationValues.placementSettings.gameCount) * (equationValues.placementSettings.gain - 1))}`);
+    thisLog(`\nCurrent Gain: ${newData.stats.global.mmr} - ${data.stats.global.mmr} = ${currentGain}`);
+    if (!undo && !equationValues.placementSettings.modeBased && data.stats.global.gamesPlayed < equationValues.placementSettings.gameCount) {
+        thisLog(`Placement Gain: ${currentGain} * (${equationValues.placementSettings.gain} - (${data.stats.global.gamesPlayed} / ${equationValues.placementSettings.gameCount}) * (${equationValues.placementSettings.gain} - 1)) = ${currentGain * (equationValues.placementSettings.gain - (data.stats.global.gamesPlayed / equationValues.placementSettings.gameCount) * (equationValues.placementSettings.gain - 1))}\n`);
         currentGain = currentGain * (equationValues.placementSettings.gain - (data.stats.global.gamesPlayed / equationValues.placementSettings.gameCount) * (equationValues.placementSettings.gain - 1));
     }
     newData.stats.global.mmr = Math.round(data.stats.global.mmr + currentGain);
     newData.persistentStats.totalMmr += newData.stats.global.mmr;
     newData.persistentStats.averageMmr = Math.round(newData.persistentStats.totalMmr / newData.persistentStats.gamesPlayed);
+
+    const perStatsDebug = {}
+    for (const perStats in newData.persistentStats) {
+        if (!['averageMmr', 'totalMmr'].includes(perStats)) continue;
+        perStatsDebug[perStats] = `[fg=red]${data.persistentStats[perStats]}[/>] -> [fg=green]${newData.persistentStats[perStats]}[/>] ([fg=yellow]${newData.persistentStats[perStats] - data.persistentStats[perStats]}[/>])`;
+    }
+    thisLog(`---- [fg=green]${data.userData.name}[/>] [fg=yellow]Player Data[/>] ----`);
+    thisLog(perStatsDebug);
 
     newData['__v'] = (data['__v'] + 1);
     await PlayerDatabase.updateMany({_id: data['_id']}, newData);
