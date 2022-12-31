@@ -17,6 +17,7 @@ const QueueConfigSchema = new mongoose.Schema({
         logChannel: {type: String, default: ''},
     },
     roleSettings: {
+        regionRoles: {type: Array, default: []},
         inActiveGameRole: {type: Object, default: {}},
         regionEU: {type: Object, default: {}},
         regionUS: {type: Object, default: {}},

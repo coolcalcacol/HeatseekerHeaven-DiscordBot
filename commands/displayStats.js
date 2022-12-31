@@ -43,7 +43,7 @@ module.exports = {
                 ephemeral: true,
                 content: message
             });
-            return;``
+            return;
         }
         await interaction.reply({
             ephemeral: interaction.options.getBoolean('visible') ? false : true,
